@@ -5,6 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galaxpeer-CLI", "Galaxpeer-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libGalaxpeer", "libGalaxpeer\libGalaxpeer.csproj", "{0C1BA46C-7554-4060-9523-8B7DC4131EE8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{956084A8-0CCC-4070-95FA-2C3F77B2958E}"
+	ProjectSection(SolutionItems) = preProject
+		libGalaxpeer\PsycicManager.cs = libGalaxpeer\PsycicManager.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,5 +24,7 @@ Global
 		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Debug|x86.Build.0 = Debug|Any CPU
 		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Release|x86.ActiveCfg = Release|Any CPU
 		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

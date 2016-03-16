@@ -10,9 +10,10 @@ namespace Galaxpeer
 				moe.LocationUpdate (1);
 
 				foreach (MobileEntity moe2 in objects){
-					moe.CheckCollision (moe2);	
+					if (moe.CheckCollision (moe2)) {
+						moe.collide (moe2);
+					}	
 				}
-
 			}
 		}
 	}
