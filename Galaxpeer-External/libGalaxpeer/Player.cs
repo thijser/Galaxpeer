@@ -135,9 +135,9 @@ namespace Galaxpeer
 			public override void collide(MobileEntity other){
 				this.Velocity = other.Velocity;
 			}
-			public override void destroy(){
-			
-			}
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}
 		}
 		public class Rocket:MobileEntity{
 			public override void collide(MobileEntity other){
@@ -149,8 +149,9 @@ namespace Galaxpeer
 				other.Health = other.Health - 10;
 				this.destroy ();
 			}
-			public override void destroy(){}
-				
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}				
 		}
 		public class astroid : MobileEntity{
 			public override void collide(MobileEntity other){
@@ -164,7 +165,9 @@ namespace Galaxpeer
 				}
 
 			}
-			public override void destroy(){}
+			public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}
 
 		}
 
@@ -180,8 +183,9 @@ namespace Galaxpeer
 
 		private LocalPlayer() {}
 
-		public override void destroy(){}
-
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}
 		public override void collide(MobileEntity other){
 			float difX=other.Velocity.X-Velocity.X;
 			float difY=other.Velocity.X-Velocity.X;
