@@ -55,11 +55,14 @@ namespace Galaxpeer
 		}
 	}
 
-	public class MobileEntity 
+	public abstract class MobileEntity 
 	{
 		public Vector3 Location;
 		public Vector4 Rotation;
 		public Vector3 Velocity;
+		public float size; 
+
+		abstract void collide(MobileEntity other);
 
 		public void LocationUpdate(double stepsize){
 			Location = Location + stepsize * Velocity; 
@@ -87,11 +90,11 @@ namespace Galaxpeer
 			r.normalize;
 			Rotation = Rotation*r;
 
-			 x = fr * upVec.X;
+			x = fr * upVec.X;
 			y=fr*upVec.Y;
 			z=fr*upVec.Z;
-			 w=Math.cos(right/2.0);
-			 r = new Vector4 (x, y, z, w);
+		    w=Math.cos(right/2.0);
+			r = new Vector4 (x, y, z, w);
 			r.normalize;
 			Rotation = Rotation*r;
 
@@ -101,16 +104,23 @@ namespace Galaxpeer
 			w=Math.cos(spin/2.0);
 			r = new Vector4 (x, y, z, w);
 			r.normalize;
-			Rotation = Rotation * r;
-
+			Rotation = Rotation * r;   
 			Rotation.normalize ();
-
-
-
-
 		}
-	
 
+		public bool CheckCollision(MobileEntity other){
+			double Xdist = Location.X - other.Location.X;
+			double Ydist = Location.Y - other.Location.Y;
+			double Zdist = Location.Z - other.Location.Z;
+			if (size + other.size > math.sqrt (Xdist * Xdist + Ydist * Ydist + Zdist * Zdist)) {
+				this.collide (other);
+			}
+				
+		}
+
+		public class Player: MobileEntity{
+			
+		}
 		public class LocalPlayer : Player
 		{
 			public int Health;
