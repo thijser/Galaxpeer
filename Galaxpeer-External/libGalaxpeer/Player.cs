@@ -129,6 +129,7 @@ namespace Galaxpeer
 			return false;
 				
 		}
+	}
 
 		public class Player: MobileEntity{
 			public override void collide(MobileEntity other){
@@ -166,21 +167,48 @@ namespace Galaxpeer
 			public override void destroy(){}
 
 		}
-		public class LocalPlayer : Player
-		{
-			public override void destroy(){}
 
-			public override void collide(MobileEntity other){
-				float difX=other.Velocity.X-Velocity.X;
-				float difY=other.Velocity.X-Velocity.X;
-				float difZ=other.Velocity.X-Velocity.X;
-				this.Velocity = other.Velocity;
-				Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
-				if (Health < 0) {
-					this.destroy ();
-				}
+		
+
+	public class LocalPlayer : Player
+	{
+		public int Health;
+		public long LastShotFired;
+
+		private static volatile LocalPlayer instance;
+		private static object syncRoot = new Object();
+
+		private LocalPlayer() {}
+
+		public override void destroy(){}
+
+		public override void collide(MobileEntity other){
+			float difX=other.Velocity.X-Velocity.X;
+			float difY=other.Velocity.X-Velocity.X;
+			float difZ=other.Velocity.X-Velocity.X;
+			this.Velocity = other.Velocity;
+			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
+			if (Health < 0) {
+				this.destroy ();
 			}
-			public long LastShotFired;
+		}
+
+
+		public static LocalPlayer Instance
+		{
+			get 
+			{
+				if (instance == null) 
+				{
+					lock (syncRoot) 
+					{
+						if (instance == null) 
+							instance = new LocalPlayer();
+					}
+				}
+
+				return instance;
+			}
 		}
 	}
 }

@@ -3,30 +3,53 @@ namespace Galaxpeer
 {
 	public class LocationMessage : Message
 	{
-		public Vector3 Position { get; private set; }
-		public Vector4 Rotation { get; private set; }
-		public Vector3 Velocity { get; private set; }
 
 		static LocationMessage()
 		{
 			MessageFactory.Register ('L', typeof(LocationMessage));
 		}
 
-		public LocationMessage(Vector3 position, Vector4 rotation, Vector3 velocity)
+		public static event MessageHandler OnReceive;
+
+
+		public Vector3 Location { get; private set; }
+		public Vector4 Rotation { get; private set; }
+		public Vector3 Velocity { get; private set; }
+
+		struct Packet
 		{
-			Position = position;
-			Rotation = rotation;
-			Velocity = velocity;
+			public char Id;
+			public Vector3 Location;
+			public Vector4 Rotation;
+			public Vector3 Velocity;
+		}
+
+		public LocationMessage(MobileEntity mob)
+		{
+			Location = mob.Location;
+			Rotation = mob.Rotation;
+			Velocity = mob.Velocity;
 		}
 
 		public LocationMessage(byte[] bytes)
 		{
+			Packet packet = FromBytes<Packet> (bytes);
+			Location = packet.Location;
+			Rotation = packet.Rotation;
+			Velocity = packet.Velocity;
 
+			OnReceive (this);
 		}
 
 		public override byte[] Serialize()
 		{
-			return StringToBytes("L" + Position.ToString () + Rotation.ToString () + Velocity.ToString ());
+			Packet packet;
+			packet.Id = 'L';
+			packet.Location = Location;
+			packet.Rotation = Rotation;
+			packet.Velocity = Velocity;
+
+			return ToBytes (packet);
 		}
 	}
 }

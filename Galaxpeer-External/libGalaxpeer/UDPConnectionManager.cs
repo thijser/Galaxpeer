@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Net;
-
+using System.Net.Sockets;
+using System.Collections;
 namespace Galaxpeer
 {
+
 	public class UDPConnectionManager : ConnectionManager
 	{
 		UdpClient socket;
+		Hashtable handlers;
 
 		public UDPConnectionManager(int port = 12346)
 		{
@@ -21,11 +23,11 @@ namespace Galaxpeer
 			Connection connection = new UDPConnection (message);
 			this.Connections.Add (connection);
 			connection.Send (this.LocalConnectionMessage);
+			//connection.Send (new LocationMessage (LocalPlayer.Instance));
 		}
 
 		protected void Receive()
 		{
-			Console.WriteLine ("Receiving");
 			socket.BeginReceive (new AsyncCallback (onReceive), null);
 		}
 
@@ -36,7 +38,6 @@ namespace Galaxpeer
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
 				Message m = MessageFactory.Parse (received);
-				Console.WriteLine (m);
 			}
 			catch (Exception)
 			{

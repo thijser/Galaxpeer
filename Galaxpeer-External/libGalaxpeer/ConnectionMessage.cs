@@ -6,6 +6,13 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : Message
 	{
+		static ConnectionMessage()
+		{
+			MessageFactory.Register ('C', typeof(ConnectionMessage));
+		}
+
+		public static event MessageHandler OnReceive;
+
 		public Guid UUID;
 		public IPAddress Ip;
 		public int Port;
@@ -17,11 +24,6 @@ namespace Galaxpeer
 			public UInt32 Ip;
 			public UInt16 Port;
 		};
-
-		static ConnectionMessage()
-		{
-			MessageFactory.Register ('C', typeof(ConnectionMessage));
-		}
 
 		public ConnectionMessage(Guid uuid, IPAddress ip, int port)
 		{
@@ -36,6 +38,8 @@ namespace Galaxpeer
 			UUID = packet.UUID;
 			Ip = new IPAddress (packet.Ip);
 			Port = packet.Port;
+
+			OnReceive (this);
 		}
 
 		public override byte[] Serialize()
