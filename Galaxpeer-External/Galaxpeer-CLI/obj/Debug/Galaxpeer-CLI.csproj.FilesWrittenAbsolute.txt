@@ -1,0 +1,14 @@
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/bin/Debug/Galaxpeer-CLI.exe.mdb
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/bin/Debug/Galaxpeer-CLI.exe
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/obj/Debug/Galaxpeer-CLI.exe
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/obj/Debug/Galaxpeer-CLI.exe.mdb
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/bin/Debug/libGalaxpeer.dll
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-CLI/bin/Debug/libGalaxpeer.dll.mdb
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/bin/Debug/Galaxpeer-CLI.exe.mdb
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/bin/Debug/Galaxpeer-CLI.exe
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/obj/Debug/Galaxpeer-CLI.exe
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/obj/Debug/Galaxpeer-CLI.exe.mdb
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/bin/Debug/libGalaxpeer.dll
+/home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/Galaxpeer-CLI/bin/Debug/libGalaxpeer.dll.mdb
