@@ -1,4 +1,4 @@
-﻿using System.Math;
+﻿using System;
 
 namespace Galaxpeer
 {
@@ -25,12 +25,13 @@ namespace Galaxpeer
 		{
 			W = w;
 		}
-		public Vector4 operator * (Vector4 left,Vector4 right){
+		public static Vector4 operator * (Vector4 left,Vector4 right){
 			Vector4 res = new Vector4 (left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
-			return res.normalize();
+			res.normalize();
+			return res;
 		}
 		public void normalize(){
-			double length = Math.sqrt(X * X + Y * Y + Z * Z + W * W);
+			float length = (float)Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
 			X = X / length;
 			Y = Y / length;
 			Z = Z / length;
@@ -38,20 +39,20 @@ namespace Galaxpeer
 		}
 		public Vector3 GetRightVector() 
 		{
-			return Vector3( 1 - 2 * (y * y + z * z),
-				2 * (x * y + w * z),
-				2 * (x * z - w * y));
+			return new Vector3( 1 - 2 * (Y * Y + Z * Z),
+				2 * (X * Y + W * Z),
+				2 * (X * Z - W * Y));
 		}
-		public Vector3 GetUpVector(){
-			return Vector3( 2 * (x * y - w * z), 
-				1 - 2 * (x * x + z * z),
-				2 * (y * z + w * x));
+		public  Vector3 GetUpVector(){
+			return new Vector3( 2 * (X * Y - W * Z), 
+				1 - 2 * (X * X + Z * Z),
+				2 * (Y * Z + W * X));
 		}
 		public Vector3 GetForwardVector() 
 		{
-			return Vector3( 2 * (x * z + w * y), 
-				2 * (y * x - w * x),
-				1 - 2 * (x * x + y * y));
+			return new Vector3( 2 * (X * Z + W * Y), 
+				2 * (Y * X - W * X),
+				1 - 2 * (X * X + Y * Y));
 		}
 	}
 
@@ -62,22 +63,29 @@ namespace Galaxpeer
 		public Vector3 Velocity;
 		public float size; 
 
-		abstract void collide(MobileEntity other);
+		public abstract void collide(MobileEntity other);
 
 		public void LocationUpdate(double stepsize){
-			Location = Location + stepsize * Velocity; 
+	
+			float nx =(float) (Location.X + stepsize * Velocity.X); 
+				float ny =(float) (Location.Y + stepsize * Velocity.Y);
+					float nz =(float) (Location.Z + stepsize * Velocity.Z);
+			Location = new Vector3 (nx, ny, nz);
 		}
-		public void AccelerateForward(double stepsize, double acceleration,double maxspeed){
-			Velocity = Velocity + (stepsize * (acceleration*GetForwardVector()));
 
+		public void AccelerateForward(double stepsize, double acceleration,double maxspeed){
+			float Vx =(float) (stepsize * (acceleration*Rotation.GetForwardVector().X));
+			float Vy =(float) (stepsize * (acceleration*Rotation.GetForwardVector().Y));
+			float Vz =(float) (stepsize * (acceleration*Rotation.GetForwardVector().Z));
+			Velocity = new Vector3 (Vx, Vy, Vz);
 			if ((Velocity.X * Velocity.X) + (Velocity.Y * Velocity.Y) + (Velocity.Z * Velocity.Z) > maxspeed*maxspeed) {
-				Velocity = Velocity / maxspeed;
+				Velocity = new Vector3((float)(Velocity.X / maxspeed),(float)(Velocity.Y / maxspeed),(float)(Velocity.Z / maxspeed));
 			}
 		}
 		public void rotate(double up,double right,double spin){
-			double ff = Math.sin (forward);
-			double fr = Math.sin (right);
-			double fs = Math.sin (spin);
+			double ff = Math.Sin (up);
+			double fr = Math.Sin (right);
+			double fs = Math.Sin (spin);
 			Vector3 rightVec = Rotation.GetRightVector (); 
 			Vector3 upVec = Rotation.GetUpVector (); 
 			Vector3 forVec = Rotation.GetForwardVector (); 
@@ -85,25 +93,25 @@ namespace Galaxpeer
 			double x = ff * rightVec.X;
 			double y=ff*rightVec.Y;
 			double z=ff*rightVec.Z;
-			double w=Math.cos(up/2.0);
-			Vector4 r = new Vector4 (x, y, z, w);
-			r.normalize;
+			double w=Math.Cos(up/2.0);
+			Vector4 r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
+			r.normalize();
 			Rotation = Rotation*r;
 
 			x = fr * upVec.X;
 			y=fr*upVec.Y;
 			z=fr*upVec.Z;
-		    w=Math.cos(right/2.0);
-			r = new Vector4 (x, y, z, w);
-			r.normalize;
+		    w=Math.Cos(right/2.0);
+			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
+			r.normalize();
 			Rotation = Rotation*r;
 
 			x = fs * forVec.X;
 			y=fs*forVec.Y;
 			z=fs*forVec.Z;
-			w=Math.cos(spin/2.0);
-			r = new Vector4 (x, y, z, w);
-			r.normalize;
+			w=Math.Cos(spin/2.0);
+			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
+			r.normalize();
 			Rotation = Rotation * r;   
 			Rotation.normalize ();
 		}
@@ -112,14 +120,17 @@ namespace Galaxpeer
 			double Xdist = Location.X - other.Location.X;
 			double Ydist = Location.Y - other.Location.Y;
 			double Zdist = Location.Z - other.Location.Z;
-			if (size + other.size > math.sqrt (Xdist * Xdist + Ydist * Ydist + Zdist * Zdist)) {
-				this.collide (other);
+			if (size + other.size > Math.Sqrt (Xdist * Xdist + Ydist * Ydist + Zdist * Zdist)) {
+				return true;
 			}
+			return false;
 				
 		}
 
 		public class Player: MobileEntity{
-			
+			public override void collide(MobileEntity other){
+			int h=0;
+			}
 		}
 		public class LocalPlayer : Player
 		{

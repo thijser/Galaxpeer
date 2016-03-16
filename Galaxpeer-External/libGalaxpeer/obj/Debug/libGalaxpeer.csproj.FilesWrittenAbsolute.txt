@@ -8,3 +8,8 @@
 /home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/libGalaxpeer/bin/Debug/libGalaxpeer.dll
 /home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/libGalaxpeer/obj/Debug/libGalaxpeer.dll
 /home/leon/Encrypted/TU Delft/Master/IN4391 Distributed Computing Systems/Galaxpeer/Galaxpeer-External/libGalaxpeer/obj/Debug/libGalaxpeer.dll.mdb
+/home/thijs/workspace/Galaxpeer/Galaxpeer-External/libGalaxpeer/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/thijs/workspace/Galaxpeer/Galaxpeer-External/libGalaxpeer/obj/Debug/libGalaxpeer.dll
+/home/thijs/workspace/Galaxpeer/Galaxpeer-External/libGalaxpeer/obj/Debug/libGalaxpeer.dll.mdb
+/home/thijs/workspace/Galaxpeer/Galaxpeer-External/libGalaxpeer/bin/Debug/libGalaxpeer.dll.mdb
+/home/thijs/workspace/Galaxpeer/Galaxpeer-External/libGalaxpeer/bin/Debug/libGalaxpeer.dll
