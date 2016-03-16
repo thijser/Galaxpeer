@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galaxpeer-CLI", "Galaxpeer-CLI\Galaxpeer-CLI.csproj", "{530F0411-B04D-4A64-AFB4-3F590F5D188B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libGalaxpeer", "libGalaxpeer\libGalaxpeer.csproj", "{0C1BA46C-7554-4060-9523-8B7DC4131EE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C1BA46C-7554-4060-9523-8B7DC4131EE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C1BA46C-7554-4060-9523-8B7DC4131EE8}.Debug|x86.Build.0 = Debug|Any CPU
+		{0C1BA46C-7554-4060-9523-8B7DC4131EE8}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C1BA46C-7554-4060-9523-8B7DC4131EE8}.Release|x86.Build.0 = Release|Any CPU
+		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Debug|x86.Build.0 = Debug|Any CPU
+		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Release|x86.ActiveCfg = Release|Any CPU
+		{530F0411-B04D-4A64-AFB4-3F590F5D188B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

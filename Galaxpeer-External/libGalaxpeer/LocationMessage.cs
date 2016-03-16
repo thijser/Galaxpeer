@@ -7,6 +7,11 @@ namespace Galaxpeer
 		public Vector4 Rotation { get; private set; }
 		public Vector3 Velocity { get; private set; }
 
+		static LocationMessage()
+		{
+			MessageFactory.Register ('L', typeof(LocationMessage));
+		}
+
 		public LocationMessage(Vector3 position, Vector4 rotation, Vector3 velocity)
 		{
 			Position = position;
@@ -14,7 +19,7 @@ namespace Galaxpeer
 			Velocity = velocity;
 		}
 
-		public LocationMessage(string serialized)
+		public LocationMessage(byte[] bytes)
 		{
 
 		}

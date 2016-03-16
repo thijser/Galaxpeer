@@ -5,7 +5,7 @@ namespace Galaxpeer
 	// Also receives incoming connections
 	public class ConnectionManager
 	{
-		ConnectionMessage LocalConnection;
-		public List<ConnectionMessage> Connections;
+		public ConnectionMessage LocalConnectionMessage;
+		public List<Connection> Connections;
 	}
 }

@@ -10,7 +10,7 @@ namespace Galaxpeer
 		public UDPConnection(ConnectionMessage message) : base(message)
 		{
 			socket = new UdpClient ();
-			socket.Connect (message.IP, message.Port);
+			socket.Connect (message.Ip, message.Port);
 		}
 
 		public override void Send(Message message)
