@@ -6,11 +6,6 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : Message
 	{
-		static ConnectionMessage()
-		{
-			MessageFactory.Register ('C', typeof(ConnectionMessage));
-		}
-
 		public static event MessageHandler OnReceive;
 
 		public Guid UUID;
@@ -39,7 +34,9 @@ namespace Galaxpeer
 			Ip = new IPAddress (packet.Ip);
 			Port = packet.Port;
 
-			OnReceive (this);
+			if (OnReceive != null) {
+				OnReceive (this);
+			}
 		}
 
 		public override byte[] Serialize()

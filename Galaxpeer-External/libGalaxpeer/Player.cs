@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-
+	[StructLayout(LayoutKind.Sequential)]
 	public class Vector3
 	{
 		public float X;
@@ -17,12 +18,19 @@ namespace Galaxpeer
 		}
 	}
 
-	public class Vector4 : Vector3
+	[StructLayout(LayoutKind.Sequential)]
+	public class Vector4
 	{
+		public float X;
+		public float Y;
+		public float Z;
 		public float W;
 
-		public Vector4(float x, float y, float z, float w) : base(x, y, z)
+		public Vector4(float x, float y, float z, float w)
 		{
+			X = x;
+			Y = y;
+			Z = z;
 			W = w;
 		}
 		public static Vector4 operator * (Vector4 left,Vector4 right){
@@ -61,7 +69,15 @@ namespace Galaxpeer
 		public Vector3 Location;
 		public Vector4 Rotation;
 		public Vector3 Velocity;
-		public float size; 
+		public float size;
+
+		public MobileEntity()
+		{
+			Location = new Vector3 (0, 0, 0);
+			Rotation = new Vector4 (0, 0, 0, 0);
+			Velocity = new Vector3 (0, 0, 0);
+			size = 0;
+		}
 
 		public abstract void collide(MobileEntity other);
 

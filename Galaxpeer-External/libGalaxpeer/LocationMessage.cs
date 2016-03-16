@@ -1,14 +1,10 @@
-﻿
+﻿using System;
+
+
 namespace Galaxpeer
 {
 	public class LocationMessage : Message
 	{
-
-		static LocationMessage()
-		{
-			MessageFactory.Register ('L', typeof(LocationMessage));
-		}
-
 		public static event MessageHandler OnReceive;
 
 
@@ -38,7 +34,9 @@ namespace Galaxpeer
 			Rotation = packet.Rotation;
 			Velocity = packet.Velocity;
 
-			OnReceive (this);
+			if (OnReceive != null) {
+				OnReceive (this);
+			}
 		}
 
 		public override byte[] Serialize()

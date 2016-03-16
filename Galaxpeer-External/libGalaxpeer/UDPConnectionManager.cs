@@ -8,22 +8,21 @@ namespace Galaxpeer
 	public class UDPConnectionManager : ConnectionManager
 	{
 		UdpClient socket;
-		Hashtable handlers;
 
 		public UDPConnectionManager(int port = 12346)
 		{
-			socket = new UdpClient (port);
+			socket = new UdpClient (0);
 			IPEndPoint endPoint = (IPEndPoint) socket.Client.LocalEndPoint;
-			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), endPoint.Address, endPoint.Port);
+			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), IPAddress.Parse("127.0.0.1")/*endPoint.Address*/, endPoint.Port);
 			Receive ();
 		}
 
-		public void Connect(ConnectionMessage message)
+		public override void Connect(ConnectionMessage message)
 		{
 			Connection connection = new UDPConnection (message);
 			this.Connections.Add (connection);
 			connection.Send (this.LocalConnectionMessage);
-			//connection.Send (new LocationMessage (LocalPlayer.Instance));
+			connection.Send (new LocationMessage (LocalPlayer.Instance));
 		}
 
 		protected void Receive()
@@ -33,16 +32,16 @@ namespace Galaxpeer
 
 		protected void onReceive(IAsyncResult result)
 		{
-			try
-			{
+			//try
+			//{
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
-				Message m = MessageFactory.Parse (received);
-			}
-			catch (Exception)
-			{
+				MessageFactory.Parse (received);
+			//}
+			//catch (Exception e)
+			//{
 
-			}
+			//}
 			Receive ();
 		}
 	}
