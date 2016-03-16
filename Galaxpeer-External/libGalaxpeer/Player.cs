@@ -69,7 +69,9 @@ namespace Galaxpeer
 		public Vector3 Location;
 		public Vector4 Rotation;
 		public Vector3 Velocity;
+
 		public float size;
+		Guid ownedBy;
 
 		public MobileEntity()
 		{
@@ -80,6 +82,8 @@ namespace Galaxpeer
 		}
 
 		public abstract void collide(MobileEntity other);
+		public abstract void destroy();
+		public int Health;
 
 		public void LocationUpdate(double stepsize){
 	
@@ -143,12 +147,48 @@ namespace Galaxpeer
 				
 		}
 	}
-		
-	public class Player: MobileEntity{
-		public override void collide(MobileEntity other){
-			int h=0;
+
+		public class Player: MobileEntity{
+			public override void collide(MobileEntity other){
+				this.Velocity = other.Velocity;
+			}
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
 		}
-	}
+		}
+		public class Rocket:MobileEntity{
+			public override void collide(MobileEntity other){
+				float difX=other.Velocity.X-Velocity.X;
+				float difY=other.Velocity.X-Velocity.X;
+				float difZ=other.Velocity.X-Velocity.X;
+				this.Velocity = other.Velocity;
+				Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));
+				other.Health = other.Health - 10;
+				this.destroy ();
+			}
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}				
+		}
+		public class astroid : MobileEntity{
+			public override void collide(MobileEntity other){
+				float difX=other.Velocity.X-Velocity.X;
+				float difY=other.Velocity.X-Velocity.X;
+				float difZ=other.Velocity.X-Velocity.X;
+				this.Velocity = other.Velocity;
+				Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
+				if (Health < 0) {
+					this.destroy ();
+				}
+
+			}
+			public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}
+
+		}
+
+		
 
 	public class LocalPlayer : Player
 	{
@@ -159,6 +199,21 @@ namespace Galaxpeer
 		private static object syncRoot = new Object();
 
 		private LocalPlayer() {}
+
+		public override void destroy(){
+			PsycicManager.Instance.Destoyed.Add (this);
+		}
+		public override void collide(MobileEntity other){
+			float difX=other.Velocity.X-Velocity.X;
+			float difY=other.Velocity.X-Velocity.X;
+			float difZ=other.Velocity.X-Velocity.X;
+			this.Velocity = other.Velocity;
+			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
+			if (Health < 0) {
+				this.destroy ();
+			}
+		}
+
 
 		public static LocalPlayer Instance
 		{
