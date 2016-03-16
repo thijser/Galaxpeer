@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
+	public delegate void MessageHandler(Message message);
 	
 	public abstract class Message
 	{

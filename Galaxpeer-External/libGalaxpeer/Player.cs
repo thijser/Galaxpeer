@@ -126,16 +126,39 @@ namespace Galaxpeer
 			return false;
 				
 		}
-
-		public class Player: MobileEntity{
-			public override void collide(MobileEntity other){
+	}
+		
+	public class Player: MobileEntity{
+		public override void collide(MobileEntity other){
 			int h=0;
-			}
 		}
-		public class LocalPlayer : Player
+	}
+
+	public class LocalPlayer : Player
+	{
+		public int Health;
+		public long LastShotFired;
+
+		private static volatile LocalPlayer instance;
+		private static object syncRoot = new Object();
+
+		private LocalPlayer() {}
+
+		public static LocalPlayer Instance
 		{
-			public int Health;
-			public long LastShotFired;
+			get 
+			{
+				if (instance == null) 
+				{
+					lock (syncRoot) 
+					{
+						if (instance == null) 
+							instance = new LocalPlayer();
+					}
+				}
+
+				return instance;
+			}
 		}
 	}
 }

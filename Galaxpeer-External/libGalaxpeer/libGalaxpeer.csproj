@@ -41,6 +41,7 @@
     <Compile Include="UDPConnectionManager.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="MessageFactory.cs" />
+    <Compile Include="PsycicManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
