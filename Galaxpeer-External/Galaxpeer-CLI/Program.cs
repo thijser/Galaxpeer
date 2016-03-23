@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Galaxpeer;
 using System.Threading;
 
@@ -10,7 +11,8 @@ namespace GalaxpeerCLI
 		{
 			ConnectionManager c1 = new UDPConnectionManager ();
 			ConnectionManager c2 = new UDPConnectionManager ();
-			c2.Connect (c1.LocalConnectionMessage);
+			Game.Init (c2);
+			c2.Connect (new ConnectionMessage(new Guid(), IPAddress.Parse("127.0.0.1"), c1.LocalConnectionMessage.Port));
 
 
 			//ConnectionMessage m = new ConnectionMessage (System.Guid.NewGuid (), System.Net.IPAddress.Parse ("127.0.0.1"), 12346);

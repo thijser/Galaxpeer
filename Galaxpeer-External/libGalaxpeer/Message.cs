@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	public delegate void MessageHandler(Message message);
+	public delegate void MessageHandler<T>(Client connection, T message);
 	
 	public abstract class Message
 	{
@@ -51,5 +52,6 @@ namespace Galaxpeer
 		}
 
 		public abstract byte[] Serialize();
+		public abstract void DispatchFrom(IPEndPoint endPoint);
 	}
 }

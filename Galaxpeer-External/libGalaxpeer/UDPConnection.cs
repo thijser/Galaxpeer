@@ -21,7 +21,14 @@ namespace Galaxpeer
 
 		protected void onSend(IAsyncResult result)
 		{
-			socket.EndSend (result);
+			try
+			{
+				socket.EndSend (result);
+			}
+			catch (Exception)
+			{
+				// TODO connection refused
+			}
 		}
 	}
 }

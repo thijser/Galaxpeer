@@ -13,16 +13,17 @@ namespace Galaxpeer
 		{
 			socket = new UdpClient (0);
 			IPEndPoint endPoint = (IPEndPoint) socket.Client.LocalEndPoint;
-			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), IPAddress.Parse("127.0.0.1")/*endPoint.Address*/, endPoint.Port);
+			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), new IPAddress(0), endPoint.Port);
 			Receive ();
 		}
 
-		public override void Connect(ConnectionMessage message)
+		public override Connection Connect(ConnectionMessage message)
 		{
 			Connection connection = new UDPConnection (message);
-			this.Connections.Add (connection);
+			//this.Connections.Add (connection);
 			connection.Send (this.LocalConnectionMessage);
 			connection.Send (new LocationMessage (LocalPlayer.Instance));
+			return connection;
 		}
 
 		protected void Receive()
@@ -36,8 +37,9 @@ namespace Galaxpeer
 			//{
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
-				MessageFactory.Parse (received);
-			//}
+				Message message = MessageFactory.Parse (received);
+				message.DispatchFrom (ip);
+	//}
 			//catch (Exception e)
 			//{
 

@@ -21,3 +21,5 @@ ExportedObj/
 *.unityproj
 *.booproj
 
+.fuse_hidden*
+
