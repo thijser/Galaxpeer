@@ -43,6 +43,17 @@ namespace Galaxpeer
 //			}
 		}
 
+		protected void ForwardMessage(Client source, Message message)
+		{
+			if (--message.Hops > 0) {
+				foreach (var client in closestClients) {
+					if (client != null && client != source) {
+						client.Connection.Send (message);
+					}
+				}
+			}
+		}
+
 		/* Handle a received connection message.
 		 * 
 		 * Add to connection list
@@ -69,6 +80,9 @@ namespace Galaxpeer
 						closestClients [octant] = new Client (message);
 						client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					}
+
+					// Forward message
+					ForwardMessage(client, message);
 				}
 			}
 		}

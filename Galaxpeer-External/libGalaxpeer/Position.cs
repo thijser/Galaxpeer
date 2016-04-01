@@ -4,6 +4,8 @@ namespace Galaxpeer
 {
 	public static class Position
 	{
+		public static float ROI_RADIUS = 300;
+
 		public static int GetOctant (Vector3 myLocation, Vector3 otherLocation)
 		{
 			int octant = 0;
@@ -24,6 +26,11 @@ namespace Galaxpeer
 		{
 			Vector3 d = otherLocation - myLocation;
 			return Math.Sqrt (d.X * d.X + d.Y * d.Y + d.Z * d.Z);
+		}
+
+		public static bool IsInRoi(Vector3 myLocation, Vector3 otherLocation)
+		{
+			return GetDistance (myLocation, otherLocation) <= ROI_RADIUS;
 		}
 	}
 }

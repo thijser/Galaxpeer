@@ -16,6 +16,7 @@ namespace Galaxpeer
 		struct Packet
 		{
 			public char Id;
+			public sbyte Hops;
 			public long Timestamp;
 			public Guid Uuid;
 			public UInt32 Ip;
@@ -34,6 +35,7 @@ namespace Galaxpeer
 		public ConnectionMessage(Byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
+			Hops = packet.Hops;
 			Uuid = packet.Uuid;
 			Ip = new IPAddress (packet.Ip);
 			Port = packet.Port;
@@ -45,6 +47,7 @@ namespace Galaxpeer
 		{
 			Packet packet;
 			packet.Id = 'C';
+			packet.Hops = Hops;
 			packet.Timestamp = Timestamp;
 			packet.Uuid = Uuid;
 			packet.Ip = BitConverter.ToUInt32(Ip.GetAddressBytes(), 0);
