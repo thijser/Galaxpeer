@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
-//using System.Linq;
 
 namespace Galaxpeer
 {
@@ -13,6 +12,7 @@ namespace Galaxpeer
 		public Dictionary<Guid, ConnectionMessage> ConnectionCache = new Dictionary<Guid, ConnectionMessage>();
 		private readonly Dictionary<IPEndPoint, Client> endPoints = new Dictionary<IPEndPoint, Client>();
 		private readonly Client[] closestClients = new Client[8];
+		public Dictionary<Guid, Client> ClientsInRoi = new Dictionary<Guid, Client> ();
 
 		public ConnectionManager()
 		{
@@ -37,10 +37,17 @@ namespace Galaxpeer
 
 		protected void cleanConnectionCache()
 		{
-//			var toRemove = ConnectionCache.Where (v => v.Value.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE).ToList();
-//			foreach (var item in toRemove) {
-//				ConnectionCache.Remove (item.Key);
-//			}
+			List<Guid> toRemove = new List<Guid> ();
+			foreach (var item in ConnectionCache) {
+				if (item.Value.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE) {
+					Console.WriteLine ("Removing connection {0}", item.Key);
+					toRemove.Add (item.Key);
+				}
+			}
+
+			foreach (var item in toRemove) {
+				ConnectionCache.Remove (item);
+			}
 		}
 
 		protected void ForwardMessage(Client source, Message message)
@@ -50,6 +57,20 @@ namespace Galaxpeer
 					if (client != null && client != source) {
 						client.Connection.Send (message);
 					}
+				}
+			}
+		}
+
+		public void UpdateRoiConnection(Client client, Vector3 location)
+		{
+			if (Position.IsInRoi (LocalPlayer.Instance.Location, location)) {
+				if (!ClientsInRoi.ContainsKey (client.Uuid)) {
+					ClientsInRoi.Add (client.Uuid, client);
+				}
+			} else {
+				if (ClientsInRoi.ContainsKey (client.Uuid)) {
+					ClientsInRoi.Remove (client.Uuid);
+					client.Connection.Close ();
 				}
 			}
 		}
@@ -81,6 +102,9 @@ namespace Galaxpeer
 						client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					}
 
+					// Check if this player is in ROI
+					UpdateRoiConnection (client, message.Location);
+
 					// Forward message
 					ForwardMessage(client, message);
 				}
@@ -90,6 +114,10 @@ namespace Galaxpeer
 		protected void OnReceiveLocation(Client client, LocationMessage message)
 		{
 			EntityManager.UpdateEntity (message);
+
+			if ((MobileEntity.EntityType)message.Type == MobileEntity.EntityType.Player) {
+				UpdateRoiConnection (client, message.Location);
+			}
 		}
 
 		/* Send data of clients closest to specified location.
@@ -128,7 +156,6 @@ namespace Galaxpeer
 			// Return connections
 			foreach (var item in connections) {
 				if (item != null) {
-					Console.WriteLine (item.Uuid);
 					client.Connection.Send (item);
 				}
 			}

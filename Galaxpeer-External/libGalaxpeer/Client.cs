@@ -1,9 +1,17 @@
-﻿
+﻿using System;
+
 namespace Galaxpeer
 {
 	public class Client
 	{
 		public ConnectionMessage ConnectionMessage;
+
+		public Guid Uuid
+		{
+			get {
+				return ConnectionMessage.Uuid;
+			}
+		}
 
 		public Player Player
 		{

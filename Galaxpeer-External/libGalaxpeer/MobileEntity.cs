@@ -77,8 +77,12 @@ namespace Galaxpeer
 		}
 	}
 
+	public delegate void LocationUpdateHandler(MobileEntity entity, bool owned);
+
 	public abstract class MobileEntity
 	{
+		public static event LocationUpdateHandler OnLocationUpdate;
+
 		public enum EntityType : byte { Player, Rocket, Asteroid };
 
 		public Vector3 Location;
@@ -121,6 +125,14 @@ namespace Galaxpeer
 		{
 			if (message.Timestamp > LastUpdate) {
 				copyMessageData (message);
+				fireUpdate (false);
+			}
+		}
+			
+		private void fireUpdate(bool owned)
+		{
+			if (OnLocationUpdate != null) {
+				OnLocationUpdate (this, owned);
 			}
 		}
 
@@ -136,6 +148,7 @@ namespace Galaxpeer
 			float ny = (float)(Location.Y + stepsize * Velocity.Y);
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			Location = new Vector3 (nx, ny, nz);
+			fireUpdate (true);
 		}
 
 		public void AccelerateForward (double stepsize, double acceleration, double maxspeed)
@@ -147,6 +160,7 @@ namespace Galaxpeer
 			if ((Velocity.X * Velocity.X) + (Velocity.Y * Velocity.Y) + (Velocity.Z * Velocity.Z) > maxspeed * maxspeed) {
 				Velocity = new Vector3 ((float)(Velocity.X / maxspeed), (float)(Velocity.Y / maxspeed), (float)(Velocity.Z / maxspeed));
 			}
+			fireUpdate (true);
 		}
 
 		public void rotate (double up, double right, double spin)
@@ -182,6 +196,7 @@ namespace Galaxpeer
 			r.normalize ();
 			Rotation = Rotation * r;   
 			Rotation.normalize ();
+			fireUpdate (true);
 		}
 
 		public bool CheckCollision (MobileEntity other)

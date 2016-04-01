@@ -5,7 +5,27 @@ namespace Galaxpeer
 {
 	public class EntityManager
 	{
+
 		public static Dictionary<Guid, MobileEntity> Entities = new Dictionary<Guid, MobileEntity>();
+
+
+		static EntityManager()
+		{
+			MobileEntity.OnLocationUpdate += OnLocationUpdate;
+		}
+
+		private static void OnLocationUpdate(MobileEntity entity, bool owned)
+		{
+			if (owned) {
+				var msg = new LocationMessage (entity);
+				foreach (var item in Game.ConnectionManager.ClientsInRoi) {
+					bool inRoi = Position.IsInRoi (item.Value.Player.Location, entity.Location);
+					if (inRoi) {
+						item.Value.Connection.Send (msg);
+					}
+				}
+			}
+		}
 
 		public static MobileEntity Get (Guid uuid) {
 			MobileEntity entity;
