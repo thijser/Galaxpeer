@@ -12,7 +12,7 @@ namespace Galaxpeer
 			get 
 			{
 				if (backingUnityInterface == null) {					
-					if (InstanceUnintyInterface == null) {
+					if (backingUnityInterface == null) {
 						if (unityInstance) {
 							backingUnityInterface = new UnityUnityInterface ();
 						} else {
