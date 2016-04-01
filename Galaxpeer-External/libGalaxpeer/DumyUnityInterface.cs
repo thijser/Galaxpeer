@@ -4,8 +4,9 @@ namespace Galaxpeer
 {
 	public class DumyUnityInterface : UnityInterfaceInterface
 	{
-		public override void SpawnModel(MobileEntity a);
-		public override void Destroy(MobileEntity a);
+		public void SpawnModel(MobileEntity baseEntity){}
+		public void Destroy(MobileEntity baseEntity){}
+		public void Move(MobileEntity baseEntity){}
 		public DumyUnityInterface ()
 		{
 		}

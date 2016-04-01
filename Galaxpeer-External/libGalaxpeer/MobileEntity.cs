@@ -222,7 +222,6 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
-		public int Health;
 		public long LastShotFired;
 
 		private static volatile LocalPlayer instance;
