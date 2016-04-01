@@ -39,7 +39,6 @@
     <Compile Include="Message.cs" />
     <Compile Include="UDPConnection.cs" />
     <Compile Include="UDPConnectionManager.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="MessageFactory.cs" />
     <Compile Include="PsycicManager.cs" />
     <Compile Include="UnityInterfaceInterface.cs" />
@@ -48,6 +47,10 @@
     <Compile Include="EntityManager.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="MobileEntity.cs" />
+    <Compile Include="UnityInterfaceInterfaceManager.cs" />
+    <Compile Include="Position.cs" />
+    <Compile Include="RequestConnectionsMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
