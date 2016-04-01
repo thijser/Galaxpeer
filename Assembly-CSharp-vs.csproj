@@ -48,7 +48,6 @@
   <ItemGroup>
      <Compile Include="Assets\GalaxpeerDocker.cs" />
      <Compile Include="Assets\MobileEntityGameObject.cs" />
-     <Compile Include="Assets\TestMain.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

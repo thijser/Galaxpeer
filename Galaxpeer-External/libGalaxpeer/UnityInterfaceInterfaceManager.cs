@@ -11,18 +11,20 @@ namespace Galaxpeer
 		{
 			get 
 			{
-				if (backingUnityInterface == null) {					
-					if (backingUnityInterface == null) {
+				if (backingUnityInterface == null) 
+					{
 						if (unityInstance) {
 							backingUnityInterface = new UnityUnityInterface ();
 						} else {
 							backingUnityInterface = new DumyUnityInterface ();
 						}
 					}
-			}
-				return backingUnityInterface;
+				
+	
+			return backingUnityInterface;
 
+			}
 		}
+
 	}
-}
 }

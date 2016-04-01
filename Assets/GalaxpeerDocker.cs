@@ -18,6 +18,7 @@ public class GalaxpeerDocker : MonoBehaviour {
 	
 	public void handleSpawns(){
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
+		return;
 		List<MobileEntity> toSpawn = UUI.getSpawns ();
 		foreach (MobileEntity spawn in toSpawn) {
 			switch(spawn.Type){

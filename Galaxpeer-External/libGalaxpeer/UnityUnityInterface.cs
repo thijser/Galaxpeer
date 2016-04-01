@@ -11,8 +11,8 @@ namespace Galaxpeer
 
 		public UnityUnityInterface()
 		{
-			ToSpawn = new List<MobileEntity> ();
-			mapping = new Dictionary<Guid,MobileEntity> ();
+			//ToSpawn = new List<MobileEntity> ();
+			//mapping = new Dictionary<Guid,MobileEntity> ();
 
 		}
 		public void SpawnModel(MobileEntity baseEntity){
