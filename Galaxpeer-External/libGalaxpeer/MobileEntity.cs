@@ -88,7 +88,7 @@ namespace Galaxpeer
 		public abstract EntityType Type { get; }
 		public float size;
 		public Guid Uuid;
-		Guid ownedBy;
+		public Guid ownedBy;
 
 		public MobileEntity ()
 		{
@@ -248,15 +248,13 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
-<<<<<<< HEAD:Galaxpeer-External/libGalaxpeer/MobileEntity.cs
-=======
+
 		public override EntityType Type {
 			get {
 				return EntityType.Player;
 			}
 		}
 
->>>>>>> ab47d09068150754028ed5f2b8dbc1b5ba3feeed:Galaxpeer-External/libGalaxpeer/Player.cs
 		public long LastShotFired;
 
 		private static volatile LocalPlayer instance;

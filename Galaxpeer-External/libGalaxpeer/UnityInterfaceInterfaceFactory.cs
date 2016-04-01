@@ -4,9 +4,7 @@ namespace libGalaxpeer
 {
 	public class UnityInterfaceInterfaceFactory
 	{
-		public UnityInterfaceInterfaceFactory ()
-		{
-		}
+		static 
 	}
 }
 
