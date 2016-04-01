@@ -22,4 +22,7 @@ ExportedObj/
 *.booproj
 
 .fuse_hidden*
+*.dll
+*.mdb
+*.exe
 
