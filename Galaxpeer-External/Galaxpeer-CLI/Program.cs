@@ -9,9 +9,6 @@ namespace GalaxpeerCLI
 	{
 		public static void Main (string[] args)
 		{
-			Random rnd = new Random();
-			LocalPlayer.Instance.Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
-
 			ConnectionManager c1 = new UDPConnectionManager ();
 			Game.Init (c1);
 
@@ -32,6 +29,12 @@ namespace GalaxpeerCLI
 
 			/*UDPConnection conn = new UDPConnection (m);
 			conn.Send (m);*/
+
+			while (true) {
+				Thread.Sleep (5000);
+				PsycicManager.Instance.addEntity(new Asteroid());
+			}
+
 			Thread.Sleep (Timeout.Infinite);
 		}
 	}

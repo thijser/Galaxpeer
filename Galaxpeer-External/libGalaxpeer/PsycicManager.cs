@@ -3,7 +3,7 @@ using System;
 
 namespace Galaxpeer
 {
-	class PsycicManager{
+	public class PsycicManager{
 		
 		List<MobileEntity> objects;
 		private static PsycicManager instance;

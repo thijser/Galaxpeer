@@ -274,6 +274,19 @@ namespace Galaxpeer
 			}
 		}
 
+		public Asteroid()
+		{
+			Random rnd = new Random ();
+			double s = rnd.NextDouble () % 2 * Math.PI;
+			double t = rnd.NextDouble () % 2 * Math.PI;
+
+			double x = Math.Cos (s) * Math.Cos (t);
+			double y = Math.Sin (s) * Math.Cos (t);
+			double z = Math.Sin (t);
+
+			Location = new Vector3 ((float) x, (float) y, (float) z);
+		}
+
 		public Asteroid(LocationMessage message) : base(message) {}
 
 		public override void collide (MobileEntity other)
