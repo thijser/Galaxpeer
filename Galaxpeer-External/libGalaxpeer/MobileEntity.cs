@@ -93,7 +93,7 @@ namespace Galaxpeer
 
 		public MobileEntity ()
 		{
-			Uuid = new Guid ();
+			Uuid = Guid.NewGuid ();
 			Location = new Vector3 (0, 0, 0);
 			Rotation = new Vector4 (0, 0, 0, 0);
 			Velocity = new Vector3 (0, 0, 0);
@@ -206,6 +206,12 @@ namespace Galaxpeer
 		}
 
 		public Player() {}
+		public Player(ConnectionMessage message)
+		{
+			Uuid = message.Uuid;
+			Location = message.Location;
+			LastUpdate = message.Timestamp;
+		}
 		public Player(LocationMessage message) : base(message) {}
 
 		public override void collide (MobileEntity other)
@@ -317,8 +323,10 @@ namespace Galaxpeer
 			get {
 				if (instance == null) {
 					lock (syncRoot) {
-						if (instance == null)
+						if (instance == null) {
 							instance = new LocalPlayer ();
+							EntityManager.Entities [instance.Uuid] = instance;
+						}
 					}
 				}
 

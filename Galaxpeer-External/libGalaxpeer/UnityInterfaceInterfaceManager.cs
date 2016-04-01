@@ -11,11 +11,8 @@ namespace Galaxpeer
 		{
 			get 
 			{
-
 				if (backingUnityInterface == null) 
-				{
-				
-					if (InstanceUnintyInterface == null) {
+					{
 						if (unityInstance) {
 							backingUnityInterface = new UnityUnityInterface ();
 						} else {
@@ -23,11 +20,11 @@ namespace Galaxpeer
 						}
 					}
 				
-				}
+	
 			return backingUnityInterface;
 
-				}
 			}
+		}
 
 	}
 }

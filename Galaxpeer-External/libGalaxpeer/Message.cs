@@ -8,10 +8,14 @@ namespace Galaxpeer
 	
 	public abstract class Message
 	{
+		public static sbyte MAX_HOPS = 2;
+
+		public sbyte Hops;
 		public long Timestamp;
 
 		public Message()
 		{
+			Hops = MAX_HOPS;
 			Timestamp = DateTime.UtcNow.Ticks;
 		}
 

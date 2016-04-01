@@ -5,11 +5,17 @@ namespace Galaxpeer
 {
 	public class EntityManager
 	{
-		public static Dictionary<Guid, MobileEntity> Entities;
+		public static Dictionary<Guid, MobileEntity> Entities = new Dictionary<Guid, MobileEntity>();
+
+		public static MobileEntity Get (Guid uuid) {
+			MobileEntity entity;
+			Entities.TryGetValue (uuid, out entity);
+			return entity;
+		}
 
 		public static void UpdateEntity(LocationMessage message)
 		{
-			MobileEntity entity = Entities [message.Uuid];
+			MobileEntity entity = Get (message.Uuid);
 			if (entity == null) {
 				CreateEntity (message);
 			} else {
