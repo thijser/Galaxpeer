@@ -21,10 +21,5 @@ public class MobileEntityGameObject : MonoBehaviour {
 		t.position = new UnityEngine.Vector3(pos.X,pos.Y,pos.Z);
 		var rot = me.Rotation;
 		t.rotation = new Quaternion (rot.X, rot.Y, rot.Z, rot.W);
-		var velo = me.Velocity;
-
-
-
-
 	}
 }

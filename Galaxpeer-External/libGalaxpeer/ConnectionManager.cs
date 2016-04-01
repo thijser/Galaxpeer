@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 
 namespace Galaxpeer
 {
@@ -37,10 +37,10 @@ namespace Galaxpeer
 
 		protected void cleanConnectionCache()
 		{
-			var toRemove = ConnectionCache.Where (v => v.Value.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE).ToList();
-			foreach (var item in toRemove) {
-				ConnectionCache.Remove (item.Key);
-			}
+//			var toRemove = ConnectionCache.Where (v => v.Value.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE).ToList();
+//			foreach (var item in toRemove) {
+//				ConnectionCache.Remove (item.Key);
+//			}
 		}
 
 		/* Handle a received connection message.

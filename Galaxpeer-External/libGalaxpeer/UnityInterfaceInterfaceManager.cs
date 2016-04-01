@@ -21,9 +21,10 @@ namespace Galaxpeer
 						}
 					}
 				
-				return backingUnityInterface;
 			}
+				return backingUnityInterface;
 
 		}
 	}
+}
 }
