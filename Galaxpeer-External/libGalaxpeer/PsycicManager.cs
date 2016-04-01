@@ -6,7 +6,7 @@ namespace Galaxpeer
 	class PsycicManager{
 		List<MobileEntity> objects;
 		private static PsycicManager instance;
-		private static object syncRoot = new Object();
+ 		private static object syncRoot = new Object();
 		public List<MobileEntity> Destoyed;
 		public static PsycicManager Instance
 		{
