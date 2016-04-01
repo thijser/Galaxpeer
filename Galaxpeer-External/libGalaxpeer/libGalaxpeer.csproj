@@ -42,6 +42,9 @@
     <Compile Include="Player.cs" />
     <Compile Include="MessageFactory.cs" />
     <Compile Include="PsycicManager.cs" />
+    <Compile Include="UnityInterfaceInterface.cs" />
+    <Compile Include="DumyUnityInterface.cs" />
+    <Compile Include="UnityUnityInterface.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
