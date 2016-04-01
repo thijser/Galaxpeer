@@ -11,6 +11,7 @@ namespace Galaxpeer
 		struct Packet
 		{
 			public char Id;
+			public long Timestamp;
 			public Vector3 Location;
 		};
 
@@ -22,6 +23,7 @@ namespace Galaxpeer
 		public RequestConnectionsMessage(byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
+			Timestamp = packet.Timestamp;
 			Location = packet.Location;
 		}
 
@@ -29,6 +31,7 @@ namespace Galaxpeer
 		{
 			Packet packet;
 			packet.Id = 'R';
+			packet.Timestamp = Timestamp;
 			packet.Location = Location;
 			return ToBytes (packet);
 		}

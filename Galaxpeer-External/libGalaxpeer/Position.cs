@@ -4,9 +4,8 @@ namespace Galaxpeer
 {
 	public static class Position
 	{
-		public static int GetOctant (Vector3 otherLocation)
+		public static int GetOctant (Vector3 myLocation, Vector3 otherLocation)
 		{
-			Vector3 myLocation = LocalPlayer.Instance.Location;
 			int octant = 0;
 
 			if (otherLocation.X >= myLocation.X) {
@@ -21,9 +20,8 @@ namespace Galaxpeer
 			return octant;
 		}
 
-		public static double GetDistance (Vector3 otherLocation)
+		public static double GetDistance (Vector3 myLocation, Vector3 otherLocation)
 		{
-			Vector3 myLocation = LocalPlayer.Instance.Location;
 			Vector3 d = otherLocation - myLocation;
 			return Math.Sqrt (d.X * d.X + d.Y * d.Y + d.Z * d.Z);
 		}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Galaxpeer
 {
@@ -17,6 +18,7 @@ namespace Galaxpeer
 		{
 			ConnectionMessage.OnReceive += this.OnReceiveConnection;
 			LocationMessage.OnReceive += this.OnReceiveLocation;
+			RequestConnectionsMessage.OnReceive += this.OnConnectionsRequest;
 		}
 
 		public abstract Connection Connect (ConnectionMessage message);
@@ -33,6 +35,14 @@ namespace Galaxpeer
 			return client;
 		}
 
+		protected void cleanConnectionCache()
+		{
+			var toRemove = ConnectionCache.Where (v => v.Value.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE).ToList();
+			foreach (var item in toRemove) {
+				ConnectionCache.Remove (item.Key);
+			}
+		}
+
 		/* Handle a received connection message.
 		 * 
 		 * Add to connection list
@@ -40,17 +50,19 @@ namespace Galaxpeer
 		 */
 		protected void OnReceiveConnection(Client client, ConnectionMessage message)
 		{
-			ConnectionCache [message.Uuid] = message;
+			if (message.Timestamp >= DateTime.UtcNow.Ticks - ConnectionMessage.MAX_AGE) {
+				ConnectionCache [message.Uuid] = message;
 
-			int octant = Position.GetOctant (message.Location);
-			double distance = Position.GetDistance (message.Location);
-			Client closest = closestClients [octant];
+				int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
+				double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
+				Client closest = closestClients [octant];
 
-			if (closest == null) {
-				closestClients [octant] = client;
-			} else if (distance < Position.GetDistance (closest.Player.Location)) {
-				closest.Connection.Close ();
-				closestClients [octant] = client;
+				if (closest == null) {
+					closestClients [octant] = client;
+				} else if (distance < Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location)) {
+					closest.Connection.Close ();
+					closestClients [octant] = client;
+				}
 			}
 		}
 
@@ -58,6 +70,20 @@ namespace Galaxpeer
 		{
 			if (message.Type == (byte)MobileEntity.EntityType.Player) {
 
+			}
+		}
+
+		/* Send data of clients closest to specified location.
+		 * 
+		 * Loop over connection cache, removing any messages that are too old.
+		 * Keep track of closest clients in each of the octants.
+		 */
+		protected void OnConnectionsRequest(Client client, RequestConnectionsMessage message)
+		{
+			cleanConnectionCache ();
+			ConnectionMessage[] connections = new ConnectionMessage[8];
+			foreach (var item in ConnectionCache.Values) {
+				
 			}
 		}
 	}
