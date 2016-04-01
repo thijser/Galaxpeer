@@ -75,6 +75,7 @@ namespace Galaxpeer
 			if (OnReceive != null) {
 				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
 				if (client != null) {
+					client.LastActivity = DateTime.UtcNow.Ticks;
 					OnReceive (client, (T)this);
 				}
 			}

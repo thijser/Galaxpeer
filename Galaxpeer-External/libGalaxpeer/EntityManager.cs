@@ -17,6 +17,7 @@ namespace Galaxpeer
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
 		{
 			if (owned) {
+				Game.ConnectionManager.cleanClientsInRoi ();
 				var msg = new LocationMessage (entity);
 				foreach (var item in Game.ConnectionManager.ClientsInRoi) {
 					bool inRoi = Position.IsInRoi (item.Value.Player.Location, entity.Location);
@@ -31,6 +32,10 @@ namespace Galaxpeer
 			MobileEntity entity;
 			Entities.TryGetValue (uuid, out entity);
 			return entity;
+		}
+
+		public static void Remove (Guid uuid) {
+			Entities.Remove (uuid);
 		}
 
 		public static void UpdateEntity(LocationMessage message)
@@ -60,6 +65,7 @@ namespace Galaxpeer
 			default:
 				return;
 			}
+			PsycicManager.Instance.addEntity (entity);
 			Entities [message.Uuid] = entity;
 		}
 	}

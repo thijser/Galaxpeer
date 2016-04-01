@@ -313,7 +313,15 @@ namespace Galaxpeer
 
 		private LocalPlayer ()
 		{
+			Spawn ();
 		}
+
+		public void Spawn ()
+		{
+			Random rnd = new Random();
+			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
+		}
+
 		public override void destroy ()
 		{
 			PsycicManager.Instance.Destoyed.Add (this);

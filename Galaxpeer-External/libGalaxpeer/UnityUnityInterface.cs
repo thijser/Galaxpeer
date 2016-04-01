@@ -6,25 +6,30 @@ namespace Galaxpeer
 {
 	public class UnityUnityInterface : UnityInterfaceInterface
 	{
-		Dictionary<Guid,MobileEntity> mapping;
+		//Dictionary<Guid,MobileEntity> mapping;
 		List<MobileEntity> ToSpawn;
 
 		public UnityUnityInterface()
 		{
 			ToSpawn = new List<MobileEntity> ();
-			mapping = new Dictionary<Guid,MobileEntity> ();
+			//mapping = new Dictionary<Guid,MobileEntity> ();
 
 		}
 		public void SpawnModel(MobileEntity baseEntity){
 			ToSpawn.Add (baseEntity);
-			mapping.Add(baseEntity.Uuid,baseEntity);
+			//mapping.Add(baseEntity.Uuid,baseEntity);
 		}
+
 		public void Destroy(MobileEntity baseEntity){
-			mapping.Remove (baseEntity.Uuid);
+			// TODO: Remove from EntityManager mapping
 			ToSpawn.Remove (baseEntity);
 		}
-		public void Move(MobileEntity baseEntity){}
-		public MobileEntity GetEntity(Guid guid){return null;}
+
+		public MobileEntity GetEntity(Guid guid)
+		{
+			return EntityManager.Get (guid);
+		}
+
 		public List<MobileEntity> getSpawns(){
 			lock (ToSpawn){
 				var ret = ToSpawn;
