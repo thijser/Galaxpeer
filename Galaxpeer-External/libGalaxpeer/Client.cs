@@ -4,6 +4,7 @@ namespace Galaxpeer
 	public class Client
 	{
 		public ConnectionMessage ConnectionMessage;
+		public Player Player;
 
 		private Connection connection;
 		public Connection Connection

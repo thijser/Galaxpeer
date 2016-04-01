@@ -12,7 +12,7 @@ namespace GalaxpeerCLI
 			ConnectionManager c1 = new UDPConnectionManager ();
 			ConnectionManager c2 = new UDPConnectionManager ();
 			Game.Init (c2);
-			c2.Connect (new ConnectionMessage(new Guid(), IPAddress.Parse("127.0.0.1"), c1.LocalConnectionMessage.Port));
+			c2.Connect (new ConnectionMessage(new Guid(), IPAddress.Parse("127.0.0.1"), c1.LocalConnectionMessage.Port, LocalPlayer.Instance.Location));
 
 
 			//ConnectionMessage m = new ConnectionMessage (System.Guid.NewGuid (), System.Net.IPAddress.Parse ("127.0.0.1"), 12346);

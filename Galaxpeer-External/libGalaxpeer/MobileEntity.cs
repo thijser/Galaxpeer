@@ -1,4 +1,4 @@
-﻿using  System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace Galaxpeer
@@ -15,6 +15,11 @@ namespace Galaxpeer
 			X = x;
 			Y = y;
 			Z = z;
+		}
+
+		public static Vector3 operator - (Vector3 a, Vector3 b)
+		{
+			return new Vector3 (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 		}
 	}
 
@@ -74,10 +79,13 @@ namespace Galaxpeer
 
 	public abstract class MobileEntity
 	{
+		public enum EntityType : byte { Player, Rocket, Asteroid };
+
 		public Vector3 Location;
 		public Vector4 Rotation;
 		public Vector3 Velocity;
 
+		public abstract EntityType Type { get; }
 		public float size;
 		public Guid Uuid;
 		Guid ownedBy;
@@ -166,6 +174,12 @@ namespace Galaxpeer
 
 	public class Player: MobileEntity
 	{
+		public override EntityType Type {
+			get {
+				return EntityType.Player;
+			}
+		}
+
 		public override void collide (MobileEntity other)
 		{
 			this.Velocity = other.Velocity;
@@ -177,8 +191,14 @@ namespace Galaxpeer
 		}
 	}
 
-	public class Rocket:MobileEntity
+	public class Rocket : MobileEntity
 	{
+		public override EntityType Type {
+			get {
+				return EntityType.Rocket;
+			}
+		}
+
 		public override void collide (MobileEntity other)
 		{
 			float difX = other.Velocity.X - Velocity.X;
@@ -196,8 +216,14 @@ namespace Galaxpeer
 		}
 	}
 
-	public class astroid : MobileEntity
+	public class Asteroid : MobileEntity
 	{
+		public override EntityType Type {
+			get {
+				return EntityType.Asteroid;
+			}
+		}
+
 		public override void collide (MobileEntity other)
 		{
 			float difX = other.Velocity.X - Velocity.X;
@@ -222,6 +248,15 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
+<<<<<<< HEAD:Galaxpeer-External/libGalaxpeer/MobileEntity.cs
+=======
+		public override EntityType Type {
+			get {
+				return EntityType.Player;
+			}
+		}
+
+>>>>>>> ab47d09068150754028ed5f2b8dbc1b5ba3feeed:Galaxpeer-External/libGalaxpeer/Player.cs
 		public long LastShotFired;
 
 		private static volatile LocalPlayer instance;

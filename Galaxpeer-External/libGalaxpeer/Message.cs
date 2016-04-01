@@ -8,6 +8,13 @@ namespace Galaxpeer
 	
 	public abstract class Message
 	{
+		public long Timestamp;
+
+		public Message()
+		{
+			Timestamp = DateTime.UtcNow.Ticks;
+		}
+
 		public byte[] StringToBytes(string str)
 		{
 			byte[] bytes = new byte[str.Length * sizeof(char)];
@@ -53,5 +60,20 @@ namespace Galaxpeer
 
 		public abstract byte[] Serialize();
 		public abstract void DispatchFrom(IPEndPoint endPoint);
+	}
+
+	public abstract class TMessage<T> : Message where T : TMessage<T>
+	{
+		public static event MessageHandler<T> OnReceive;
+
+		public override void DispatchFrom(IPEndPoint endPoint)
+		{
+			if (OnReceive != null) {
+				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
+				if (client != null) {
+					OnReceive (client, (T)this);
+				}
+			}
+		}
 	}
 }

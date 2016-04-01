@@ -19,6 +19,12 @@ namespace Galaxpeer
 			socket.BeginSend (serialized, serialized.Length, new AsyncCallback(onSend), null);
 		}
 
+		public override void Close ()
+		{
+			// TODO implement UDPConnection.Close()
+			Console.WriteLine ("TODO: close connection");
+		}
+
 		protected void onSend(IAsyncResult result)
 		{
 			try
