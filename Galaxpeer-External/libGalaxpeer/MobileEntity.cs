@@ -248,7 +248,6 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
-
 		public override EntityType Type {
 			get {
 				return EntityType.Player;

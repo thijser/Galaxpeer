@@ -6,26 +6,27 @@ namespace Galaxpeer
 	{
 		private static object syncRoot = new Object();
 		private static bool unityInstance=true;
+		private static UnityInterfaceInterface backingUnityInterface;
 		public static UnityInterfaceInterface InstanceUnintyInterface
 		{
 			get 
 			{
-				if (InstanceUnintyInterface == null) 
+				if (backingUnityInterface == null) 
 				{
 					lock (syncRoot) 
 					{
 						if (InstanceUnintyInterface == null) {
 							if (unityInstance) {
-								InstanceUnintyInterface = new UnityUnityInterface ();
+								backingUnityInterface = new UnityUnityInterface ();
 							} else
-								InstanceUnintyInterface = new DumyUnityInferace ();
+								backingUnityInterface = new DumyUnityInterface ();
 						}
 					}
 				}
 
-				return instance;
+				return backingUnityInterface;
 			}
+
 		}
 	}
 }
-

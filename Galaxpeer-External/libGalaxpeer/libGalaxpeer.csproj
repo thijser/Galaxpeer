@@ -49,6 +49,8 @@
     <Compile Include="Client.cs" />
     <Compile Include="MobileEntity.cs" />
     <Compile Include="UnityInterfaceInterfaceManager.cs" />
+    <Compile Include="Position.cs" />
+    <Compile Include="RequestConnectionsMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -6,6 +6,7 @@ Obj/
 UnityGenerated/
 Library/
 Assets/AssetStoreTools*
+obj/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -22,4 +23,6 @@ ExportedObj/
 *.booproj
 
 .fuse_hidden*
-
+Galaxpeer-External/**/*.dll
+*.mdb
+*.exe
