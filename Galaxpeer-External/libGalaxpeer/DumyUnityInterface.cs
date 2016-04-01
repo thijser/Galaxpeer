@@ -6,7 +6,6 @@ namespace Galaxpeer
 	{
 		public void SpawnModel(MobileEntity baseEntity){}
 		public void Destroy(MobileEntity baseEntity){}
-		public void Move(MobileEntity baseEntity){}
 		public MobileEntity GetEntity(Guid guid){ return null;}
 		public List<MobileEntity> getSpawns(){
 			return new List<MobileEntity> ();}

@@ -4,7 +4,6 @@ namespace Galaxpeer
 {
 	public class UnityInterfaceInterfaceManager
 	{
-		private static object syncRoot = new Object();
 		private static bool unityInstance=true;
 		private static UnityInterfaceInterface backingUnityInterface;
 		public static UnityInterfaceInterface InstanceUnintyInterface

@@ -34,6 +34,10 @@ namespace Galaxpeer
 			return entity;
 		}
 
+		public static void Remove (Guid uuid) {
+			Entities.Remove (uuid);
+		}
+
 		public static void UpdateEntity(LocationMessage message)
 		{
 			MobileEntity entity = Get (message.Uuid);
@@ -61,6 +65,7 @@ namespace Galaxpeer
 			default:
 				return;
 			}
+			PsycicManager.Instance.addEntity (entity);
 			Entities [message.Uuid] = entity;
 		}
 	}
