@@ -63,7 +63,13 @@ namespace Galaxpeer
 				Ip = endPoint.Address;
 
 				// Connection belonging to endpoint, so add to manager
-				Game.ConnectionManager.AddByEndPoint(endPoint, this);
+				if (Game.ConnectionManager.GetByEndPoint (endPoint) == null) {
+					Game.ConnectionManager.AddByEndPoint (endPoint, this);
+				}
+			}
+
+			if (EntityManager.Get (Uuid) == null) {
+				EntityManager.Entities[Uuid] = new Player (this);
 			}
 
 			base.DispatchFrom (endPoint);

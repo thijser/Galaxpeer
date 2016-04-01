@@ -21,6 +21,7 @@ namespace Galaxpeer
 		{
 			Connection connection = new UDPConnection (message);
 			//this.Connections.Add (connection);
+			this.LocalConnectionMessage.Timestamp = DateTime.UtcNow.Ticks;
 			connection.Send (this.LocalConnectionMessage);
 			connection.Send (new LocationMessage (LocalPlayer.Instance));
 			// Request closest connections, until we reach a stable state
@@ -40,6 +41,7 @@ namespace Galaxpeer
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
 				Message message = MessageFactory.Parse (received);
+				Console.WriteLine ("Received {0} from {1}", (char) received [0], ip);
 				message.DispatchFrom (ip);
 	//}
 			//catch (Exception e)

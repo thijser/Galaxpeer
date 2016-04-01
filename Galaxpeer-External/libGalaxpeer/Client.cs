@@ -4,7 +4,13 @@ namespace Galaxpeer
 	public class Client
 	{
 		public ConnectionMessage ConnectionMessage;
-		public Player Player;
+
+		public Player Player
+		{
+			get {
+				return (Player) EntityManager.Get (ConnectionMessage.Uuid);
+			}
+		}
 
 		private Connection connection;
 		public Connection Connection
