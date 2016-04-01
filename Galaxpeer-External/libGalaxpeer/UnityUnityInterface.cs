@@ -37,9 +37,10 @@ namespace Galaxpeer
 				return ret;
 			}
 		}
-		public void registerPlayer(Guid id, Vector3 location){
-			LocalPlayer.Instance.Uuid = id;
-			LocalPlayer.Instance.Location = location;
+
+		public Guid newPlayer(){
+			LocalPlayer.Instance.Spawn ();
+			return LocalPlayer.Instance.Uuid;
 		}
 	}
 
