@@ -99,7 +99,7 @@ namespace Galaxpeer
 		{
 			Uuid = Guid.NewGuid ();
 			Location = new Vector3 (0, 0, 0);
-			Rotation = new Vector4 (0, 0, 0, 0);
+			Rotation = new Vector4 (0, 0, 0, 1);
 			Velocity = new Vector3 (0, 0, 0);
 			size = 0;
 			LastUpdate = DateTime.UtcNow.Ticks;
@@ -285,6 +285,9 @@ namespace Galaxpeer
 			double z = Math.Sin (t);
 
 			Location = new Vector3 ((float) x, (float) y, (float) z);
+
+			rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
+			Velocity = new Vector3 (rnd.Next (0, 20), rnd.Next (0, 20), rnd.Next (0, 20));
 		}
 
 		public Asteroid(LocationMessage message) : base(message) {}
