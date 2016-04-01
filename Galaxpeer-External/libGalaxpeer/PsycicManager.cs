@@ -25,15 +25,21 @@ namespace Galaxpeer
 				return instance;
 			}
 		}
+		public void addEntity(MobileEntity entity){
+			objects.Add (entity);
+			UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
+		}
 
 		public void tick(){
+			
 			foreach (MobileEntity moe in objects) {
 				moe.LocationUpdate (1);
-			
-				foreach (MobileEntity moe2 in objects){
-					if (moe.CheckCollision (moe2)) {
-						moe.collide (moe2);
-					}	
+				if (moe.ownedBy == LocalPlayer.Instance.Uuid) {
+					foreach (MobileEntity moe2 in objects) {
+						if (moe.CheckCollision (moe2)) {
+							moe.collide (moe2);
+						}	
+					}
 				}
 			}
 

@@ -11,8 +11,8 @@ namespace Galaxpeer
 
 		public UnityUnityInterface()
 		{
-			//ToSpawn = new List<MobileEntity> ();
-			//mapping = new Dictionary<Guid,MobileEntity> ();
+			ToSpawn = new List<MobileEntity> ();
+			mapping = new Dictionary<Guid,MobileEntity> ();
 
 		}
 		public void SpawnModel(MobileEntity baseEntity){
@@ -31,6 +31,10 @@ namespace Galaxpeer
 				ToSpawn = new List<MobileEntity> ();
 				return ret;
 			}
+		}
+		public void registerPlayer(Guid id, Vector3 location){
+			LocalPlayer.Instance.Uuid = id;
+			LocalPlayer.Instance.Location = location;
 		}
 	}
 

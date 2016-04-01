@@ -219,8 +219,7 @@ namespace Galaxpeer
 				return EntityType.Player;
 			}
 		}
-
-		public Player() {}
+		public Player(){}
 		public Player(ConnectionMessage message)
 		{
 			Uuid = message.Uuid;
@@ -315,7 +314,6 @@ namespace Galaxpeer
 		private LocalPlayer ()
 		{
 		}
-
 		public override void destroy ()
 		{
 			PsycicManager.Instance.Destoyed.Add (this);
