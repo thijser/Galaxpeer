@@ -88,7 +88,7 @@ namespace Galaxpeer
 		public abstract EntityType Type { get; }
 		public float size;
 		public Guid Uuid;
-		Guid ownedBy;
+		public Guid ownedBy;
 		public long LastUpdate;
 
 		public MobileEntity ()
@@ -98,6 +98,7 @@ namespace Galaxpeer
 			Rotation = new Vector4 (0, 0, 0, 0);
 			Velocity = new Vector3 (0, 0, 0);
 			size = 0;
+			LastUpdate = DateTime.UtcNow.Ticks;
 		}
 
 		public MobileEntity(LocationMessage message)

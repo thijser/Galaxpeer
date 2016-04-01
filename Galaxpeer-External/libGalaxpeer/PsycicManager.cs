@@ -4,6 +4,7 @@ using System;
 namespace Galaxpeer
 {
 	class PsycicManager{
+		
 		List<MobileEntity> objects;
 		private static PsycicManager instance;
  		private static object syncRoot = new Object();
@@ -28,7 +29,7 @@ namespace Galaxpeer
 		public void tick(){
 			foreach (MobileEntity moe in objects) {
 				moe.LocationUpdate (1);
-
+			
 				foreach (MobileEntity moe2 in objects){
 					if (moe.CheckCollision (moe2)) {
 						moe.collide (moe2);
