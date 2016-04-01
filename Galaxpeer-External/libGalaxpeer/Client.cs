@@ -4,7 +4,17 @@ namespace Galaxpeer
 {
 	public class Client
 	{
+		public const long MAX_AGE = 1 * TimeSpan.TicksPerMinute;
+		
+		public long LastActivity;
 		public ConnectionMessage ConnectionMessage;
+
+		public bool IsAlive
+		{
+			get {
+				return DateTime.UtcNow.Ticks - LastActivity <= MAX_AGE;
+			}
+		}
 
 		public Guid Uuid
 		{

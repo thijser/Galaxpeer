@@ -17,6 +17,7 @@ namespace Galaxpeer
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
 		{
 			if (owned) {
+				Game.ConnectionManager.cleanClientsInRoi ();
 				var msg = new LocationMessage (entity);
 				foreach (var item in Game.ConnectionManager.ClientsInRoi) {
 					bool inRoi = Position.IsInRoi (item.Value.Player.Location, entity.Location);

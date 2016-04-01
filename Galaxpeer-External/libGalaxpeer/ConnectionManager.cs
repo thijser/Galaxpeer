@@ -61,6 +61,20 @@ namespace Galaxpeer
 			}
 		}
 
+		public void cleanClientsInRoi()
+		{
+			List<Guid> toRemove = new List<Guid> ();
+			foreach (var item in ClientsInRoi) {
+				if (!item.Value.IsAlive) {
+					toRemove.Add (item.Key);
+				}
+			}
+
+			foreach (var item in toRemove) {
+				ClientsInRoi.Remove (item);
+			}
+		}
+
 		public void UpdateRoiConnection(Client client, Vector3 location)
 		{
 			if (Position.IsInRoi (LocalPlayer.Instance.Location, location)) {
