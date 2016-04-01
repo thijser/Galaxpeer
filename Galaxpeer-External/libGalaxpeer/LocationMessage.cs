@@ -3,11 +3,9 @@ using System.Net;
 
 namespace Galaxpeer
 {
-	public class LocationMessage : Message
+	public class LocationMessage : TMessage<LocationMessage>
 	{
-		public static event MessageHandler<LocationMessage> OnReceive;
-
-
+		public byte Type { get; private set; }
 		public Vector3 Location { get; private set; }
 		public Vector4 Rotation { get; private set; }
 		public Vector3 Velocity { get; private set; }
@@ -15,6 +13,8 @@ namespace Galaxpeer
 		struct Packet
 		{
 			public char Id;
+			public long Timestamp;
+			public byte Type;
 			public Vector3 Location;
 			public Vector4 Rotation;
 			public Vector3 Velocity;
@@ -22,6 +22,7 @@ namespace Galaxpeer
 
 		public LocationMessage(MobileEntity mob)
 		{
+			Type = (byte)mob.Type;
 			Location = mob.Location;
 			Rotation = mob.Rotation;
 			Velocity = mob.Velocity;
@@ -30,6 +31,8 @@ namespace Galaxpeer
 		public LocationMessage(byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
+			Timestamp = packet.Timestamp;
+			Type = packet.Type;
 			Location = packet.Location;
 			Rotation = packet.Rotation;
 			Velocity = packet.Velocity;
@@ -39,21 +42,13 @@ namespace Galaxpeer
 		{
 			Packet packet;
 			packet.Id = 'L';
+			packet.Timestamp = Timestamp;
+			packet.Type = Type;
 			packet.Location = Location;
 			packet.Rotation = Rotation;
 			packet.Velocity = Velocity;
 
 			return ToBytes (packet);
-		}
-
-		public override void DispatchFrom(IPEndPoint endPoint)
-		{
-			if (OnReceive != null) {
-				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
-				if (client != null) {
-					OnReceive (client, this);
-				}
-			}
 		}
 	}
 }

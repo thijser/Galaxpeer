@@ -13,7 +13,7 @@ namespace Galaxpeer
 		{
 			socket = new UdpClient (0);
 			IPEndPoint endPoint = (IPEndPoint) socket.Client.LocalEndPoint;
-			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), new IPAddress(0), endPoint.Port);
+			this.LocalConnectionMessage = new ConnectionMessage (Guid.NewGuid (), new IPAddress(0), endPoint.Port, LocalPlayer.Instance.Location);
 			Receive ();
 		}
 
@@ -23,6 +23,8 @@ namespace Galaxpeer
 			//this.Connections.Add (connection);
 			connection.Send (this.LocalConnectionMessage);
 			connection.Send (new LocationMessage (LocalPlayer.Instance));
+			// Request closest connections, until we reach a stable state
+			connection.Send (new RequestConnectionsMessage(LocalPlayer.Instance.Location));
 			return connection;
 		}
 

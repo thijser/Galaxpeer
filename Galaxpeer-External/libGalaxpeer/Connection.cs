@@ -10,5 +10,6 @@ namespace Galaxpeer
 		}
 
 		public abstract void Send (Message message);
+		public abstract void Close ();
 	}
 }
