@@ -6,6 +6,8 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : TMessage<ConnectionMessage>
 	{
+		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
+
 		public Guid Uuid;
 		public IPAddress Ip;
 		public int Port;

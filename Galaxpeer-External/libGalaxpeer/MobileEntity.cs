@@ -89,6 +89,7 @@ namespace Galaxpeer
 		public float size;
 		public Guid Uuid;
 		public Guid ownedBy;
+		public long LastUpdate;
 
 		public MobileEntity ()
 		{
@@ -97,6 +98,30 @@ namespace Galaxpeer
 			Rotation = new Vector4 (0, 0, 0, 0);
 			Velocity = new Vector3 (0, 0, 0);
 			size = 0;
+			LastUpdate = DateTime.UtcNow.Ticks;
+		}
+
+		public MobileEntity(LocationMessage message)
+		{
+			Uuid = message.Uuid;
+			copyMessageData (message);
+			size = 0;
+		}
+
+		private void copyMessageData(LocationMessage message)
+		{
+			Location = message.Location;
+			Rotation = message.Rotation;
+			Velocity = message.Velocity;
+
+			LastUpdate = message.Timestamp;
+		}
+
+		public void Update(LocationMessage message)
+		{
+			if (message.Timestamp > LastUpdate) {
+				copyMessageData (message);
+			}
 		}
 
 		public abstract void collide (MobileEntity other);
@@ -180,6 +205,9 @@ namespace Galaxpeer
 			}
 		}
 
+		public Player() {}
+		public Player(LocationMessage message) : base(message) {}
+
 		public override void collide (MobileEntity other)
 		{
 			this.Velocity = other.Velocity;
@@ -198,6 +226,8 @@ namespace Galaxpeer
 				return EntityType.Rocket;
 			}
 		}
+			
+		public Rocket(LocationMessage message) : base(message) {}
 
 		public override void collide (MobileEntity other)
 		{
@@ -223,6 +253,8 @@ namespace Galaxpeer
 				return EntityType.Asteroid;
 			}
 		}
+
+		public Asteroid(LocationMessage message) : base(message) {}
 
 		public override void collide (MobileEntity other)
 		{
