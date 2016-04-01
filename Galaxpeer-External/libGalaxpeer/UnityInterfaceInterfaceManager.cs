@@ -18,8 +18,9 @@ namespace Galaxpeer
 						if (InstanceUnintyInterface == null) {
 							if (unityInstance) {
 								backingUnityInterface = new UnityUnityInterface ();
-							} else
+							} else {
 								backingUnityInterface = new DumyUnityInterface ();
+							}
 						}
 					}
 				}
