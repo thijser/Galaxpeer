@@ -3,12 +3,17 @@ using Galaxpeer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 public class MobileEntityGameObject : MonoBehaviour {
 	public Guid Uuid;
 	
 	// Update is called once per frame
 	void Update () {
+
+
+
+
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 		MobileEntity me = UUI.GetEntity (Uuid);
 		Transform t=transform;
@@ -17,5 +22,9 @@ public class MobileEntityGameObject : MonoBehaviour {
 		var rot = me.Rotation;
 		t.rotation = new Quaternion (rot.X, rot.Y, rot.Z, rot.W);
 		var velo = me.Velocity;
+
+
+
+
 	}
 }
