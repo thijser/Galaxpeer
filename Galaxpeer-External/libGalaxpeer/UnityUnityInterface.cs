@@ -42,6 +42,15 @@ namespace Galaxpeer
 			LocalPlayer.Instance.Spawn ();
 			return LocalPlayer.Instance.Uuid;
 		}
+		public void shootplayer(){
+		}
+		public void rotateplayer(Vector3 uprightspin){
+			LocalPlayer.Instance.rotate(uprightspin.X,uprightspin.Y,uprightspin.Z);
+		}
+		public void accaleratePlayer(double acc){
+			
+		}
+
 	}
 
 }
