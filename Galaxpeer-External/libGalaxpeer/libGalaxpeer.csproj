@@ -45,6 +45,9 @@
     <Compile Include="UnityInterfaceInterface.cs" />
     <Compile Include="DumyUnityInterface.cs" />
     <Compile Include="UnityUnityInterface.cs" />
+    <Compile Include="EntityManager.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Client.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

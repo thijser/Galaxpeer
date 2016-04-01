@@ -24,5 +24,11 @@ namespace Galaxpeer
 		{
 			constructors.Add ((byte) ((int) id), type);
 		}
+
+		static MessageFactory()
+		{
+			Register ('C', typeof(ConnectionMessage));
+			Register ('L', typeof(LocationMessage));
+		}
 	}
 }

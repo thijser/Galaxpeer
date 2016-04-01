@@ -6,28 +6,23 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : Message
 	{
-		static ConnectionMessage()
-		{
-			MessageFactory.Register ('C', typeof(ConnectionMessage));
-		}
+		public static event MessageHandler<ConnectionMessage> OnReceive;
 
-		public static event MessageHandler OnReceive;
-
-		public Guid UUID;
+		public Guid Uuid;
 		public IPAddress Ip;
 		public int Port;
 
 		struct Packet
 		{
 			public char Id;
-			public Guid UUID;
+			public Guid Uuid;
 			public UInt32 Ip;
 			public UInt16 Port;
 		};
 
 		public ConnectionMessage(Guid uuid, IPAddress ip, int port)
 		{
-			UUID = uuid;
+			Uuid = uuid;
 			Ip = ip;
 			Port = port;
 		}
@@ -35,23 +30,38 @@ namespace Galaxpeer
 		public ConnectionMessage(Byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
-			UUID = packet.UUID;
+			Uuid = packet.Uuid;
 			Ip = new IPAddress (packet.Ip);
 			Port = packet.Port;
-
-			OnReceive (this);
 		}
 
 		public override byte[] Serialize()
 		{
 			Packet packet;
 			packet.Id = 'C';
-			packet.UUID = UUID;
+			packet.Uuid = Uuid;
 			packet.Ip = BitConverter.ToUInt32(Ip.GetAddressBytes(), 0);
 			packet.Port = (UInt16) Port;
 			byte[] bytes = ToBytes (packet);
 
 			return bytes;
+		}
+
+		public override void DispatchFrom(IPEndPoint endPoint)
+		{
+			if (Ip.Equals (new IPAddress (0))) {
+				Ip = endPoint.Address;
+
+				// Connection belonging to endpoint, so add to manager
+				Game.ConnectionManager.AddByEndPoint(endPoint, this);
+			}
+
+			if (OnReceive != null) {
+				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
+				if (client != null) {
+					OnReceive (client, this);
+				}
+			}
 		}
 	}
 }

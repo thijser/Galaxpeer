@@ -1,15 +1,11 @@
-﻿
+﻿using System;
+using System.Net;
+
 namespace Galaxpeer
 {
 	public class LocationMessage : Message
 	{
-
-		static LocationMessage()
-		{
-			MessageFactory.Register ('L', typeof(LocationMessage));
-		}
-
-		public static event MessageHandler OnReceive;
+		public static event MessageHandler<LocationMessage> OnReceive;
 
 
 		public Vector3 Location { get; private set; }
@@ -37,8 +33,6 @@ namespace Galaxpeer
 			Location = packet.Location;
 			Rotation = packet.Rotation;
 			Velocity = packet.Velocity;
-
-			OnReceive (this);
 		}
 
 		public override byte[] Serialize()
@@ -50,6 +44,16 @@ namespace Galaxpeer
 			packet.Velocity = Velocity;
 
 			return ToBytes (packet);
+		}
+
+		public override void DispatchFrom(IPEndPoint endPoint)
+		{
+			if (OnReceive != null) {
+				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
+				if (client != null) {
+					OnReceive (client, this);
+				}
+			}
 		}
 	}
 }
