@@ -14,7 +14,20 @@ namespace Galaxpeer
 		static EntityManager()
 		{
 			MobileEntity.OnLocationUpdate += OnLocationUpdate;
+			MobileEntity.OnDestroy += OnDestroyEntity;
 			PsycicManager.OnTick += GenerateAsteroids;
+			DestroyMessage.OnReceive += OnDestroyMessage;
+		}
+
+		static void OnDestroyEntity (MobileEntity entity, bool owned)
+		{
+			if (owned) {
+				Game.ConnectionManager.cleanClientsInRoi ();
+				var msg = new DestroyMessage (entity);
+				foreach (var client in Game.ConnectionManager.ClientsInRoi.Values) {
+					client.Connection.Send (msg);
+				}
+			}
 		}
 
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
@@ -29,6 +42,15 @@ namespace Galaxpeer
 					}
 				}
 			}
+		}
+
+		private static void OnDestroyMessage(Client client, DestroyMessage message)
+		{
+			MobileEntity entity = Get (message.Uuid);
+			if (entity != null) {
+				entity.Destroy ();
+			}
+			Game.ConnectionManager.ForwardMessage (client, message);
 		}
 
 		public static MobileEntity Get (Guid uuid) {
@@ -68,7 +90,7 @@ namespace Galaxpeer
 			default:
 				return;
 			}
-			PsycicManager.Instance.addEntity (entity);
+			PsycicManager.Instance.AddEntity (entity);
 			Entities [message.Uuid] = entity;
 		}
 
@@ -81,7 +103,7 @@ namespace Galaxpeer
 				Asteroid a = new Asteroid ();
 
 				if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, a.Location)) {
-					PsycicManager.Instance.addEntity (a);
+					PsycicManager.Instance.AddEntity (a);
 				}
 			}
 		}

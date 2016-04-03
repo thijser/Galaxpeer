@@ -11,7 +11,7 @@ namespace Galaxpeer
 		List<MobileEntity> objects = new List<MobileEntity>();
 		private static PsycicManager instance;
  		private static object syncRoot = new Object();
-		public List<MobileEntity> Destoyed = new List<MobileEntity>();
+		private List<MobileEntity> destroyed = new List<MobileEntity>();
 		public static PsycicManager Instance
 		{
 			get 
@@ -28,12 +28,20 @@ namespace Galaxpeer
 				return instance;
 			}
 		}
-		public void addEntity(MobileEntity entity){
+
+		public void AddEntity(MobileEntity entity)
+		{
 			objects.Add (entity);
 			UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
 		}
 
-		public void tick(){
+		public void RemoveEntity(MobileEntity entity)
+		{
+			destroyed.Add (entity);
+		}
+
+		public void Tick()
+		{
 			long time = DateTime.UtcNow.Ticks;
 
 			if (OnTick != null) {
@@ -42,10 +50,10 @@ namespace Galaxpeer
 
 			foreach (MobileEntity moe in objects) {
 				moe.LocationUpdate (1);
-				if (moe.ownedBy == LocalPlayer.Instance.Uuid) {
+				if (moe.OwnedBy == LocalPlayer.Instance.Uuid) {
 					foreach (MobileEntity moe2 in objects) {
 						if (moe.CheckCollision (moe2)) {
-							moe.collide (moe2);
+							moe.Collide (moe2);
 						}
 					}
 				}
@@ -54,11 +62,12 @@ namespace Galaxpeer
 			Cleanup ();
 		}
 
-		private void Cleanup(){
-			while (Destoyed.Count != 0) {
-				var entity = Destoyed [0];
+		private void Cleanup()
+		{
+			while (destroyed.Count != 0) {
+				var entity = destroyed [0];
 				objects.Remove (entity);
-				Destoyed.Remove (entity);
+				destroyed.Remove (entity);
 			}
 		}
 	}

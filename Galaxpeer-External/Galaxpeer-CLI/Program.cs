@@ -36,7 +36,7 @@ namespace GalaxpeerCLI
 
 		private static void Tick(object _)
 		{
-			PsycicManager.Instance.tick ();
+			PsycicManager.Instance.Tick ();
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace Galaxpeer
 			}
 		}
 
-		protected void ForwardMessage(Client source, Message message)
+		public void ForwardMessage(Client source, Message message)
 		{
 			if (--message.Hops > 0) {
 				foreach (var client in closestClients) {

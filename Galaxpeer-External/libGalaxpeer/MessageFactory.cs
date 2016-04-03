@@ -30,6 +30,7 @@ namespace Galaxpeer
 			Register ('C', typeof(ConnectionMessage));
 			Register ('L', typeof(LocationMessage));
 			Register ('R', typeof(RequestConnectionsMessage));
+			Register ('D', typeof(DestroyMessage));
 		}
 	}
 }

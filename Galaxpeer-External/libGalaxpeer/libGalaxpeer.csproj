@@ -8,8 +8,6 @@
     <RootNamespace>libGalaxpeer</RootNamespace>
     <AssemblyName>libGalaxpeer</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -53,6 +51,7 @@
     <Compile Include="UnityInterfaceInterfaceManager.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="RequestConnectionsMessage.cs" />
+    <Compile Include="DestroyMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
