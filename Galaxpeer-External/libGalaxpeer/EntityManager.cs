@@ -7,6 +7,8 @@ namespace Galaxpeer
 	{
 
 		public static Dictionary<Guid, MobileEntity> Entities = new Dictionary<Guid, MobileEntity>();
+		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerSecond * 5;
+		private static long nextAsteroid = DateTime.UtcNow.Ticks + ASTEROID_INTERVAL;
 
 
 		static EntityManager()
@@ -70,18 +72,18 @@ namespace Galaxpeer
 			Entities [message.Uuid] = entity;
 		}
 
-		private static void GenerateAsteroids()
+		private static void GenerateAsteroids(long time)
 		{
-			// Only generate asteroid if it is outside ROI of other players
-			Asteroid a = new Asteroid();
+			if (time >= nextAsteroid) {
+				nextAsteroid = time + ASTEROID_INTERVAL;
 
-			foreach (var client in Game.ConnectionManager.ClientsInRoi.Values) {
-				if (Position.IsInRoi (client.Player.Location, a.Location)) {
-					return;
+				// Only generate asteroid if it is outside ROI of other players
+				Asteroid a = new Asteroid ();
+
+				if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, a.Location)) {
+					PsycicManager.Instance.addEntity (a);
 				}
 			}
-
-			PsycicManager.Instance.addEntity(a);
 		}
 	}
 }

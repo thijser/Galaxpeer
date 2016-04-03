@@ -3,7 +3,7 @@ using System;
 
 namespace Galaxpeer
 {
-	public delegate void TickHandler ();
+	public delegate void TickHandler (long time);
 
 	public class PsycicManager{
 		public static event TickHandler OnTick;
@@ -34,8 +34,10 @@ namespace Galaxpeer
 		}
 
 		public void tick(){
+			long time = DateTime.UtcNow.Ticks;
+
 			if (OnTick != null) {
-				OnTick ();
+				OnTick (time);
 			}
 
 			foreach (MobileEntity moe in objects) {

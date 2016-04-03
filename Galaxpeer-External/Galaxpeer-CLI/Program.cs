@@ -31,13 +31,6 @@ namespace GalaxpeerCLI
 			conn.Send (m);*/
 
 			new Timer (Tick, null, 0, 1000);
-
-
-			/*while (true) {
-				Thread.Sleep (5000);
-				PsycicManager.Instance.addEntity(new Asteroid());
-			}*/
-
 			Thread.Sleep (Timeout.Infinite);
 		}
 
