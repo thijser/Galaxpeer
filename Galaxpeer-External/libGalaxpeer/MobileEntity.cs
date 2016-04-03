@@ -114,6 +114,7 @@ namespace Galaxpeer
 			size = 0;
 			LastUpdate = DateTime.UtcNow.Ticks;
 			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
+			fireUpdate (true);
 		}
 
 		public MobileEntity(LocationMessage message)
@@ -121,6 +122,8 @@ namespace Galaxpeer
 			Uuid = message.Uuid;
 			copyMessageData (message);
 			size = 0;
+			Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
+			fireUpdate (false);
 		}
 
 		private void copyMessageData(LocationMessage message)
@@ -299,8 +302,6 @@ namespace Galaxpeer
 
 			Location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
 			Vector3 myLoc = LocalPlayer.Instance.Location;
-			Console.WriteLine ("My position: {0}.{1}.{2}", myLoc.X, myLoc.Y, myLoc.Z);
-			Console.WriteLine ("Asteroid Position: {0}.{1}.{2}", Location.X, Location.Y, Location.Z);
 
 			rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
 			Velocity = new Vector3 (rnd.Next (0, 20), rnd.Next (0, 20), rnd.Next (0, 20));
