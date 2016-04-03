@@ -3,19 +3,22 @@ using System;
 
 namespace Galaxpeer
 {
+	public delegate void TickHandler ();
+
 	public class PsycicManager{
-		
-		List<MobileEntity> objects;
+		public static event TickHandler OnTick;
+
+		List<MobileEntity> objects = new List<MobileEntity>();
 		private static PsycicManager instance;
  		private static object syncRoot = new Object();
-		public List<MobileEntity> Destoyed;
+		public List<MobileEntity> Destoyed = new List<MobileEntity>();
 		public static PsycicManager Instance
 		{
 			get 
 			{
 				if (instance == null) 
 				{
-					lock (syncRoot) 
+					lock (syncRoot)
 					{
 						if (instance == null) 
 							instance = new PsycicManager();
@@ -31,14 +34,17 @@ namespace Galaxpeer
 		}
 
 		public void tick(){
-			
+			if (OnTick != null) {
+				OnTick ();
+			}
+
 			foreach (MobileEntity moe in objects) {
 				moe.LocationUpdate (1);
 				if (moe.ownedBy == LocalPlayer.Instance.Uuid) {
 					foreach (MobileEntity moe2 in objects) {
 						if (moe.CheckCollision (moe2)) {
 							moe.collide (moe2);
-						}	
+						}
 					}
 				}
 			}

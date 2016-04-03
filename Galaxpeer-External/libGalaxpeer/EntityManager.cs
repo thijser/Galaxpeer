@@ -12,6 +12,7 @@ namespace Galaxpeer
 		static EntityManager()
 		{
 			MobileEntity.OnLocationUpdate += OnLocationUpdate;
+			PsycicManager.OnTick += GenerateAsteroids;
 		}
 
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
@@ -67,6 +68,20 @@ namespace Galaxpeer
 			}
 			PsycicManager.Instance.addEntity (entity);
 			Entities [message.Uuid] = entity;
+		}
+
+		private static void GenerateAsteroids()
+		{
+			// Only generate asteroid if it is outside ROI of other players
+			Asteroid a = new Asteroid();
+
+			foreach (var client in Game.ConnectionManager.ClientsInRoi.Values) {
+				if (Position.IsInRoi (client.Player.Location, a.Location)) {
+					return;
+				}
+			}
+
+			PsycicManager.Instance.addEntity(a);
 		}
 	}
 }

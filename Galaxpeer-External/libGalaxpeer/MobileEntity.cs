@@ -17,9 +17,19 @@ namespace Galaxpeer
 			Z = z;
 		}
 
+		public static Vector3 operator + (Vector3 a, Vector3 b)
+		{
+			return new Vector3 (a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+		}
+
 		public static Vector3 operator - (Vector3 a, Vector3 b)
 		{
 			return new Vector3 (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+		}
+
+		public static Vector3 operator * (Vector3 v, float d)
+		{
+			return new Vector3 (v.X * d, v.Y * d, v.Z * d);
 		}
 	}
 
@@ -103,6 +113,7 @@ namespace Galaxpeer
 			Velocity = new Vector3 (0, 0, 0);
 			size = 0;
 			LastUpdate = DateTime.UtcNow.Ticks;
+			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
 		}
 
 		public MobileEntity(LocationMessage message)
@@ -284,7 +295,12 @@ namespace Galaxpeer
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			Location = new Vector3 ((float) x, (float) y, (float) z);
+			float distance = Position.ROI_RADIUS - 1;
+
+			Location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
+			Vector3 myLoc = LocalPlayer.Instance.Location;
+			Console.WriteLine ("My position: {0}.{1}.{2}", myLoc.X, myLoc.Y, myLoc.Z);
+			Console.WriteLine ("Asteroid Position: {0}.{1}.{2}", Location.X, Location.Y, Location.Z);
 
 			rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
 			Velocity = new Vector3 (rnd.Next (0, 20), rnd.Next (0, 20), rnd.Next (0, 20));
