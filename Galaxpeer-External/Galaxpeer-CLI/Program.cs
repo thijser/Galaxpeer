@@ -9,7 +9,9 @@ namespace GalaxpeerCLI
 	{
 		public static void Main (string[] args)
 		{
-			ConnectionManager c1 = new UDPConnectionManager ();
+			int port = args.Length >= 2 ? 0 : 36963;
+
+			ConnectionManager c1 = new UDPConnectionManager (port);
 			Game.Init (c1);
 
 			Console.WriteLine ("Listening on port {0}", c1.LocalConnectionMessage.Port);
