@@ -218,7 +218,7 @@ namespace Galaxpeer
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			Location = new Vector3 (nx, ny, nz);
 
-			if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location)) {
+			if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location) && !Position.IsInRoi(LocalPlayer.Instance.Location, Location)) {
 				Destroy ();
 			}
 		}
