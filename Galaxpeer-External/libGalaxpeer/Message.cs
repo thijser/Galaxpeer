@@ -8,7 +8,7 @@ namespace Galaxpeer
 	
 	public abstract class Message
 	{
-		public static sbyte MAX_HOPS = 2;
+		public virtual sbyte max_hops { get { return 2; } }
 
 		public virtual IPEndPoint SourceIp { get; set; }
 		public Client SourceClient;
@@ -17,7 +17,7 @@ namespace Galaxpeer
 
 		public Message()
 		{
-			Hops = MAX_HOPS;
+			Hops = max_hops;
 			Timestamp = DateTime.UtcNow.Ticks;
 		}
 

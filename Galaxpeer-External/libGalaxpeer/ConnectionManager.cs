@@ -11,7 +11,7 @@ namespace Galaxpeer
 
 		public Dictionary<Guid, ConnectionMessage> ConnectionCache = new Dictionary<Guid, ConnectionMessage>();
 		private readonly Dictionary<IPEndPoint, Client> endPoints = new Dictionary<IPEndPoint, Client>();
-		private readonly Client[] closestClients = new Client[8];
+		public readonly Client[] ClosestClients = new Client[8];
 		public Dictionary<Guid, Client> ClientsInRoi = new Dictionary<Guid, Client> ();
 
 		public ConnectionManager()
@@ -53,7 +53,7 @@ namespace Galaxpeer
 		public void ForwardMessage(Message message)
 		{
 			if (--message.Hops > 0) {
-				foreach (var client in closestClients) {
+				foreach (var client in ClosestClients) {
 					if (client != null && client != message.SourceClient) {
 						client.Connection.Send (message);
 					}
@@ -103,24 +103,21 @@ namespace Galaxpeer
 
 					int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
 					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
-					Client closest = closestClients [octant];
+					Client closest = ClosestClients [octant];
 
 					if (closest == null) {
 						Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
-						closestClients [octant] = new Client (message);
+						ClosestClients [octant] = new Client (message);
 						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					} else if (distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 5)) {
 						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2} ({3})", closest.ConnectionMessage.Uuid, octant, message.Uuid, message.SourceClient.Player.Uuid);
 						closest.Connection.Close ();
-						closestClients [octant] = new Client (message);
+						ClosestClients [octant] = new Client (message);
 						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					}
 
 					// Check if this player is in ROI
 					UpdateRoiConnection (message.SourceClient, message.Location);
-
-					// Forward message
-					ForwardMessage(message);
 				}
 			}
 		}

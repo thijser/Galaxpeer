@@ -50,7 +50,6 @@ namespace Galaxpeer
 			if (entity != null) {
 				entity.Destroy ();
 			}
-			Game.ConnectionManager.ForwardMessage (message);
 		}
 
 		public static MobileEntity Get (Guid uuid) {

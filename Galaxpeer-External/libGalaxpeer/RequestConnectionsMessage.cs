@@ -4,6 +4,8 @@ namespace Galaxpeer
 {
 	public class RequestConnectionsMessage : TMessage<RequestConnectionsMessage>
 	{
+		public override sbyte max_hops { get { return 0; } }
+
 		public Vector3 Location { get; private set; }
 
 		struct Packet

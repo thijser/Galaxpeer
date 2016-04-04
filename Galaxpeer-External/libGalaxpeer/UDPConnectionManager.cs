@@ -50,6 +50,7 @@ namespace Galaxpeer
 					Console.WriteLine ("Received {0} from {1}", (char) received [0], ip);
 					message.SourceClient.LastActivity = DateTime.UtcNow.Ticks;
 					message.Dispatch();
+					this.ForwardMessage (message);
 				}
 	//}
 			//catch (Exception e)
