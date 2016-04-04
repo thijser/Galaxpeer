@@ -52,6 +52,7 @@
     <Compile Include="Position.cs" />
     <Compile Include="RequestConnectionsMessage.cs" />
     <Compile Include="DestroyMessage.cs" />
+    <Compile Include="HandoverMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
