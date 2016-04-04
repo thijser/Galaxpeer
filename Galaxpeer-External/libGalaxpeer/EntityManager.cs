@@ -44,13 +44,13 @@ namespace Galaxpeer
 			}
 		}
 
-		private static void OnDestroyMessage(Client client, DestroyMessage message)
+		private static void OnDestroyMessage(DestroyMessage message)
 		{
 			MobileEntity entity = Get (message.Uuid);
 			if (entity != null) {
 				entity.Destroy ();
 			}
-			Game.ConnectionManager.ForwardMessage (client, message);
+			Game.ConnectionManager.ForwardMessage (message);
 		}
 
 		public static MobileEntity Get (Guid uuid) {

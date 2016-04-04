@@ -50,11 +50,11 @@ namespace Galaxpeer
 			}
 		}
 
-		public void ForwardMessage(Client source, Message message)
+		public void ForwardMessage(Message message)
 		{
 			if (--message.Hops > 0) {
 				foreach (var client in closestClients) {
-					if (client != null && client != source) {
+					if (client != null && client != message.SourceClient) {
 						client.Connection.Send (message);
 					}
 				}
@@ -94,7 +94,7 @@ namespace Galaxpeer
 		 * Add to connection list
 		 * Check if it should replace an existing connection
 		 */
-		protected void OnReceiveConnection(Client client, ConnectionMessage message)
+		protected void OnReceiveConnection(ConnectionMessage message)
 		{
 			if (message.Uuid != LocalConnectionMessage.Uuid) {
 				long age = DateTime.UtcNow.Ticks - message.Timestamp;
@@ -108,29 +108,29 @@ namespace Galaxpeer
 					if (closest == null) {
 						Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
 						closestClients [octant] = new Client (message);
-						client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
+						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					} else if (distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 5)) {
-						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2} ({3})", closest.ConnectionMessage.Uuid, octant, message.Uuid, client.Player.Uuid);
+						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2} ({3})", closest.ConnectionMessage.Uuid, octant, message.Uuid, message.SourceClient.Player.Uuid);
 						closest.Connection.Close ();
 						closestClients [octant] = new Client (message);
-						client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
+						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					}
 
 					// Check if this player is in ROI
-					UpdateRoiConnection (client, message.Location);
+					UpdateRoiConnection (message.SourceClient, message.Location);
 
 					// Forward message
-					ForwardMessage(client, message);
+					ForwardMessage(message);
 				}
 			}
 		}
 
-		protected void OnReceiveLocation(Client client, LocationMessage message)
+		protected void OnReceiveLocation(LocationMessage message)
 		{
 			EntityManager.UpdateEntity (message);
 
 			if ((MobileEntity.EntityType)message.Type == MobileEntity.EntityType.Player) {
-				UpdateRoiConnection (client, message.Location);
+				UpdateRoiConnection (message.SourceClient, message.Location);
 			}
 		}
 
@@ -140,14 +140,14 @@ namespace Galaxpeer
 		 * Keep track of closest clients in each of the octants.
 		 * If a newer location of client is known, use that.
 		 */
-		protected void OnConnectionsRequest(Client client, RequestConnectionsMessage message)
+		protected void OnConnectionsRequest(RequestConnectionsMessage message)
 		{
 			cleanConnectionCache ();
 			ConnectionMessage[] connections = new ConnectionMessage[8];
 			foreach (var item in ConnectionCache) {
 				ConnectionMessage conn = item.Value;
 
-				if (conn.Uuid != client.ConnectionMessage.Uuid) {
+				if (conn.Uuid != message.SourceClient.ConnectionMessage.Uuid) {
 					Guid id = item.Key;
 					MobileEntity entity = EntityManager.Get (id);
 
@@ -170,7 +170,7 @@ namespace Galaxpeer
 			// Return connections
 			foreach (var item in connections) {
 				if (item != null) {
-					client.Connection.Send (item);
+					message.SourceClient.Connection.Send (item);
 				}
 			}
 		}

@@ -100,11 +100,15 @@ namespace Galaxpeer
 		private Vector4 rotation;
 		private Vector3 velocity;
 
-		// Todo: cache this value
+		bool? isMine = null;
 		bool IsMine
 		{
 			get {
-				return OwnedBy.Equals (LocalPlayer.LocalUuid);
+				if (isMine == null) {
+					isMine = OwnedBy.Equals (LocalPlayer.LocalUuid); 
+					Console.WriteLine ("{0} is{1} mine", Uuid, (bool) isMine ? "" : " not");
+				}
+				return (bool) isMine;
 			}
 		}
 
@@ -162,6 +166,7 @@ namespace Galaxpeer
 		public MobileEntity(LocationMessage message)
 		{
 			Uuid = message.Uuid;
+			OwnedBy = message.SourceClient.Uuid;
 			copyMessageData (message);
 			Size = 0;
 			Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
@@ -285,12 +290,16 @@ namespace Galaxpeer
 				return EntityType.Player;
 			}
 		}
-		public Player(){}
+
+		public Player() {}
+
 		public Player(ConnectionMessage message)
 		{
 			Uuid = message.Uuid;
+			OwnedBy = Uuid;
 			Location = message.Location;
 		}
+
 		public Player(LocationMessage message) : base(message) {}
 
 		public override void Collide (MobileEntity other)

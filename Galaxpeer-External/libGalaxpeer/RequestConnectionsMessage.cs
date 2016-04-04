@@ -2,10 +2,8 @@
 
 namespace Galaxpeer
 {
-	public class RequestConnectionsMessage : Message
+	public class RequestConnectionsMessage : TMessage<RequestConnectionsMessage>
 	{
-		public static event MessageHandler<RequestConnectionsMessage> OnReceive;
-
 		public Vector3 Location { get; private set; }
 
 		struct Packet
@@ -37,16 +35,6 @@ namespace Galaxpeer
 			packet.Timestamp = Timestamp;
 			packet.Location = Location;
 			return ToBytes (packet);
-		}
-
-		public override void DispatchFrom(IPEndPoint endPoint)
-		{
-			if (OnReceive != null) {
-				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
-				if (client != null) {
-					OnReceive (client, this);
-				}
-			}
 		}
 	}
 }
