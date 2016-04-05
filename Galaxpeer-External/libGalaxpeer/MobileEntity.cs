@@ -272,6 +272,8 @@ namespace Galaxpeer
 
 		public bool CheckCollision (MobileEntity other)
 		{
+			if (other.Equals (this))
+				return false;
 			double Xdist = Location.X - other.Location.X;
 			double Ydist = Location.Y - other.Location.Y;
 			double Zdist = Location.Z - other.Location.Z;
