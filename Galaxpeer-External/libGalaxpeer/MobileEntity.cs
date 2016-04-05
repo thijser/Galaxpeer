@@ -319,8 +319,7 @@ namespace Galaxpeer
 		{
 			this.location = location;
 			this.rotation = rotation;
-
-			fireUpdate (true);
+			AccelerateForward (1, 2, 20);
 		}
 
 		public Rocket(LocationMessage message) : base(message) {}
