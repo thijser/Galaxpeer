@@ -96,15 +96,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -0.58
+      value: -.579999983
       objectReference: {fileID: 0}
     - target: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.69
+      value: .689999998
       objectReference: {fileID: 0}
     - target: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 2.90938
+      value: 2.90937996
       objectReference: {fileID: 0}
     - target: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
       propertyPath: m_LocalRotation.x
@@ -124,11 +124,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &680619778 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 416814, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
+  m_PrefabInternal: {fileID: 680619777}
 --- !u!1 &1038540337
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +234,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!1 &1448527526 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 160604, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
@@ -333,7 +337,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: .300000012
-  far clip plane: 1000
+  far clip plane: 300
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -356,11 +360,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2089700872}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: .579999983, y: .310000002, z: -12.90938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 680619778}
+  m_RootOrder: 0
 --- !u!45 &2089700879
 Skybox:
   m_ObjectHideFlags: 0
