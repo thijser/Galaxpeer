@@ -50,16 +50,13 @@ namespace Galaxpeer
 			while (created.Count != 0) {
 				var entity = created [0];
 				objects.Add (entity);
+				EntityManager.Entities [entity.Uuid] = entity;
 				UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
 				created.Remove (entity);
 			}
 
-			if (OnTick != null) {
-				OnTick (time);
-			}
-
 			foreach (MobileEntity moe in objects) {
-				moe.LocationUpdate (1);
+				moe.LocationUpdate (0.02);
 				if (moe.OwnedBy == LocalPlayer.Instance.Uuid) {
 					foreach (MobileEntity moe2 in objects) {
 						if (moe.CheckCollision (moe2)) {
@@ -67,6 +64,10 @@ namespace Galaxpeer
 						}
 					}
 				}
+			}
+
+			if (OnTick != null) {
+				OnTick (time);
 			}
 
 			Cleanup ();
@@ -77,6 +78,8 @@ namespace Galaxpeer
 			while (destroyed.Count != 0) {
 				var entity = destroyed [0];
 				objects.Remove (entity);
+				EntityManager.Remove (entity);
+				UnityInterfaceInterfaceManager.InstanceUnintyInterface.Destroy (entity);
 				destroyed.Remove (entity);
 			}
 		}

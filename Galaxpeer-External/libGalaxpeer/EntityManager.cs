@@ -6,7 +6,7 @@ namespace Galaxpeer
 	public class EntityManager
 	{
 		public static Dictionary<Guid, MobileEntity> Entities = new Dictionary<Guid, MobileEntity>();
-		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerSecond * 5;
+		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerSecond * 3;
 		private static long nextAsteroid = DateTime.UtcNow.Ticks + ASTEROID_INTERVAL;
 
 
@@ -49,14 +49,21 @@ namespace Galaxpeer
 			}
 		}
 
-		public static MobileEntity Get (Guid uuid) {
+		public static MobileEntity Get (Guid uuid)
+		{
 			MobileEntity entity;
 			Entities.TryGetValue (uuid, out entity);
 			return entity;
 		}
 
-		public static void Remove (Guid uuid) {
+		public static void Remove (Guid uuid)
+		{
 			Entities.Remove (uuid);
+		}
+
+		public static void Remove (MobileEntity entity)
+		{
+			Remove (entity.Uuid);
 		}
 
 		public static void UpdateEntity(LocationMessage message)

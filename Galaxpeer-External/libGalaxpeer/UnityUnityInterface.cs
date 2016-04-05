@@ -8,10 +8,12 @@ namespace Galaxpeer
 	{
 		//Dictionary<Guid,MobileEntity> mapping;
 		List<MobileEntity> ToSpawn;
+		List<MobileEntity> ToDestroy;
 
 		public UnityUnityInterface()
 		{
 			ToSpawn = new List<MobileEntity> ();
+			ToDestroy = new List<MobileEntity> ();
 			//mapping = new Dictionary<Guid,MobileEntity> ();
 
 		}
@@ -23,6 +25,7 @@ namespace Galaxpeer
 		public void Destroy(MobileEntity baseEntity){
 			// TODO: Remove from EntityManager mapping
 			ToSpawn.Remove (baseEntity);
+			ToDestroy.Add (baseEntity);
 		}
 
 		public MobileEntity GetEntity(Guid guid)
@@ -34,6 +37,14 @@ namespace Galaxpeer
 			lock (ToSpawn){
 				var ret = ToSpawn;
 				ToSpawn = new List<MobileEntity> ();
+				return ret;
+			}
+		}
+
+		public List<MobileEntity> getDestroys() {
+			lock (ToDestroy) {
+				var ret = ToDestroy;
+				ToDestroy = new List<MobileEntity> ();
 				return ret;
 			}
 		}
