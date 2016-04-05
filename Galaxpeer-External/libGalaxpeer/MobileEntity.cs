@@ -50,11 +50,19 @@ namespace Galaxpeer
 			W = w;
 		}
 
-		public static Vector4 operator * (Vector4 left, Vector4 right)
+		/*public static Vector4 operator * (Vector4 left, Vector4 right)
 		{
 			Vector4 res = new Vector4 (left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
 			res.normalize ();
 			return res;
+		}*/
+
+		public static Vector4 operator * (Vector4 q, Vector4 r)
+		{
+			return new Vector4 (r.X * q.X - r.Y * q.Y - r.Z * q.Z - r.W * q.W,
+				r.X * q.Y + r.Y * q.X - r.Z * q.W + r.W * q.Z,
+				r.X * q.Z + r.Y * q.W + r.Z * q.X - r.W * q.Y,
+				r.X * q.W - r.Y * q.Z + r.Z * q.Y + r.W * q.X);
 		}
 
 		public void normalize ()
@@ -266,8 +274,10 @@ namespace Galaxpeer
 			w = Math.Cos (spin / 2.0);
 			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
 			r.normalize ();
-			rotation = Rotation * r;   
+			Console.WriteLine ("{0} {1} {2} {3}", r.X, r.Y, r.Z, r.W);
+			rotation = Rotation * r;
 			rotation.normalize ();
+			Console.WriteLine ("{0} {1} {2} {3}", rotation.X, rotation.Y, rotation.Z, rotation.W);
 			fireUpdate (true);
 		}
 

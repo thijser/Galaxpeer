@@ -33,9 +33,9 @@ namespace GalaxpeerCLI
 			}*/
 			UnityUnityInterface ui = (UnityUnityInterface) UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 			Random rnd = new Random ();
-			rotation.X += (float)rnd.Next (-10, 10) / 100.0f;
-			rotation.Y += (float)rnd.Next (-10, 10) / 100.0f;
-			rotation.Z += (float)rnd.Next (-10, 10) / 100.0f;
+			rotation.X += (float)rnd.Next (-10, 10) / 10.0f;
+			rotation.Y += (float)rnd.Next (-10, 10) / 10.0f;
+			rotation.Z += (float)rnd.Next (-10, 10) / 10.0f;
 			Debug.Print (rotation.ToString());
 			ui.rotateplayer (rotation);
 			ui.shootplayer ();
