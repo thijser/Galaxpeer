@@ -12,8 +12,6 @@ public class PlayerScript : MonoBehaviour {
 		v.Uuid = UUI.newPlayer();
 	}
 
-	System.Random rnd = new System.Random();
-	long lastTick=0;
 	public void Update(){
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 
@@ -21,24 +19,24 @@ public class PlayerScript : MonoBehaviour {
 			UUI.shootplayer();
 		}
 		if (Input.GetKey (KeyCode.W)) {
-			UUI.accaleratePlayer(1);
+			UUI.accaleratePlayer(.1f);
 		} else {
 			if(Input.GetKey(KeyCode.S)){
-				UUI.accaleratePlayer(-1);
+				UUI.accaleratePlayer(-.1f);
 			}
 		}
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
 		if (Input.GetKey (KeyCode.UpArrow)) {
-			uprightspin.X=uprightspin.X+.1f;
+			uprightspin.X=uprightspin.X+.02f;
 		}
 		if (Input.GetKey (KeyCode.DownArrow)) {
-			uprightspin.X=uprightspin.X-.1f;
+			uprightspin.X=uprightspin.X-.02f;
 		}
 		if (Input.GetKey (KeyCode.LeftArrow)) {
-			uprightspin.Y=uprightspin.Y+.1f;
+			uprightspin.Y=uprightspin.Y-.02f;
 		}
 		if (Input.GetKey (KeyCode.RightArrow)) {
-			uprightspin.Y=uprightspin.Y-.1f;
+			uprightspin.Y=uprightspin.Y+.02f;
 		}
 		UUI.rotateplayer (uprightspin);
 	}

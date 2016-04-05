@@ -70,7 +70,9 @@ namespace Galaxpeer
 		{
 			MobileEntity entity = Get (message.Uuid);
 			if (entity == null) {
-				CreateEntity (message);
+				if (Position.IsInRoi(LocalPlayer.Instance.Location, message.Location)) {
+					CreateEntity (message);
+				}
 			} else {
 				entity.Update (message);
 			}

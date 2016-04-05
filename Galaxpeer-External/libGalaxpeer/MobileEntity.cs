@@ -132,21 +132,25 @@ namespace Galaxpeer
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			Location = new Vector3 (nx, ny, nz);
 
-			if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location) && !Position.IsInRoi(LocalPlayer.Instance.Location, Location)) {
-				Destroy ();
+			if (!Position.IsInRoi (LocalPlayer.Instance.Location, Location)) {
+				if (!IsMine || !Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location)) {
+					Destroy ();
+				}
 			}
 		}
 
-		public void AccelerateForward (double stepsize, double acceleration, double maxspeed)
+		public void AccelerateForward (float stepsize, float acceleration, float maxspeed)
 		{
-			float Vx = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().X));
-			float Vy = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Y));
-			float Vz = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Z));
-			velocity = new Vector3 (Vx, Vy, Vz);
-			if ((Velocity.X * Velocity.X) + (Velocity.Y * Velocity.Y) + (Velocity.Z * Velocity.Z) > maxspeed * maxspeed) {
-				velocity = new Vector3 ((float)(Velocity.X / maxspeed), (float)(Velocity.Y / maxspeed), (float)(Velocity.Z / maxspeed));
+			Vector3 f = Rotation.GetForwardVector ();
+			Vector3 v = velocity + (stepsize * (acceleration * f));
+
+			//float Vx = Velocity.X + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().X));
+			//float Vy = Velocity.Y + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Y));
+			//float Vz = Velocity.Z + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Z));
+			//velocity = new Vector3 (Vx, Vy, Vz);
+			if ((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) <= maxspeed * maxspeed) {
+				Velocity = v;
 			}
-			fireUpdate (true);
 		}
 
 		public void Rotate (double up, double right, double spin)

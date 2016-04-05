@@ -61,8 +61,8 @@ namespace Galaxpeer
 			LocalPlayer.Instance.Rotate(uprightspin.X,uprightspin.Y,uprightspin.Z);
 		}
 
-		public void accaleratePlayer(double acc){
-			LocalPlayer.Instance.AccelerateForward (1, acc, 20);
+		public void accaleratePlayer(float acc){
+			LocalPlayer.Instance.AccelerateForward (1f, acc, 10f);
 		}
 
 	}
