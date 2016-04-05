@@ -3,6 +3,7 @@ using Galaxpeer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 public class GalaxpeerDocker : MonoBehaviour {
 	public GameObject baseOtherPlayer;
@@ -13,10 +14,11 @@ public class GalaxpeerDocker : MonoBehaviour {
 
 	void Start () {
 		Game.Init (new UDPConnectionManager (36963));
-		InvokeRepeating("Tick", 0, 0.02F);
+		//InvokeRepeating("Tick", 0, 1F);
+		new Timer (Tick, null, 0, 20);
 	}
 
-	void Tick () {
+	void Tick (object _) {
 		PsycicManager.Instance.Tick ();
 	}
 	
@@ -30,14 +32,24 @@ public class GalaxpeerDocker : MonoBehaviour {
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 		List<MobileEntity> toSpawn = UUI.getSpawns ();
 		foreach (MobileEntity spawn in toSpawn) {
+			GameObject toInstantiate = null;
+
 			switch(spawn.Type){
-			case MobileEntity.EntityType.Player:break;
-			case MobileEntity.EntityType.Rocket:break;
-			case MobileEntity.EntityType.Asteroid:
-				GameObject asteroid = (GameObject)Instantiate (baseAsteroid, Conversion.ToUnity (spawn.Location), Conversion.ToUnity (spawn.Rotation));
-				gameObjects [spawn.Uuid] = asteroid;
-				asteroid.GetComponent<MobileEntityGameObject> ().Uuid = spawn.Uuid;
+			case MobileEntity.EntityType.Player:
+				toInstantiate = baseOtherPlayer;
 				break;
+			case MobileEntity.EntityType.Rocket:
+				toInstantiate = baseRocket;
+				break;
+			case MobileEntity.EntityType.Asteroid:
+				toInstantiate = baseAsteroid;
+				break;
+			}
+
+			if (toInstantiate != null) {
+				GameObject obj = (GameObject)Instantiate (toInstantiate, Conversion.ToUnity (spawn.Location), Conversion.ToUnity (spawn.Rotation));
+				gameObjects [spawn.Uuid] = obj;
+				obj.GetComponent<MobileEntityGameObject> ().Uuid = spawn.Uuid;
 			}
 		}
 	}

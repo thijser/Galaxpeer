@@ -7,6 +7,11 @@ using System.Reflection;
 
 public class MobileEntityGameObject : MonoBehaviour {
 	public Guid Uuid;
+	public string id;
+
+	void Start () {
+		id = Uuid.ToString ();
+	}
 
 	public MobileEntity Entity {
 		get {
