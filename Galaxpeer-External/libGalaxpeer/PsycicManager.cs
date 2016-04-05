@@ -1,5 +1,7 @@
+
 using System.Collections.Generic;
-using System;
+using System;
+using System.Threading;
 
 namespace Galaxpeer
 {
@@ -15,6 +17,8 @@ namespace Galaxpeer
 		private List<MobileEntity> created = new List<MobileEntity>();
 		private List<MobileEntity> destroyed = new List<MobileEntity>();
 
+		private Timer timer;
+
 
 		public static PsycicManager Instance
 		{
@@ -24,53 +28,56 @@ namespace Galaxpeer
 				{
 					lock (syncRoot)
 					{
-						if (instance == null) 
-							instance = new PsycicManager();
-					}
+						if (instance == null) {
+							instance = new PsycicManager ();
+						}
+ 					}
 				}
 
 				return instance;
 			}
 		}
 
+		public void Init()
+		{
+			timer = new Timer (Tick, null, 0, 100);
+		}
+
 		public void AddEntity(MobileEntity entity)
 		{
 			created.Add (entity);
 		}
-
+	
 		public void RemoveEntity(MobileEntity entity)
 		{
 			destroyed.Add (entity);
 		}
 
-		public void Tick()
+		public static void Tick(object _)
 		{
-			long time = DateTime.UtcNow.Ticks;
-
-			while (created.Count != 0) {
-				var entity = created [0];
-				objects.Add (entity);
+			var pm = PsycicManager.Instance;
+			while (pm.created.Count != 0) {
+				var entity = pm.created [0];
+				pm.objects.Add (entity);
 				EntityManager.Entities [entity.Uuid] = entity;
 				UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
-				created.Remove (entity);
+				pm.created.Remove (entity);
 			}
 
-			foreach (MobileEntity moe in objects) {
+			foreach (MobileEntity moe in pm.objects) {
 				moe.LocationUpdate (0.02);
 				if (moe.OwnedBy == LocalPlayer.Instance.Uuid) {
-					foreach (MobileEntity moe2 in objects) {
+					foreach (MobileEntity moe2 in pm.objects) {
 						if (moe.CheckCollision (moe2)) {
 							moe.Collide (moe2);
 						}
 					}
 				}
 			}
-
+			pm.Cleanup ();
 			if (OnTick != null) {
-				OnTick (time);
+				OnTick (DateTime.UtcNow.Ticks);
 			}
-
-			Cleanup ();
 		}
 
 		private void Cleanup()

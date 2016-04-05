@@ -8,6 +8,7 @@ namespace Galaxpeer
 		public static void Init(ConnectionManager connectionManager)
 		{
 			ConnectionManager = connectionManager;
+			PsycicManager.Instance.Init ();
 		}
 	}
 }

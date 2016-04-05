@@ -14,12 +14,6 @@ public class GalaxpeerDocker : MonoBehaviour {
 
 	void Start () {
 		Game.Init (new UDPConnectionManager (36963));
-		//InvokeRepeating("Tick", 0, 1F);
-		new Timer (Tick, null, 0, 20);
-	}
-
-	void Tick (object _) {
-		PsycicManager.Instance.Tick ();
 	}
 	
 	// Update is called once per frame
