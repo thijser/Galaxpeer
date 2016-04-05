@@ -8,12 +8,13 @@ namespace Galaxpeer
 	public class UDPConnectionManager : ConnectionManager
 	{
 		UdpClient socket;
-
+		public int portstore;
 		public UDPConnectionManager(int port = 0)
 		{
 			socket = new UdpClient (port);
 			IPEndPoint endPoint = (IPEndPoint) socket.Client.LocalEndPoint;
 			this.LocalConnectionMessage = new ConnectionMessage (LocalPlayer.Instance.Uuid, new IPAddress(0), endPoint.Port, LocalPlayer.Instance.Location);
+			portstore=endPoint.Port;
 			Receive ();
 		}
 
