@@ -20,7 +20,7 @@ namespace GalaxpeerCLI
 
 			if (args.Length >= 2) {
 				Console.WriteLine ("Connecting to {0}:{1}", args [0], args[1]);
-				c1.Connect (new ConnectionMessage (new Guid (), IPAddress.Parse (args [0]), int.Parse (args [1]), LocalPlayer.Instance.Location));
+				c1.Connect (new ConnectionMessage (LocalPlayer.Instance.Uuid, IPAddress.Parse (args [0]), int.Parse (args [1]), LocalPlayer.Instance.Location));
 			}
 
 			//ConnectionManager c2 = new UDPConnectionManager ();

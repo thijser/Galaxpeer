@@ -62,7 +62,9 @@ namespace Galaxpeer
 				var entity = pm.created [0];
 				pm.objects.Add (entity);
 				EntityManager.Entities [entity.Uuid] = entity;
-				UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
+				if (entity != LocalPlayer.Instance) {
+					UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
+				}
 				pm.created.Remove (entity);
 			}
 
