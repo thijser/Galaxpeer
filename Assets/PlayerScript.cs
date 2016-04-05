@@ -21,24 +21,24 @@ public class PlayerScript : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			UUI.shootplayer();
 		}
-		if (Input.GetKeyDown (KeyCode.W)) {
+		if (Input.GetKey (KeyCode.W)) {
 			UUI.accaleratePlayer(0.01);
 		} else {
-			if(Input.GetKeyDown(KeyCode.S)){
+			if(Input.GetKey(KeyCode.S)){
 				UUI.accaleratePlayer(-0.01);
 			}
 		}
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
-		if (Input.GetKeyDown (KeyCode.UpArrow)) {
+		if (Input.GetKey (KeyCode.UpArrow)) {
 			uprightspin.X=uprightspin.X+1;
 		}
-		if (Input.GetKeyDown (KeyCode.DownArrow)) {
+		if (Input.GetKey (KeyCode.DownArrow)) {
 			uprightspin.X=uprightspin.X-1;
 		}
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+		if (Input.GetKey (KeyCode.LeftArrow)) {
 			uprightspin.Y=uprightspin.Y+1;
 		}
-		if (Input.GetKeyDown (KeyCode.RightArrow)) {
+		if (Input.GetKey (KeyCode.RightArrow)) {
 			uprightspin.Y=uprightspin.Y-1;
 		}
 		UUI.rotateplayer (uprightspin);
