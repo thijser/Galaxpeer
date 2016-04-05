@@ -1,7 +1,7 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2008
-
-Project("{5ECBE9B9-2539-2FA8-87AA-A89ECBD79652}") = "Galaxpeer", "Assembly-CSharp.csproj", "{EB5CB332-FA7E-0AAE-B5EB-6F47824AD06E}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galaxpeer.CSharp", "Galaxpeer.CSharp.csproj", "{C25186B1-0D34-B0C6-4D26-C37F8BADE4BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,15 +9,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB5CB332-FA7E-0AAE-B5EB-6F47824AD06E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB5CB332-FA7E-0AAE-B5EB-6F47824AD06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB5CB332-FA7E-0AAE-B5EB-6F47824AD06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB5CB332-FA7E-0AAE-B5EB-6F47824AD06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C25186B1-0D34-B0C6-4D26-C37F8BADE4BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C25186B1-0D34-B0C6-4D26-C37F8BADE4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C25186B1-0D34-B0C6-4D26-C37F8BADE4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C25186B1-0D34-B0C6-4D26-C37F8BADE4BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-																																																																								GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal
