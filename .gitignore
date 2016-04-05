@@ -8,6 +8,9 @@ Library/
 Assets/AssetStoreTools*
 obj/
 
+Galaxpeer_Data
+Galaxpeer.x86_64
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #

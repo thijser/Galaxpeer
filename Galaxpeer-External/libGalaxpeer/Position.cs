@@ -6,6 +6,7 @@ namespace Galaxpeer
 	public static class Position
 	{
 		public static float ROI_RADIUS = 300;
+		public static float SIGHT_DISTANCE = 100;
 
 		public static int GetOctant (Vector3 myLocation, Vector3 otherLocation)
 		{
@@ -43,6 +44,11 @@ namespace Galaxpeer
 			}
 
 			return false;
+		}
+
+		public static bool IsInSight(Vector3 a, Vector3 b)
+		{
+			return GetDistance (a, b) <= SIGHT_DISTANCE;
 		}
 	}
 }

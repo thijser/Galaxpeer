@@ -32,7 +32,8 @@ namespace GalaxpeerCLI
 			/*UDPConnection conn = new UDPConnection (m);
 			conn.Send (m);*/
 
-			new Timer (Tick, null, 0, 1000);
+			new Ai ();
+			//new Timer (Tick, null, 0, 1000);
 			Thread.Sleep (Timeout.Infinite);
 		}
 
