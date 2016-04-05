@@ -8,6 +8,21 @@ namespace Galaxpeer
 	{
 		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
 
+		public override IPEndPoint SourceIp
+		{
+			set {
+				if (Ip.Equals (new IPAddress (0))) {
+					Ip = value.Address;
+
+					// Connection belonging to endpoint, so add to manager
+					if (Game.ConnectionManager.GetByEndPoint (value) == null) {
+						Game.ConnectionManager.AddByEndPoint (value, this);
+					}
+				}
+				base.SourceIp = value;
+			}
+		}
+
 		public Guid Uuid;
 		public IPAddress Ip;
 		public int Port;
@@ -41,6 +56,12 @@ namespace Galaxpeer
 			Port = packet.Port;
 			Location = packet.Location;
 			Timestamp = packet.Timestamp;
+
+			if (EntityManager.Get (Uuid) == null) {
+				Player player = new Player (this);
+				EntityManager.Entities[Uuid] = player;
+				PsycicManager.Instance.AddEntity (player);
+			}
 		}
 
 		public override byte[] Serialize()
@@ -58,24 +79,6 @@ namespace Galaxpeer
 			bytes = ToBytes (packet);
 
 			return bytes;
-		}
-
-		public override void DispatchFrom(IPEndPoint endPoint)
-		{
-			if (Ip.Equals (new IPAddress (0))) {
-				Ip = endPoint.Address;
-
-				// Connection belonging to endpoint, so add to manager
-				if (Game.ConnectionManager.GetByEndPoint (endPoint) == null) {
-					Game.ConnectionManager.AddByEndPoint (endPoint, this);
-				}
-			}
-
-			if (EntityManager.Get (Uuid) == null) {
-				EntityManager.Entities[Uuid] = new Player (this);
-			}
-
-			base.DispatchFrom (endPoint);
 		}
 	}
 }

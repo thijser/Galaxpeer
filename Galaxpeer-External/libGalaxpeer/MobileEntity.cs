@@ -17,9 +17,19 @@ namespace Galaxpeer
 			Z = z;
 		}
 
+		public static Vector3 operator + (Vector3 a, Vector3 b)
+		{
+			return new Vector3 (a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+		}
+
 		public static Vector3 operator - (Vector3 a, Vector3 b)
 		{
 			return new Vector3 (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+		}
+
+		public static Vector3 operator * (Vector3 v, float d)
+		{
+			return new Vector3 (v.X * d, v.Y * d, v.Z * d);
 		}
 	}
 
@@ -77,46 +87,96 @@ namespace Galaxpeer
 		}
 	}
 
-	public delegate void LocationUpdateHandler(MobileEntity entity, bool owned);
+	public delegate void EntityUpdateHandler(MobileEntity entity, bool owned);
 
 	public abstract class MobileEntity
 	{
-		public static event LocationUpdateHandler OnLocationUpdate;
+		public static event EntityUpdateHandler OnLocationUpdate;
+		public static event EntityUpdateHandler OnDestroy;
 
 		public enum EntityType : byte { Player, Rocket, Asteroid };
 
-		public Vector3 Location;
-		public Vector4 Rotation;
-		public Vector3 Velocity;
+		protected Vector3 location;
+		protected Vector4 rotation;
+		protected Vector3 velocity;
+
+		bool? isMine = null;
+		bool IsMine
+		{
+			get {
+				if (isMine == null) {
+					isMine = OwnedBy.Equals (LocalPlayer.LocalUuid); 
+					Console.WriteLine ("{0} is{1} mine", Uuid, (bool) isMine ? "" : " not");
+				}
+				return (bool) isMine;
+			}
+		}
+
+		public Vector3 Location
+		{
+			get {
+				return location;
+			}
+			set {
+				location = value;
+				fireUpdate (IsMine);
+			}
+		}
+
+		public Vector4 Rotation
+		{
+			get {
+				return rotation;
+			}
+			set {
+				rotation = value;
+				fireUpdate (IsMine);
+			}
+		}
+
+		public Vector3 Velocity
+		{
+			get {
+				return velocity;
+			}
+			set {
+				velocity = value;
+				fireUpdate (IsMine);
+			}
+		}
 
 		public abstract EntityType Type { get; }
-		public float size;
+		public float Size;
 		public Guid Uuid;
-		public Guid ownedBy;
+		public Guid OwnedBy;
 		public long LastUpdate;
 
 		public MobileEntity ()
 		{
 			Uuid = Guid.NewGuid ();
-			Location = new Vector3 (0, 0, 0);
-			Rotation = new Vector4 (0, 0, 0, 1);
-			Velocity = new Vector3 (0, 0, 0);
-			size = 0;
-			LastUpdate = DateTime.UtcNow.Ticks;
+			OwnedBy = LocalPlayer.LocalUuid;
+			location = new Vector3 (0, 0, 0);
+			rotation = new Vector4 (0, 0, 0, 1);
+			velocity = new Vector3 (0, 0, 0);
+			Size = 0;
+			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
 		}
 
 		public MobileEntity(LocationMessage message)
 		{
 			Uuid = message.Uuid;
+			OwnedBy = message.SourceClient.Uuid;
 			copyMessageData (message);
-			size = 0;
+			Size = 0;
+			Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
+			fireUpdate (false);
 		}
 
 		private void copyMessageData(LocationMessage message)
 		{
-			Location = message.Location;
-			Rotation = message.Rotation;
-			Velocity = message.Velocity;
+			location = message.Location;
+			rotation = message.Rotation;
+			velocity = message.Velocity;
 
 			LastUpdate = message.Timestamp;
 		}
@@ -129,16 +189,24 @@ namespace Galaxpeer
 			}
 		}
 			
-		private void fireUpdate(bool owned)
+		protected void fireUpdate(bool owned)
 		{
+			LastUpdate = DateTime.UtcNow.Ticks;
 			if (OnLocationUpdate != null) {
 				OnLocationUpdate (this, owned);
 			}
 		}
 
-		public abstract void collide (MobileEntity other);
+		public abstract void Collide (MobileEntity other);
 
-		public abstract void destroy ();
+		public void Destroy ()
+		{
+			PsycicManager.Instance.RemoveEntity (this);
+
+			if (OnDestroy != null) {
+				OnDestroy (this, IsMine);
+			}
+		}
 
 		public int Health;
 
@@ -148,7 +216,10 @@ namespace Galaxpeer
 			float ny = (float)(Location.Y + stepsize * Velocity.Y);
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			Location = new Vector3 (nx, ny, nz);
-			fireUpdate (true);
+
+			if (!Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location) && !Position.IsInRoi(LocalPlayer.Instance.Location, Location)) {
+				Destroy ();
+			}
 		}
 
 		public void AccelerateForward (double stepsize, double acceleration, double maxspeed)
@@ -156,14 +227,14 @@ namespace Galaxpeer
 			float Vx = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().X));
 			float Vy = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Y));
 			float Vz = (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Z));
-			Velocity = new Vector3 (Vx, Vy, Vz);
+			velocity = new Vector3 (Vx, Vy, Vz);
 			if ((Velocity.X * Velocity.X) + (Velocity.Y * Velocity.Y) + (Velocity.Z * Velocity.Z) > maxspeed * maxspeed) {
-				Velocity = new Vector3 ((float)(Velocity.X / maxspeed), (float)(Velocity.Y / maxspeed), (float)(Velocity.Z / maxspeed));
+				velocity = new Vector3 ((float)(Velocity.X / maxspeed), (float)(Velocity.Y / maxspeed), (float)(Velocity.Z / maxspeed));
 			}
 			fireUpdate (true);
 		}
 
-		public void rotate (double up, double right, double spin)
+		public void Rotate (double up, double right, double spin)
 		{
 			double ff = Math.Sin (up);
 			double fr = Math.Sin (right);
@@ -178,7 +249,7 @@ namespace Galaxpeer
 			double w = Math.Cos (up / 2.0);
 			Vector4 r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
 			r.normalize ();
-			Rotation = Rotation * r;
+			rotation = Rotation * r;
 
 			x = fr * upVec.X;
 			y = fr * upVec.Y;
@@ -186,7 +257,7 @@ namespace Galaxpeer
 			w = Math.Cos (right / 2.0);
 			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
 			r.normalize ();
-			Rotation = Rotation * r;
+			rotation = Rotation * r;
 
 			x = fs * forVec.X;
 			y = fs * forVec.Y;
@@ -194,8 +265,8 @@ namespace Galaxpeer
 			w = Math.Cos (spin / 2.0);
 			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
 			r.normalize ();
-			Rotation = Rotation * r;   
-			Rotation.normalize ();
+			rotation = Rotation * r;   
+			rotation.normalize ();
 			fireUpdate (true);
 		}
 
@@ -204,11 +275,10 @@ namespace Galaxpeer
 			double Xdist = Location.X - other.Location.X;
 			double Ydist = Location.Y - other.Location.Y;
 			double Zdist = Location.Z - other.Location.Z;
-			if (size + other.size > Math.Sqrt (Xdist * Xdist + Ydist * Ydist + Zdist * Zdist)) {
+			if (Size + other.Size > Math.Sqrt (Xdist * Xdist + Ydist * Ydist + Zdist * Zdist)) {
 				return true;
 			}
 			return false;
-				
 		}
 	}
 
@@ -219,23 +289,21 @@ namespace Galaxpeer
 				return EntityType.Player;
 			}
 		}
-		public Player(){}
+
+		public Player() {}
+
 		public Player(ConnectionMessage message)
 		{
 			Uuid = message.Uuid;
+			OwnedBy = Uuid;
 			Location = message.Location;
-			LastUpdate = message.Timestamp;
 		}
+
 		public Player(LocationMessage message) : base(message) {}
 
-		public override void collide (MobileEntity other)
+		public override void Collide (MobileEntity other)
 		{
 			this.Velocity = other.Velocity;
-		}
-
-		public override void destroy ()
-		{
-			PsycicManager.Instance.Destoyed.Add (this);
 		}
 	}
 
@@ -246,10 +314,17 @@ namespace Galaxpeer
 				return EntityType.Rocket;
 			}
 		}
-			
+
+		public Rocket(Vector3 location, Vector4 rotation)
+		{
+			this.location = location;
+			this.rotation = rotation;
+			AccelerateForward (1, 2, 20);
+		}
+
 		public Rocket(LocationMessage message) : base(message) {}
 
-		public override void collide (MobileEntity other)
+		public override void Collide (MobileEntity other)
 		{
 			float difX = other.Velocity.X - Velocity.X;
 			float difY = other.Velocity.X - Velocity.X;
@@ -257,12 +332,7 @@ namespace Galaxpeer
 			this.Velocity = other.Velocity;
 			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));
 			other.Health = other.Health - 10;
-			this.destroy ();
-		}
-
-		public override void destroy ()
-		{
-			PsycicManager.Instance.Destoyed.Add (this);
+			this.Destroy ();
 		}
 	}
 
@@ -284,15 +354,18 @@ namespace Galaxpeer
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			Location = new Vector3 ((float) x, (float) y, (float) z);
+			float distance = Position.ROI_RADIUS - 1;
 
-			rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
+			Location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
+			Vector3 myLoc = LocalPlayer.Instance.Location;
+
+			Rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
 			Velocity = new Vector3 (rnd.Next (0, 20), rnd.Next (0, 20), rnd.Next (0, 20));
 		}
 
 		public Asteroid(LocationMessage message) : base(message) {}
 
-		public override void collide (MobileEntity other)
+		public override void Collide (MobileEntity other)
 		{
 			float difX = other.Velocity.X - Velocity.X;
 			float difY = other.Velocity.X - Velocity.X;
@@ -300,14 +373,9 @@ namespace Galaxpeer
 			this.Velocity = other.Velocity;
 			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
 			if (Health < 0) {
-				this.destroy ();
+				this.Destroy ();
 			}
 
-		}
-
-		public override void destroy ()
-		{
-			PsycicManager.Instance.Destoyed.Add (this);
 		}
 
 	}
@@ -316,13 +384,24 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
+		const long FIRE_INTERVAL = TimeSpan.TicksPerSecond;
+
 		public override EntityType Type {
 			get {
 				return EntityType.Player;
 			}
 		}
 
-		public long LastShotFired;
+		public static Guid LocalUuid {
+			get {
+				if (instance != null) {
+					return instance.Uuid;
+				}
+				return Guid.Empty;
+			}
+		}
+
+		public long LastShotFired = 0;
 
 		private static volatile LocalPlayer instance;
 		private static object syncRoot = new Object ();
@@ -338,12 +417,16 @@ namespace Galaxpeer
 			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
 		}
 
-		public override void destroy ()
+		public Rocket Fire ()
 		{
-			PsycicManager.Instance.Destoyed.Add (this);
+			if (DateTime.UtcNow.Ticks - LastShotFired >= FIRE_INTERVAL) {
+				LastShotFired = DateTime.UtcNow.Ticks;
+				return new Rocket (this.Location, this.Rotation);
+			}
+			return null;
 		}
 
-		public override void collide (MobileEntity other)
+		public override void Collide (MobileEntity other)
 		{
 			float difX = other.Velocity.X - Velocity.X;
 			float difY = other.Velocity.X - Velocity.X;
@@ -351,7 +434,7 @@ namespace Galaxpeer
 			this.Velocity = other.Velocity;
 			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
 			if (Health < 0) {
-				this.destroy ();
+				this.Destroy ();
 			}
 		}
 
@@ -362,6 +445,7 @@ namespace Galaxpeer
 					lock (syncRoot) {
 						if (instance == null) {
 							instance = new LocalPlayer ();
+							instance.OwnedBy = instance.Uuid;
 							EntityManager.Entities [instance.Uuid] = instance;
 						}
 					}

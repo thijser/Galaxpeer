@@ -4,18 +4,26 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	public delegate void MessageHandler<T>(Client connection, T message);
+	public delegate void MessageHandler<T>(T message);
 	
 	public abstract class Message
 	{
-		public static sbyte MAX_HOPS = 2;
+		public virtual sbyte max_hops { get { return 2; } }
 
+		public virtual IPEndPoint SourceIp { get; set; }
+		public Client SourceClient;
 		public sbyte Hops;
 		public long Timestamp;
 
+		public long Age {
+			get {
+				return DateTime.UtcNow.Ticks - Timestamp;
+			}
+		}
+
 		public Message()
 		{
-			Hops = MAX_HOPS;
+			Hops = max_hops;
 			Timestamp = DateTime.UtcNow.Ticks;
 		}
 
@@ -63,21 +71,17 @@ namespace Galaxpeer
 		}
 
 		public abstract byte[] Serialize();
-		public abstract void DispatchFrom(IPEndPoint endPoint);
+		public abstract void Dispatch();
 	}
 
 	public abstract class TMessage<T> : Message where T : TMessage<T>
 	{
 		public static event MessageHandler<T> OnReceive;
 
-		public override void DispatchFrom(IPEndPoint endPoint)
+		public override void Dispatch()
 		{
 			if (OnReceive != null) {
-				Client client = Game.ConnectionManager.GetByEndPoint (endPoint);
-				if (client != null) {
-					client.LastActivity = DateTime.UtcNow.Ticks;
-					OnReceive (client, (T)this);
-				}
+				OnReceive ((T)this);
 			}
 		}
 	}

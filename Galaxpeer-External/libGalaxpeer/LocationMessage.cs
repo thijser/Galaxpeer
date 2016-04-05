@@ -5,6 +5,8 @@ namespace Galaxpeer
 {
 	public class LocationMessage : TMessage<LocationMessage>
 	{
+		public override sbyte max_hops { get { return 0; } }
+
 		public byte Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Vector3 Location { get; private set; }

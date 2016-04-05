@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Galaxpeer
 {
@@ -31,6 +32,17 @@ namespace Galaxpeer
 		public static bool IsInRoi(Vector3 myLocation, Vector3 otherLocation)
 		{
 			return GetDistance (myLocation, otherLocation) <= ROI_RADIUS;
+		}
+
+		public static bool IsInAnyRoi(ICollection<Client> clients, Vector3 location)
+		{
+			foreach (var client in clients) {
+				if (IsInRoi (client.Player.Location, location)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

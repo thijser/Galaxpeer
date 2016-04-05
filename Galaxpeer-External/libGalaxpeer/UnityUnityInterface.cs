@@ -8,10 +8,12 @@ namespace Galaxpeer
 	{
 		//Dictionary<Guid,MobileEntity> mapping;
 		List<MobileEntity> ToSpawn;
+		List<MobileEntity> ToDestroy;
 
 		public UnityUnityInterface()
 		{
 			ToSpawn = new List<MobileEntity> ();
+			ToDestroy = new List<MobileEntity> ();
 			//mapping = new Dictionary<Guid,MobileEntity> ();
 
 		}
@@ -23,6 +25,7 @@ namespace Galaxpeer
 		public void Destroy(MobileEntity baseEntity){
 			// TODO: Remove from EntityManager mapping
 			ToSpawn.Remove (baseEntity);
+			ToDestroy.Add (baseEntity);
 		}
 
 		public MobileEntity GetEntity(Guid guid)
@@ -38,6 +41,14 @@ namespace Galaxpeer
 			}
 		}
 
+		public List<MobileEntity> getDestroys() {
+			lock (ToDestroy) {
+				var ret = ToDestroy;
+				ToDestroy = new List<MobileEntity> ();
+				return ret;
+			}
+		}
+
 		public Guid newPlayer(){
 			LocalPlayer.Instance.Spawn ();
 			return LocalPlayer.Instance.Uuid;
@@ -45,7 +56,7 @@ namespace Galaxpeer
 		public void shootplayer(){
 		}
 		public void rotateplayer(Vector3 uprightspin){
-			LocalPlayer.Instance.rotate(uprightspin.X,uprightspin.Y,uprightspin.Z);
+			LocalPlayer.Instance.Rotate(uprightspin.X,uprightspin.Y,uprightspin.Z);
 		}
 		public void accaleratePlayer(double acc){
 			

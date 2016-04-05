@@ -9,7 +9,9 @@ namespace GalaxpeerCLI
 	{
 		public static void Main (string[] args)
 		{
-			ConnectionManager c1 = new UDPConnectionManager ();
+			int port = args.Length >= 2 ? 0 : 36963;
+
+			ConnectionManager c1 = new UDPConnectionManager (port);
 			Game.Init (c1);
 
 			Console.WriteLine ("Listening on port {0}", c1.LocalConnectionMessage.Port);
@@ -30,12 +32,17 @@ namespace GalaxpeerCLI
 			/*UDPConnection conn = new UDPConnection (m);
 			conn.Send (m);*/
 
-			while (true) {
-				Thread.Sleep (5000);
-				PsycicManager.Instance.addEntity(new Asteroid());
-			}
-
+			new Timer (Tick, null, 0, 1000);
 			Thread.Sleep (Timeout.Infinite);
+		}
+
+		private static void Tick(object _)
+		{
+			var rocket = LocalPlayer.Instance.Fire ();
+			if (rocket != null) {
+				PsycicManager.Instance.AddEntity (rocket);
+			}
+			PsycicManager.Instance.Tick ();
 		}
 	}
 }
