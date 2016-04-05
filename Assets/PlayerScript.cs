@@ -31,6 +31,7 @@ public class PlayerScript : MonoBehaviour {
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
 		if (Input.GetKey (KeyCode.UpArrow)) {
 			uprightspin.X=uprightspin.X+1;
+			print ("t");
 		}
 		if (Input.GetKey (KeyCode.DownArrow)) {
 			uprightspin.X=uprightspin.X-1;
