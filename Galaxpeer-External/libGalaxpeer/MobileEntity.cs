@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Galaxpeer
 {
@@ -235,6 +236,7 @@ namespace Galaxpeer
 
 		public void Rotate (double up, double right, double spin)
 		{
+			Debug.Print ("rotating:" + up + "," + right + "," + spin);
 			double ff = Math.Sin (up);
 			double fr = Math.Sin (right);
 			double fs = Math.Sin (spin);

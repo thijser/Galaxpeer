@@ -2,7 +2,7 @@
 using Galaxpeer;
 using System.Collections.Generic;
 using System;
-
+using System.Diagnostics;
 namespace GalaxpeerCLI
 {
 	public class Ai
@@ -33,9 +33,10 @@ namespace GalaxpeerCLI
 			}*/
 			UnityUnityInterface ui = (UnityUnityInterface) UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 			Random rnd = new Random ();
-			rotation.X += rnd.Next (-10, 10) / 100;
-			rotation.Y += rnd.Next (-10, 10) / 100;
-			rotation.Z += rnd.Next (-10, 10) / 100;
+			rotation.X += (float)rnd.Next (-10, 10) / 100.0f;
+			rotation.Y += (float)rnd.Next (-10, 10) / 100.0f;
+			rotation.Z += (float)rnd.Next (-10, 10) / 100.0f;
+			Debug.Print (rotation.ToString());
 			ui.rotateplayer (rotation);
 			ui.shootplayer ();
 			ui.accaleratePlayer (0.01);
