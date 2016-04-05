@@ -207,16 +207,15 @@ namespace Galaxpeer
 
 		public Rocket(Vector3 location, Quaternion rotation)
 		{
-			this.location = location;
-			this.rotation = rotation;
-
 			Vector3 v = rotation.GetForwardVector ();
+		
+			this.location = location + (v * 3);
+			this.rotation = rotation;
 
 			float Vx = (float)(20 * v.X);
 			float Vy = (float)(20 * v.Y);
 			float Vz = (float)(20 * v.Z);
 			Velocity = new Vector3 (Vx, Vy, Vz);
-			//fireUpdate (true);
 		}
 
 		public Rocket(LocationMessage message) : base(message) {}
