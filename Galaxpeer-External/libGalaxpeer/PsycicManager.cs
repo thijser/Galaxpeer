@@ -1,6 +1,7 @@
 using System.Timers;
 using System.Collections.Generic;
 using System;
+using System.Diagnostics;
 namespace Galaxpeer
 {
 	public delegate void TickHandler (long time);
@@ -41,6 +42,7 @@ namespace Galaxpeer
 
 		private Timer timer1;
 		public void setTicks(){
+			Debug.Print("ah");
 			System.Timers.Timer aTimer = new System.Timers.Timer();
 			aTimer.Elapsed+=new ElapsedEventHandler(Tick);
 			aTimer.Interval=100;
@@ -75,6 +77,9 @@ namespace Galaxpeer
 				}
 			}
 			pm.Cleanup ();
+			if (OnTick != null) {
+				OnTick (DateTime.UtcNow.Ticks);
+			}
 		}
 
 		private void Cleanup()
