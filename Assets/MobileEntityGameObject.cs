@@ -24,9 +24,7 @@ public class MobileEntityGameObject : MonoBehaviour {
 	void Update () {
 		var me = Entity;
 		//Transform t=transform;
-		if (me.Type != MobileEntity.EntityType.Player) {
-			Debug.Log (Conversion.ToUnity(me.Location));
-		}
+
 		transform.position = Conversion.ToUnity (me.Location);
 		transform.rotation = Conversion.ToUnity (me.Rotation);
 	}
