@@ -42,7 +42,6 @@ namespace GalaxpeerCLI
 			if (rocket != null) {
 				PsycicManager.Instance.AddEntity (rocket);
 			}
-			PsycicManager.Instance.Tick ();
 		}
 	}
 }

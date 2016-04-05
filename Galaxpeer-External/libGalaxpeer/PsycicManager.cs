@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Timers;
-
+using System.Collections.Generic;
+using System;
 namespace Galaxpeer
 {
 	public delegate void TickHandler (long time);
@@ -26,7 +26,8 @@ namespace Galaxpeer
 					{
 						if (instance == null) 
 							instance = new PsycicManager();
-					}
+ 	  						instance.setTicks();
+ 					}
 				}
 
 				return instance;
@@ -38,52 +39,42 @@ namespace Galaxpeer
 			created.Add (entity);
 		}
 
-<<<<<<< HEAD
 		private Timer timer1;
 		public void setTicks(){
-			timer1 = new Timer();
-			timer1.Tick += new EventHandler(tick);
-			timer1.Interval = 100; // in miliseconds
-			timer1.Start();
-
+			System.Timers.Timer aTimer = new System.Timers.Timer();
+			aTimer.Elapsed+=new ElapsedEventHandler(Tick);
+			aTimer.Interval=100;
+			aTimer.Enabled=true;
 		}
-		public void tick(){
-			
-=======
+
+	
 		public void RemoveEntity(MobileEntity entity)
 		{
 			destroyed.Add (entity);
 		}
 
-		public void Tick()
+		public static void Tick(object source,ElapsedEventArgs e)
 		{
-			long time = DateTime.UtcNow.Ticks;
-
-			while (created.Count != 0) {
-				var entity = created [0];
-				objects.Add (entity);
+			var pm = PsycicManager.Instance;
+			while (pm.created.Count != 0) {
+				var entity = pm.created [0];
+				pm.objects.Add (entity);
 				EntityManager.Entities [entity.Uuid] = entity;
 				UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
-				created.Remove (entity);
+				pm.created.Remove (entity);
 			}
 
->>>>>>> 72bf5dfdc8c400bd7d4e159df1665d136d877c5c
-			foreach (MobileEntity moe in objects) {
+			foreach (MobileEntity moe in pm.objects) {
 				moe.LocationUpdate (0.02);
 				if (moe.OwnedBy == LocalPlayer.Instance.Uuid) {
-					foreach (MobileEntity moe2 in objects) {
+					foreach (MobileEntity moe2 in pm.objects) {
 						if (moe.CheckCollision (moe2)) {
 							moe.Collide (moe2);
 						}
 					}
 				}
 			}
-
-			if (OnTick != null) {
-				OnTick (time);
-			}
-
-			Cleanup ();
+			pm.Cleanup ();
 		}
 
 		private void Cleanup()
