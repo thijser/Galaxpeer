@@ -11,7 +11,11 @@ namespace Galaxpeer
 		List<MobileEntity> objects = new List<MobileEntity>();
 		private static PsycicManager instance;
  		private static object syncRoot = new Object();
+
+		private List<MobileEntity> created = new List<MobileEntity>();
 		private List<MobileEntity> destroyed = new List<MobileEntity>();
+
+
 		public static PsycicManager Instance
 		{
 			get 
@@ -31,8 +35,7 @@ namespace Galaxpeer
 
 		public void AddEntity(MobileEntity entity)
 		{
-			objects.Add (entity);
-			UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
+			created.Add (entity);
 		}
 
 		public void RemoveEntity(MobileEntity entity)
@@ -43,6 +46,13 @@ namespace Galaxpeer
 		public void Tick()
 		{
 			long time = DateTime.UtcNow.Ticks;
+
+			while (created.Count != 0) {
+				var entity = created [0];
+				objects.Add (entity);
+				UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
+				created.Remove (entity);
+			}
 
 			if (OnTick != null) {
 				OnTick (time);

@@ -160,7 +160,6 @@ namespace Galaxpeer
 			velocity = new Vector3 (0, 0, 0);
 			Size = 0;
 			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
-			fireUpdate (true);
 		}
 
 		public MobileEntity(LocationMessage message)

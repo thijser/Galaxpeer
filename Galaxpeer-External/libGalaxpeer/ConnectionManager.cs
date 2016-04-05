@@ -14,14 +14,45 @@ namespace Galaxpeer
 		public readonly Client[] ClosestClients = new Client[8];
 		public Dictionary<Guid, Client> ClientsInRoi = new Dictionary<Guid, Client> ();
 
+		private readonly List<Client> staleClients = new List<Client>();
+
+		private readonly List<ConnectionMessage> newConnections = new List<ConnectionMessage>();
+		private readonly List<ConnectionMessage> staleConnections = new List<ConnectionMessage> ();
+
 		public ConnectionManager()
 		{
 			ConnectionMessage.OnReceive += this.OnReceiveConnection;
 			LocationMessage.OnReceive += this.OnReceiveLocation;
 			RequestConnectionsMessage.OnReceive += this.OnConnectionsRequest;
+			PsycicManager.OnTick += this.OnTick;
 		}
 
 		public abstract Connection Connect (ConnectionMessage message);
+
+		public void Disconnect(Client client)
+		{
+			staleClients.Add (client);
+		}
+
+		// TODO: remove client from endPoints
+		private void disconnectStaleClients()
+		{
+			while (staleClients.Count > 0) {
+				var client = staleClients [0];
+				Console.WriteLine ("Dropping client {0}", client.Uuid);
+				client.Connection.Close ();
+				ConnectionCache.Remove (client.Uuid);
+				ClientsInRoi.Remove (client.Uuid);
+
+				for (int i = 0; i < ClosestClients.Length; i++) {
+					if (ClosestClients[i] == client) {
+						ClosestClients [i] = null;
+						FindClosestClient (i);
+					}
+				}
+				staleClients.Remove (client);
+			}
+		}
 
 		public void AddByEndPoint(IPEndPoint endPoint, ConnectionMessage connection)
 		{
@@ -61,20 +92,6 @@ namespace Galaxpeer
 			}
 		}
 
-		public void cleanClientsInRoi()
-		{
-			List<Guid> toRemove = new List<Guid> ();
-			foreach (var item in ClientsInRoi) {
-				if (!item.Value.IsAlive) {
-					toRemove.Add (item.Key);
-				}
-			}
-
-			foreach (var item in toRemove) {
-				ClientsInRoi.Remove (item);
-			}
-		}
-
 		public void UpdateRoiConnection(Client client, Vector3 location)
 		{
 			if (Position.IsInRoi (LocalPlayer.Instance.Location, location)) {
@@ -89,6 +106,32 @@ namespace Galaxpeer
 			}
 		}
 
+		public void FindClosestClient(int octant)
+		{
+			double max_distance = double.MaxValue;
+			foreach (var message in ConnectionCache.Values) {
+				int messageOctant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
+				if (messageOctant == octant) {
+					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
+					if (distance <= max_distance) {
+						Console.WriteLine ("Found new client {0}", message.Uuid);
+						ClosestClients [octant] = new Client (message); // TODO: prevent creating duplicate clients
+						max_distance = distance;
+					}
+				}
+			}
+		}
+
+		void OnTick(long time)
+		{
+			while (newConnections.Count > 0) {
+				var message = newConnections [0];
+				ConnectionCache [message.Uuid] = message;
+				newConnections.Remove (message);
+			}
+			disconnectStaleClients ();
+		}
+
 		/* Handle a received connection message.
 		 * 
 		 * Add to connection list
@@ -99,7 +142,8 @@ namespace Galaxpeer
 			if (message.Uuid != LocalConnectionMessage.Uuid) {
 				long age = DateTime.UtcNow.Ticks - message.Timestamp;
 				if (age <= ConnectionMessage.MAX_AGE) {
-					ConnectionCache [message.Uuid] = message;
+					//ConnectionCache [message.Uuid] = message;
+					newConnections.Add(message);
 
 					int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
 					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);

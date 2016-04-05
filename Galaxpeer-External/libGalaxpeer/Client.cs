@@ -1,20 +1,15 @@
 ﻿using System;
+using System.Threading;
 
 namespace Galaxpeer
 {
 	public class Client
 	{
-		public const long MAX_AGE = 1 * TimeSpan.TicksPerMinute;
-		
-		public long LastActivity;
+		public const long MAX_AGE = 10000; // ms
+
 		public ConnectionMessage ConnectionMessage;
 
-		public bool IsAlive
-		{
-			get {
-				return DateTime.UtcNow.Ticks - LastActivity <= MAX_AGE;
-			}
-		}
+		private Timer timer;
 
 		public Guid Uuid
 		{
@@ -44,6 +39,17 @@ namespace Galaxpeer
 		public Client(ConnectionMessage connectionMessage)
 		{
 			ConnectionMessage = connectionMessage;
+			timer = new Timer (onTimeout, null, MAX_AGE, Timeout.Infinite);
+		}
+
+		public void Tick ()
+		{
+			timer.Change (MAX_AGE, 0);
+		}
+
+		private void onTimeout(object _)
+		{
+			Game.ConnectionManager.Disconnect (this);
 		}
 	}
 }

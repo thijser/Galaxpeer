@@ -15,6 +15,12 @@ namespace Galaxpeer
 		public sbyte Hops;
 		public long Timestamp;
 
+		public long Age {
+			get {
+				return DateTime.UtcNow.Ticks - Timestamp;
+			}
+		}
+
 		public Message()
 		{
 			Hops = max_hops;

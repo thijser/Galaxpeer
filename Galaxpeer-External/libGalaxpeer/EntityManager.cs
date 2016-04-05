@@ -5,7 +5,6 @@ namespace Galaxpeer
 {
 	public class EntityManager
 	{
-
 		public static Dictionary<Guid, MobileEntity> Entities = new Dictionary<Guid, MobileEntity>();
 		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerSecond * 5;
 		private static long nextAsteroid = DateTime.UtcNow.Ticks + ASTEROID_INTERVAL;
@@ -22,7 +21,6 @@ namespace Galaxpeer
 		static void OnDestroyEntity (MobileEntity entity, bool owned)
 		{
 			if (owned) {
-				Game.ConnectionManager.cleanClientsInRoi ();
 				var msg = new DestroyMessage (entity);
 				foreach (var client in Game.ConnectionManager.ClientsInRoi.Values) {
 					client.Connection.Send (msg);
@@ -33,7 +31,6 @@ namespace Galaxpeer
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
 		{
 			if (owned) {
-				Game.ConnectionManager.cleanClientsInRoi ();
 				var msg = new LocationMessage (entity);
 				foreach (var item in Game.ConnectionManager.ClientsInRoi) {
 					bool inRoi = Position.IsInRoi (item.Value.Player.Location, entity.Location);
