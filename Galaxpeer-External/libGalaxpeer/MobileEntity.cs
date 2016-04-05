@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace Galaxpeer
-{
+{/*
 	[StructLayout (LayoutKind.Sequential)]
 	public class Vector3
 	{
@@ -35,14 +34,14 @@ namespace Galaxpeer
 	}
 
 	[StructLayout (LayoutKind.Sequential)]
-	public class Vector4
+	public class Quaternion
 	{
 		public float X;
 		public float Y;
 		public float Z;
 		public float W;
 
-		public Vector4 (float x, float y, float z, float w)
+		public Quaternion (float x, float y, float z, float w)
 		{
 			X = x;
 			Y = y;
@@ -57,9 +56,9 @@ namespace Galaxpeer
 			return res;
 		}*/
 
-		public static Vector4 operator * (Vector4 q, Vector4 r)
+		/*public static Quaternion operator * (Quaternion q, Quaternion r)
 		{
-			return new Vector4 (r.X * q.X - r.Y * q.Y - r.Z * q.Z - r.W * q.W,
+			return new Quaternion (r.X * q.X - r.Y * q.Y - r.Z * q.Z - r.W * q.W,
 				r.X * q.Y + r.Y * q.X - r.Z * q.W + r.W * q.Z,
 				r.X * q.Z + r.Y * q.W + r.Z * q.X - r.W * q.Y,
 				r.X * q.W - r.Y * q.Z + r.Z * q.Y + r.W * q.X);
@@ -94,7 +93,7 @@ namespace Galaxpeer
 				2 * (Y * X - W * X),
 				1 - 2 * (X * X + Y * Y));
 		}
-	}
+	}*/
 
 	public delegate void EntityUpdateHandler(MobileEntity entity, bool owned);
 
@@ -106,7 +105,7 @@ namespace Galaxpeer
 		public enum EntityType : byte { Player = 1, Rocket = 2, Asteroid = 3 };
 
 		protected Vector3 location;
-		protected Vector4 rotation;
+		protected Quaternion rotation;
 		protected Vector3 velocity;
 
 		bool? isMine = null;
@@ -131,7 +130,7 @@ namespace Galaxpeer
 			}
 		}
 
-		public Vector4 Rotation
+		public Quaternion Rotation
 		{
 			get {
 				return rotation;
@@ -164,9 +163,9 @@ namespace Galaxpeer
 			Uuid = Guid.NewGuid ();
 			OwnedBy = LocalPlayer.LocalUuid;
 			location = new Vector3 (0, 0, 0);
-			rotation = new Vector4 (0, 0, 0, 1);
+			rotation = new Quaternion (0, 0, 0, 1);
 			velocity = new Vector3 (0, 0, 0);
-			Size = 0;
+			Size = 1;
 			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
 		}
 
@@ -175,7 +174,7 @@ namespace Galaxpeer
 			Uuid = message.Uuid;
 			OwnedBy = message.SourceClient.Uuid;
 			copyMessageData (message);
-			Size = 0;
+			Size = 1;
 			Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
 			fireUpdate (false);
 		}
@@ -207,7 +206,7 @@ namespace Galaxpeer
 
 		public abstract void Collide (MobileEntity other);
 
-		public void Destroy ()
+		public virtual void Destroy ()
 		{
 			PsycicManager.Instance.RemoveEntity (this);
 
@@ -244,8 +243,7 @@ namespace Galaxpeer
 
 		public void Rotate (double up, double right, double spin)
 		{
-			Debug.Print ("rotating:" + up + "," + right + "," + spin);
-			double ff = Math.Sin (up);
+			/*double ff = Math.Sin (up);
 			double fr = Math.Sin (right);
 			double fs = Math.Sin (spin);
 			Vector3 rightVec = Rotation.GetRightVector (); 
@@ -274,11 +272,19 @@ namespace Galaxpeer
 			w = Math.Cos (spin / 2.0);
 			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
 			r.normalize ();
-			Console.WriteLine ("{0} {1} {2} {3}", r.X, r.Y, r.Z, r.W);
 			rotation = Rotation * r;
 			rotation.normalize ();
-			Console.WriteLine ("{0} {1} {2} {3}", rotation.X, rotation.Y, rotation.Z, rotation.W);
-			fireUpdate (true);
+			fireUpdate (true);*/
+
+			Quaternion r = Quaternion.CreateFromYawPitchRoll ((float) right, (float) up, (float) spin);
+
+			//Quaternion QuatAroundX = new Quaternion (1F, 0F, 0F, (float) up);
+			//Quaternion QuatAroundY = new Quaternion (0F, 1F, 0F, (float) right);
+			//Quaternion QuatAroundZ = new Quaternion (0F, 0F, 1F, (float) spin);
+			//Quaternion r = QuatAroundX * QuatAroundY * QuatAroundZ;
+			//rotation *= r;
+			Rotation *= r;
+
 		}
 
 		public bool CheckCollision (MobileEntity other)
@@ -328,9 +334,9 @@ namespace Galaxpeer
 			}
 		}
 
-		const float VELOCITY = 20;
+		const float VELOCITY = 50;
 
-		public Rocket(Vector3 location, Vector4 rotation)
+		public Rocket(Vector3 location, Quaternion rotation)
 		{
 			this.location = location;
 			this.rotation = rotation;
@@ -365,24 +371,27 @@ namespace Galaxpeer
 				return EntityType.Asteroid;
 			}
 		}
-
+		
+		static Random rnd = new Random ();
 		public Asteroid()
 		{
-			Random rnd = new Random ();
-			double s = rnd.NextDouble () % 2 * Math.PI;
-			double t = rnd.NextDouble () % 2 * Math.PI;
+			double s = rnd.NextDouble () % (2 * Math.PI);
+			double t = rnd.NextDouble () % (2 * Math.PI);
 
 			double x = Math.Cos (s) * Math.Cos (t);
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			float distance = Position.ROI_RADIUS - 1;
+			float distance = 10; //Position.ROI_RADIUS - 1;
+			if (rnd.NextDouble () > .5) {
+				distance *= -1;
+			}
 
 			Location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
 			Vector3 myLoc = LocalPlayer.Instance.Location;
 
 			Rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
-			Velocity = new Vector3 (rnd.Next (0, 20), rnd.Next (0, 20), rnd.Next (0, 20));
+			Velocity = new Vector3 ((float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f);
 		}
 
 		public Asteroid(LocationMessage message) : base(message) {}
@@ -437,6 +446,11 @@ namespace Galaxpeer
 		{
 			Random rnd = new Random();
 			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
+		}
+
+		public override void Destroy ()
+		{
+			Spawn ();
 		}
 
 		public Rocket Fire ()

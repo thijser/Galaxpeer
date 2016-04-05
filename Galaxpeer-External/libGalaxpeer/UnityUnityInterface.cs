@@ -62,7 +62,7 @@ namespace Galaxpeer
 		}
 
 		public void accaleratePlayer(double acc){
-			LocalPlayer.Instance.AccelerateForward (1,acc,10);
+			LocalPlayer.Instance.AccelerateForward (1, acc, 20);
 		}
 
 	}

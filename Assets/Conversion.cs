@@ -9,9 +9,9 @@ public static class Conversion
 		return new UnityEngine.Vector3 (g.X, g.Y, g.Z);
 	}
 
-	public static Quaternion ToUnity (Galaxpeer.Vector4 g)
+	public static UnityEngine.Quaternion ToUnity (Galaxpeer.Quaternion g)
 	{
-		return new Quaternion (g.X, g.Y, g.Z, g.W);
+		return new UnityEngine.Quaternion (g.X, g.Y, g.Z, g.W);
 	}
 }
 
