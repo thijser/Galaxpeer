@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
@@ -7,12 +8,13 @@ namespace Galaxpeer
 	{
 		public override sbyte max_hops { get { return 0; } }
 
-		public byte Type { get; private set; }
+		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Vector3 Location { get; private set; }
 		public Vector4 Rotation { get; private set; }
 		public Vector3 Velocity { get; private set; }
 
+		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
 			public char Id;
@@ -27,7 +29,7 @@ namespace Galaxpeer
 
 		public LocationMessage(MobileEntity mob)
 		{
-			Type = (byte)mob.Type;
+			Type = mob.Type;
 			Uuid = mob.Uuid;
 			Location = mob.Location;
 			Rotation = mob.Rotation;
@@ -39,7 +41,7 @@ namespace Galaxpeer
 			Packet packet = FromBytes<Packet> (bytes);
 			Timestamp = packet.Timestamp;
 			Hops = packet.Hops;
-			Type = packet.Type;
+			Type = (MobileEntity.EntityType) packet.Type;
 			Uuid = packet.Uuid;
 			Location = packet.Location;
 			Rotation = packet.Rotation;
@@ -52,7 +54,7 @@ namespace Galaxpeer
 			packet.Id = 'L';
 			packet.Hops = Hops;
 			packet.Timestamp = Timestamp;
-			packet.Type = Type;
+			packet.Type = (byte) Type;
 			packet.Uuid = Uuid;
 			packet.Location = Location;
 			packet.Rotation = Rotation;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
@@ -28,6 +29,7 @@ namespace Galaxpeer
 		public int Port;
 		public Vector3 Location;
 
+		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
 			public char Id;

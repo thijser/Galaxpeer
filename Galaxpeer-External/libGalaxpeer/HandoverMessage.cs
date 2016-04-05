@@ -7,6 +7,7 @@ namespace Galaxpeer
 		Guid ObjectUuid;
 		Guid OwnerUuid;
 
+		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
 			public char Id;

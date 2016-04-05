@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
@@ -8,6 +9,7 @@ namespace Galaxpeer
 
 		public Vector3 Location { get; private set; }
 
+		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
 			public char Id;

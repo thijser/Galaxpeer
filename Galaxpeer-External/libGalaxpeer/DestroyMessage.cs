@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
@@ -6,6 +7,7 @@ namespace Galaxpeer
 	{
 		public Guid Uuid;
 
+		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
 			public char Id;

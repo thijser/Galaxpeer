@@ -94,7 +94,7 @@ namespace Galaxpeer
 		public static event EntityUpdateHandler OnLocationUpdate;
 		public static event EntityUpdateHandler OnDestroy;
 
-		public enum EntityType : byte { Player, Rocket, Asteroid };
+		public enum EntityType : byte { Player = 1, Rocket = 2, Asteroid = 3 };
 
 		protected Vector3 location;
 		protected Vector4 rotation;
@@ -319,7 +319,7 @@ namespace Galaxpeer
 		{
 			this.location = location;
 			this.rotation = rotation;
-			AccelerateForward (1, 2, 20);
+			AccelerateForward (1, 10, 20);
 		}
 
 		public Rocket(LocationMessage message) : base(message) {}
