@@ -18,14 +18,14 @@ public class PlayerScript : MonoBehaviour {
 	public void Update(){
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 
-		if (Input.GetKeyDown ("space")) {
+		if (Input.GetKeyDown(KeyCode.Space)) {
 			UUI.shootplayer();
 		}
 		if (Input.GetKeyDown (KeyCode.W)) {
 			UUI.accaleratePlayer(0.01);
 		} else {
 			if(Input.GetKeyDown(KeyCode.S)){
-				UUI.accaleratePlayer(0.01);
+				UUI.accaleratePlayer(-0.01);
 			}
 		}
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
@@ -41,7 +41,6 @@ public class PlayerScript : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
 			uprightspin.Y=uprightspin.Y-1;
 		}
-
+		UUI.rotateplayer (uprightspin);
 	}
-
 }

@@ -23,7 +23,6 @@ public class MobileEntityGameObject : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		var me = Entity;
-
 		if (me != null) {
 			transform.position = Conversion.ToUnity (me.Location);
 			transform.rotation = Conversion.ToUnity (me.Rotation);
