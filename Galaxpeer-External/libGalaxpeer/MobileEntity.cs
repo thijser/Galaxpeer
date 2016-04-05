@@ -319,7 +319,7 @@ namespace Galaxpeer
 		{
 			this.location = location;
 			this.rotation = rotation;
-			this.velocity = 20;
+
 			fireUpdate (true);
 		}
 

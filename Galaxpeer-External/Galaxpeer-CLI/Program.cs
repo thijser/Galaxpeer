@@ -38,6 +38,10 @@ namespace GalaxpeerCLI
 
 		private static void Tick(object _)
 		{
+			var rocket = LocalPlayer.Instance.Fire ();
+			if (rocket != null) {
+				PsycicManager.Instance.AddEntity (rocket);
+			}
 			PsycicManager.Instance.Tick ();
 		}
 	}
