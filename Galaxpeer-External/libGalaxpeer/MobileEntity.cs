@@ -96,9 +96,9 @@ namespace Galaxpeer
 
 		public enum EntityType : byte { Player, Rocket, Asteroid };
 
-		private Vector3 location;
-		private Vector4 rotation;
-		private Vector3 velocity;
+		protected Vector3 location;
+		protected Vector4 rotation;
+		protected Vector3 velocity;
 
 		bool? isMine = null;
 		bool IsMine
@@ -189,7 +189,7 @@ namespace Galaxpeer
 			}
 		}
 			
-		private void fireUpdate(bool owned)
+		protected void fireUpdate(bool owned)
 		{
 			LastUpdate = DateTime.UtcNow.Ticks;
 			if (OnLocationUpdate != null) {
@@ -314,7 +314,15 @@ namespace Galaxpeer
 				return EntityType.Rocket;
 			}
 		}
-			
+
+		public Rocket(Vector3 location, Vector4 rotation)
+		{
+			this.location = location;
+			this.rotation = rotation;
+			this.velocity = 20;
+			fireUpdate (true);
+		}
+
 		public Rocket(LocationMessage message) : base(message) {}
 
 		public override void Collide (MobileEntity other)
@@ -377,6 +385,8 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
+		const long FIRE_INTERVAL = TimeSpan.TicksPerSecond;
+
 		public override EntityType Type {
 			get {
 				return EntityType.Player;
@@ -392,7 +402,7 @@ namespace Galaxpeer
 			}
 		}
 
-		public long LastShotFired;
+		public long LastShotFired = 0;
 
 		private static volatile LocalPlayer instance;
 		private static object syncRoot = new Object ();
@@ -406,6 +416,15 @@ namespace Galaxpeer
 		{
 			Random rnd = new Random();
 			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
+		}
+
+		public Rocket Fire ()
+		{
+			if (DateTime.UtcNow.Ticks - LastShotFired >= FIRE_INTERVAL) {
+				LastShotFired = DateTime.UtcNow.Ticks;
+				return new Rocket (this.Location, this.Rotation);
+			}
+			return null;
 		}
 
 		public override void Collide (MobileEntity other)
