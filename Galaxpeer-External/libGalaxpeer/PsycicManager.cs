@@ -45,7 +45,9 @@ namespace Galaxpeer
 
 		public void AddEntity(MobileEntity entity)
 		{
-			created.Add (entity);
+			if (entity != null) {
+				created.Add (entity);
+			}
 		}
 	
 		public void RemoveEntity(MobileEntity entity)

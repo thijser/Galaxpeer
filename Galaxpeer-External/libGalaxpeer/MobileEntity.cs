@@ -106,7 +106,6 @@ namespace Galaxpeer
 			get {
 				if (isMine == null) {
 					isMine = OwnedBy.Equals (LocalPlayer.LocalUuid); 
-					Console.WriteLine ("{0} is{1} mine", Uuid, (bool) isMine ? "" : " not");
 				}
 				return (bool) isMine;
 			}
@@ -317,11 +316,20 @@ namespace Galaxpeer
 			}
 		}
 
+		const float VELOCITY = 20;
+
 		public Rocket(Vector3 location, Vector4 rotation)
 		{
 			this.location = location;
 			this.rotation = rotation;
-			AccelerateForward (1, 10, 20);
+
+			Vector3 v = rotation.GetForwardVector ();
+
+			float Vx = (float)(20 * v.X);
+			float Vy = (float)(20 * v.Y);
+			float Vz = (float)(20 * v.Z);
+			Velocity = new Vector3 (Vx, Vy, Vz);
+			//fireUpdate (true);
 		}
 
 		public Rocket(LocationMessage message) : base(message) {}
@@ -448,7 +456,8 @@ namespace Galaxpeer
 						if (instance == null) {
 							instance = new LocalPlayer ();
 							instance.OwnedBy = instance.Uuid;
-							EntityManager.Entities [instance.Uuid] = instance;
+							PsycicManager.Instance.AddEntity (instance);
+							//EntityManager.Entities [instance.Uuid] = instance;
 						}
 					}
 				}
