@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Galaxpeer
 {
@@ -38,18 +39,31 @@ namespace Galaxpeer
 
 		public Client(ConnectionMessage connectionMessage)
 		{
+			Console.WriteLine ("New Client {0}", connectionMessage.Uuid);
 			ConnectionMessage = connectionMessage;
 			timer = new Timer (onTimeout, null, MAX_AGE, Timeout.Infinite);
 		}
 
 		public void Tick ()
 		{
-			timer.Change (MAX_AGE, 0);
+			timer.Change (MAX_AGE, Timeout.Infinite);
 		}
 
 		private void onTimeout(object _)
 		{
 			Game.ConnectionManager.Disconnect (this);
+		}
+
+		private static Dictionary<Guid, Client> clients = new Dictionary<Guid, Client>();
+		public static Client Create(ConnectionMessage message)
+		{
+			if (clients.ContainsKey (message.Uuid)) {
+				return clients [message.Uuid];
+			} else {
+				var client = new Client (message);
+				clients [message.Uuid] = client;
+				return client;
+			}
 		}
 	}
 }

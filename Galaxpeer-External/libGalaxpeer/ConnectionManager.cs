@@ -56,7 +56,7 @@ namespace Galaxpeer
 
 		public void AddByEndPoint(IPEndPoint endPoint, ConnectionMessage connection)
 		{
-			endPoints [endPoint] = new Client (connection);
+			endPoints [endPoint] = Client.Create (connection);
 		}
 
 		public Client GetByEndPoint(IPEndPoint endPoint)
@@ -115,7 +115,7 @@ namespace Galaxpeer
 					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
 					if (distance <= max_distance) {
 						Console.WriteLine ("Found new client {0}", message.Uuid);
-						ClosestClients [octant] = new Client (message); // TODO: prevent creating duplicate clients
+						ClosestClients [octant] = Client.Create (message);
 						max_distance = distance;
 					}
 				}
@@ -151,12 +151,12 @@ namespace Galaxpeer
 
 					if (closest == null) {
 						Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
-						ClosestClients [octant] = new Client (message);
+						ClosestClients [octant] = Client.Create (message);
 						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					} else if (distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 5)) {
 						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2} ({3})", closest.ConnectionMessage.Uuid, octant, message.Uuid, message.SourceClient.Player.Uuid);
 						closest.Connection.Close ();
-						ClosestClients [octant] = new Client (message);
+						ClosestClients [octant] = Client.Create (message);
 						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 					}
 
