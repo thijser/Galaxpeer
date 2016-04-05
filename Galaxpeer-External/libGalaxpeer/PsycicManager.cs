@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System;
+using System.Timers;
 
 namespace Galaxpeer
 {
@@ -30,6 +30,14 @@ namespace Galaxpeer
 			UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
 		}
 
+		private Timer timer1;
+		public void setTicks(){
+			timer1 = new Timer();
+			timer1.Tick += new EventHandler(tick);
+			timer1.Interval = 100; // in miliseconds
+			timer1.Start();
+
+		}
 		public void tick(){
 			
 			foreach (MobileEntity moe in objects) {

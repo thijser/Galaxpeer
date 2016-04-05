@@ -10,10 +10,6 @@ public class MobileEntityGameObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-
-
-
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 		MobileEntity me = UUI.GetEntity (Uuid);
 		Transform t=transform;
