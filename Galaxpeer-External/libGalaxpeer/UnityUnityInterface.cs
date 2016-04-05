@@ -54,12 +54,15 @@ namespace Galaxpeer
 			return LocalPlayer.Instance.Uuid;
 		}
 		public void shootplayer(){
+			PsycicManager.Instance.AddEntity(LocalPlayer.Instance.Fire());
 		}
+
 		public void rotateplayer(Vector3 uprightspin){
 			LocalPlayer.Instance.Rotate(uprightspin.X,uprightspin.Y,uprightspin.Z);
 		}
+
 		public void accaleratePlayer(double acc){
-			
+			LocalPlayer.Instance.AccelerateForward (1,acc,10);
 		}
 
 	}
