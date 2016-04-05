@@ -11,7 +11,7 @@ namespace Galaxpeer
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Vector3 Location { get; private set; }
-		public Vector4 Rotation { get; private set; }
+		public Quaternion Rotation { get; private set; }
 		public Vector3 Velocity { get; private set; }
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
@@ -23,7 +23,7 @@ namespace Galaxpeer
 			public long Timestamp;
 			public Guid Uuid;
 			public Vector3 Location;
-			public Vector4 Rotation;
+			public Quaternion Rotation;
 			public Vector3 Velocity;
 		}
 

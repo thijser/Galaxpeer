@@ -10,10 +10,9 @@ public class PlayerScript : MonoBehaviour {
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
 		var v = GetComponent<MobileEntityGameObject> ();
 		v.Uuid = UUI.newPlayer();
-
-
 	}
 
+	System.Random rnd = new System.Random();
 	long lastTick=0;
 	public void Update(){
 		UnityUnityInterface UUI = (UnityUnityInterface)UnityInterfaceInterfaceManager.InstanceUnintyInterface;
@@ -30,17 +29,16 @@ public class PlayerScript : MonoBehaviour {
 		}
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
 		if (Input.GetKey (KeyCode.UpArrow)) {
-			uprightspin.X=uprightspin.X+1;
-			print ("t");
+			uprightspin.X=uprightspin.X+.1f;
 		}
 		if (Input.GetKey (KeyCode.DownArrow)) {
-			uprightspin.X=uprightspin.X-1;
+			uprightspin.X=uprightspin.X-.1f;
 		}
 		if (Input.GetKey (KeyCode.LeftArrow)) {
-			uprightspin.Y=uprightspin.Y+1;
+			uprightspin.Y=uprightspin.Y+.1f;
 		}
 		if (Input.GetKey (KeyCode.RightArrow)) {
-			uprightspin.Y=uprightspin.Y-1;
+			uprightspin.Y=uprightspin.Y-.1f;
 		}
 		UUI.rotateplayer (uprightspin);
 	}

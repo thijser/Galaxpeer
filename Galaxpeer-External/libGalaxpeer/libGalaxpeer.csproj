@@ -53,6 +53,7 @@
     <Compile Include="RequestConnectionsMessage.cs" />
     <Compile Include="DestroyMessage.cs" />
     <Compile Include="HandoverMessage.cs" />
+    <Compile Include="Quaternion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

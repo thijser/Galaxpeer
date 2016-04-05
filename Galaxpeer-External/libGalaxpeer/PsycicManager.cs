@@ -69,7 +69,7 @@ namespace Galaxpeer
 			}
 
 			foreach (MobileEntity moe in pm.objects) {
-				moe.LocationUpdate (0.02);
+				moe.LocationUpdate (0.1);
 				if (moe.OwnedBy == LocalPlayer.Instance.Uuid) {
 					foreach (MobileEntity moe2 in pm.objects) {
 						if (moe.CheckCollision (moe2)) {
