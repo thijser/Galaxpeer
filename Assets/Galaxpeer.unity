@@ -163,6 +163,8 @@ MonoBehaviour:
   baseOtherPlayer: {fileID: 195560, guid: e611d1b5400054812a4f9d3b00a519f7, type: 2}
   baseAsteroid: {fileID: 142746, guid: 57d94ca96a77b4a23bbf3ec50fca500f, type: 2}
   baseRocket: {fileID: 130222, guid: b9deccabad6c24487b0822348430577a, type: 2}
+  targetIP: 127.0.0.1
+  targetPort: 36963
 --- !u!4 &1038540339
 Transform:
   m_ObjectHideFlags: 0
@@ -170,10 +172,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1038540337}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: .579999983, y: .310000002, z: -12.90938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 680619778}
   m_RootOrder: 1
 --- !u!1 &1185741062
 GameObject:
@@ -230,11 +232,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1185741062}
   m_LocalRotation: {x: .408217937, y: -.234569728, z: .109381676, w: .875426054}
-  m_LocalPosition: {x: .519999981, y: 2.11999989, z: -.910000026}
+  m_LocalPosition: {x: .280000001, y: 2.51999998, z: -.49000001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1 &1448527526 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 160604, guid: 3956375d3934e4bd6b620d12ebb7dac3, type: 2}
@@ -359,8 +361,8 @@ Transform:
   m_PrefabParentObject: {fileID: 484324, guid: ee9a2b24e541e4ce199c7c065ab370c7, type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2089700872}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .579999983, y: .310000002, z: -12.90938}
+  m_LocalRotation: {x: 0, y: .996917367, z: 0, w: -.0784593001}
+  m_LocalPosition: {x: .579999983, y: .310000002, z: 1.83899999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 680619778}
