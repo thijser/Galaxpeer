@@ -13,7 +13,6 @@ public class GalaxpeerDocker : MonoBehaviour {
 
 	void Start () {
 		Game.Init (new UDPConnectionManager (36963));
-		InvokeRepeating("Tick", 0, 0.02F);
 	}
 
 	
