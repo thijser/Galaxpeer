@@ -2,6 +2,7 @@
 using Galaxpeer;
 using System;
 using System.Collections;
+using System.Net;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -9,11 +10,18 @@ public class GalaxpeerDocker : MonoBehaviour {
 	public GameObject baseOtherPlayer;
 	public GameObject baseAsteroid;
 	public GameObject baseRocket;
-
+	public string targetIP;
+	public string targetPort;
 	Dictionary<Guid, GameObject> gameObjects = new Dictionary<Guid, GameObject> ();
 
 	void Start () {
-		Game.Init (new UDPConnectionManager (36963));
+		var UDPC = new UDPConnectionManager ();
+			Game.Init (UDPC);
+			print(UDPC.portstore);
+
+		if (targetIP != null) {
+			Game.ConnectionManager.Connect(new ConnectionMessage(LocalPlayer.Instance.Uuid,IPAddress.Parse(targetIP),int.Parse(targetPort),LocalPlayer.Instance.Location));
+		}
 	}
 	
 	// Update is called once per frame

@@ -39,7 +39,7 @@ namespace GalaxpeerCLI
 			Debug.Print (rotation.ToString());
 			ui.rotateplayer (rotation);
 			ui.shootplayer ();
-			ui.accaleratePlayer (0.01);
+			ui.accaleratePlayer (1);
 		}
 	}
 }
