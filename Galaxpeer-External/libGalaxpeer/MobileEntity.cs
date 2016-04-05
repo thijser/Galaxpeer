@@ -456,7 +456,8 @@ namespace Galaxpeer
 						if (instance == null) {
 							instance = new LocalPlayer ();
 							instance.OwnedBy = instance.Uuid;
-							EntityManager.Entities [instance.Uuid] = instance;
+							PsycicManager.Instance.AddEntity (instance);
+							//EntityManager.Entities [instance.Uuid] = instance;
 						}
 					}
 				}

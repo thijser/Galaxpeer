@@ -7,6 +7,8 @@ namespace GalaxpeerCLI
 {
 	class MainClass
 	{
+		static Ai ai;
+
 		public static void Main (string[] args)
 		{
 			int port = args.Length >= 2 ? 0 : 36963;
@@ -32,7 +34,7 @@ namespace GalaxpeerCLI
 			/*UDPConnection conn = new UDPConnection (m);
 			conn.Send (m);*/
 
-			new Ai ();
+			ai = new Ai ();
 			//new Timer (Tick, null, 0, 1000);
 			Thread.Sleep (Timeout.Infinite);
 		}

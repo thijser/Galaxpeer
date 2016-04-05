@@ -36,6 +36,7 @@ namespace GalaxpeerCLI
 			rotation.X += rnd.Next (-10, 10) / 100;
 			rotation.Y += rnd.Next (-10, 10) / 100;
 			rotation.Z += rnd.Next (-10, 10) / 100;
+			ui.rotateplayer (rotation);
 			ui.shootplayer ();
 			ui.accaleratePlayer (0.01);
 		}

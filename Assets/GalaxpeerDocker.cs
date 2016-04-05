@@ -13,7 +13,7 @@ public class GalaxpeerDocker : MonoBehaviour {
 	Dictionary<Guid, GameObject> gameObjects = new Dictionary<Guid, GameObject> ();
 
 	void Start () {
-		Game.Init (new UDPConnectionManager ());
+		Game.Init (new UDPConnectionManager (36963));
 	}
 	
 	// Update is called once per frame

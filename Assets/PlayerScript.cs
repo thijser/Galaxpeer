@@ -22,10 +22,10 @@ public class PlayerScript : MonoBehaviour {
 			UUI.shootplayer();
 		}
 		if (Input.GetKey (KeyCode.W)) {
-			UUI.accaleratePlayer(0.01);
+			UUI.accaleratePlayer(1);
 		} else {
 			if(Input.GetKey(KeyCode.S)){
-				UUI.accaleratePlayer(-0.01);
+				UUI.accaleratePlayer(-1);
 			}
 		}
 		Galaxpeer.Vector3 uprightspin = new Galaxpeer.Vector3 (0, 0, 0);
