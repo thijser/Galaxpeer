@@ -33,9 +33,12 @@ namespace Galaxpeer
 			if (owned) {
 				var msg = new LocationMessage (entity);
 				foreach (var item in Game.ConnectionManager.ClientsInRoi) {
-					bool inRoi = Position.IsInRoi (item.Value.Player.Location, entity.Location);
-					if (inRoi) {
-						item.Value.Connection.Send (msg);
+					Player player = item.Value.Player;
+					if (player != null) {
+						bool inRoi = Position.IsInRoi (player.Location, entity.Location);
+						if (inRoi) {
+							item.Value.Connection.Send (msg);
+						}
 					}
 				}
 			}

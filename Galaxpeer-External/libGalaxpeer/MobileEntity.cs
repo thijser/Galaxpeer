@@ -148,9 +148,10 @@ namespace Galaxpeer
 			//float Vy = Velocity.Y + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Y));
 			//float Vz = Velocity.Z + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Z));
 			//velocity = new Vector3 (Vx, Vy, Vz);
-			if ((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) <= maxspeed * maxspeed) {
-				Velocity = v;
+			if ((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) >= maxspeed * maxspeed) {
+				v *= 0.8f;
 			}
+			Velocity = v;
 		}
 
 		public void Rotate (double up, double right, double spin)
@@ -254,7 +255,7 @@ namespace Galaxpeer
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			float distance = 10; //Position.ROI_RADIUS - 1;
+			float distance = Position.ROI_RADIUS / 2; //- 1;
 			if (rnd.NextDouble () > .5) {
 				distance *= -1;
 			}
@@ -287,7 +288,7 @@ namespace Galaxpeer
 
 	public class LocalPlayer : Player
 	{
-		const long FIRE_INTERVAL = TimeSpan.TicksPerSecond;
+		const long FIRE_INTERVAL = TimeSpan.TicksPerSecond * 3;
 
 		public override EntityType Type {
 			get {

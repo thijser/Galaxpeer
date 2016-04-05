@@ -38,7 +38,7 @@ namespace Galaxpeer
 		public static bool IsInAnyRoi(ICollection<Client> clients, Vector3 location)
 		{
 			foreach (var client in clients) {
-				if (IsInRoi (client.Player.Location, location)) {
+				if (client.Player != null && IsInRoi (client.Player.Location, location)) {
 					return true;
 				}
 			}
