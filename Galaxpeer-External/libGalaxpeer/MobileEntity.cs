@@ -2,99 +2,7 @@
 using System.Runtime.InteropServices;
 
 namespace Galaxpeer
-{/*
-	[StructLayout (LayoutKind.Sequential)]
-	public class Vector3
-	{
-		public float X;
-		public float Y;
-		public float Z;
-
-		public Vector3 (float x, float y, float z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-
-		public static Vector3 operator + (Vector3 a, Vector3 b)
-		{
-			return new Vector3 (a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-		}
-
-		public static Vector3 operator - (Vector3 a, Vector3 b)
-		{
-			return new Vector3 (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-		}
-
-		public static Vector3 operator * (Vector3 v, float d)
-		{
-			return new Vector3 (v.X * d, v.Y * d, v.Z * d);
-		}
-	}
-
-	[StructLayout (LayoutKind.Sequential)]
-	public class Quaternion
-	{
-		public float X;
-		public float Y;
-		public float Z;
-		public float W;
-
-		public Quaternion (float x, float y, float z, float w)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-			W = w;
-		}
-
-		/*public static Vector4 operator * (Vector4 left, Vector4 right)
-		{
-			Vector4 res = new Vector4 (left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
-			res.normalize ();
-			return res;
-		}*/
-
-		/*public static Quaternion operator * (Quaternion q, Quaternion r)
-		{
-			return new Quaternion (r.X * q.X - r.Y * q.Y - r.Z * q.Z - r.W * q.W,
-				r.X * q.Y + r.Y * q.X - r.Z * q.W + r.W * q.Z,
-				r.X * q.Z + r.Y * q.W + r.Z * q.X - r.W * q.Y,
-				r.X * q.W - r.Y * q.Z + r.Z * q.Y + r.W * q.X);
-		}
-
-		public void normalize ()
-		{
-			float length = (float)Math.Sqrt (X * X + Y * Y + Z * Z + W * W);
-			X = X / length;
-			Y = Y / length;
-			Z = Z / length;
-			W = W / length;
-		}
-
-		public Vector3 GetRightVector ()
-		{
-			return new Vector3 (1 - 2 * (Y * Y + Z * Z),
-				2 * (X * Y + W * Z),
-				2 * (X * Z - W * Y));
-		}
-
-		public  Vector3 GetUpVector ()
-		{
-			return new Vector3 (2 * (X * Y - W * Z), 
-				1 - 2 * (X * X + Z * Z),
-				2 * (Y * Z + W * X));
-		}
-
-		public Vector3 GetForwardVector ()
-		{
-			return new Vector3 (2 * (X * Z + W * Y), 
-				2 * (Y * X - W * X),
-				1 - 2 * (X * X + Y * Y));
-		}
-	}*/
-
+{
 	public delegate void EntityUpdateHandler(MobileEntity entity, bool owned);
 
 	public abstract class MobileEntity
@@ -243,46 +151,7 @@ namespace Galaxpeer
 
 		public void Rotate (double up, double right, double spin)
 		{
-			/*double ff = Math.Sin (up);
-			double fr = Math.Sin (right);
-			double fs = Math.Sin (spin);
-			Vector3 rightVec = Rotation.GetRightVector (); 
-			Vector3 upVec = Rotation.GetUpVector (); 
-			Vector3 forVec = Rotation.GetForwardVector (); 
-
-			double x = ff * rightVec.X;
-			double y = ff * rightVec.Y;
-			double z = ff * rightVec.Z;
-			double w = Math.Cos (up / 2.0);
-			Vector4 r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
-			r.normalize ();
-			rotation = Rotation * r;
-
-			x = fr * upVec.X;
-			y = fr * upVec.Y;
-			z = fr * upVec.Z;
-			w = Math.Cos (right / 2.0);
-			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
-			r.normalize ();
-			rotation = Rotation * r;
-
-			x = fs * forVec.X;
-			y = fs * forVec.Y;
-			z = fs * forVec.Z;
-			w = Math.Cos (spin / 2.0);
-			r = new Vector4 ((float)x, (float)y, (float)z, (float)w);
-			r.normalize ();
-			rotation = Rotation * r;
-			rotation.normalize ();
-			fireUpdate (true);*/
-
 			Quaternion r = Quaternion.CreateFromYawPitchRoll ((float) right, (float) up, (float) spin);
-
-			//Quaternion QuatAroundX = new Quaternion (1F, 0F, 0F, (float) up);
-			//Quaternion QuatAroundY = new Quaternion (0F, 1F, 0F, (float) right);
-			//Quaternion QuatAroundZ = new Quaternion (0F, 0F, 1F, (float) spin);
-			//Quaternion r = QuatAroundX * QuatAroundY * QuatAroundZ;
-			//rotation *= r;
 			Rotation *= r;
 
 		}
@@ -445,6 +314,7 @@ namespace Galaxpeer
 		public void Spawn ()
 		{
 			Random rnd = new Random();
+			Velocity = new Vector3 (0, 0, 0);
 			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
 		}
 
@@ -483,7 +353,6 @@ namespace Galaxpeer
 							instance = new LocalPlayer ();
 							instance.OwnedBy = instance.Uuid;
 							PsycicManager.Instance.AddEntity (instance);
-							//EntityManager.Entities [instance.Uuid] = instance;
 						}
 					}
 				}

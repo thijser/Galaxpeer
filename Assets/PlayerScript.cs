@@ -35,10 +35,10 @@ public class PlayerScript : MonoBehaviour {
 			uprightspin.X=uprightspin.X-.1f;
 		}
 		if (Input.GetKey (KeyCode.LeftArrow)) {
-			uprightspin.Y=uprightspin.Y-.1f;
+			uprightspin.Y=uprightspin.Y+.1f;
 		}
 		if (Input.GetKey (KeyCode.RightArrow)) {
-			uprightspin.Y=uprightspin.Y+.1f;
+			uprightspin.Y=uprightspin.Y-.1f;
 		}
 		UUI.rotateplayer (uprightspin);
 	}
