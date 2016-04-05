@@ -16,9 +16,6 @@ public class GalaxpeerDocker : MonoBehaviour {
 		InvokeRepeating("Tick", 0, 0.02F);
 	}
 
-	void Tick () {
-		PsycicManager.Instance.Tick ();
-	}
 	
 	// Update is called once per frame
 	void Update () {
