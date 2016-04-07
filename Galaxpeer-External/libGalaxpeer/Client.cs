@@ -12,7 +12,7 @@ namespace Galaxpeer
 		public static TimedCache<Guid, Client> Clients = new TimedCache<Guid, Client>();
 
 		static Client () {
-			Clients.CacheTimeout = 5000000;
+			Clients.CacheTimeout = 5000;
 			Clients.OnTimeout += onTimeout;
 			Clients.OnRemove += onRemove;
 		}
