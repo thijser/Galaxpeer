@@ -6,7 +6,7 @@ namespace Galaxpeer
 	public static class Position
 	{
 		public static float ROI_RADIUS = 300;
-		public static float SIGHT_DISTANCE = 100;
+		public static float PLAYER_ROI_RADIUS = 2 * ROI_RADIUS;
 
 		public static int GetOctant (Vector3 myLocation, Vector3 otherLocation)
 		{
@@ -30,25 +30,25 @@ namespace Galaxpeer
 			return Math.Sqrt (d.X * d.X + d.Y * d.Y + d.Z * d.Z);
 		}
 
-		public static bool IsInRoi(Vector3 myLocation, Vector3 otherLocation)
+		public static bool IsEntityInRoi(Vector3 myLocation, Vector3 otherLocation)
 		{
 			return GetDistance (myLocation, otherLocation) <= ROI_RADIUS;
+		}
+
+		public static bool IsClientInRoi(Vector3 location)
+		{
+			return GetDistance (LocalPlayer.Instance.Location, location) <= PLAYER_ROI_RADIUS;
 		}
 
 		public static bool IsInAnyRoi(Vector3 location)
 		{
 			bool inRoi = false;
 			Game.ConnectionManager.ClientsInRoi.ForEach ((Guid uuid, Client client) => {
-				if (IsInRoi(client.Player.Location, location)) {
+				if (IsEntityInRoi(client.Player.Location, location)) {
 					inRoi = true;
 				}
 			});
 			return inRoi;
-		}
-
-		public static bool IsInSight(Vector3 a, Vector3 b)
-		{
-			return GetDistance (a, b) <= SIGHT_DISTANCE;
 		}
 	}
 }

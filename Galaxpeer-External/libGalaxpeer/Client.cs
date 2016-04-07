@@ -11,15 +11,12 @@ namespace Galaxpeer
 
 		public static TimedCache<Guid, Client> Clients = new TimedCache<Guid, Client>();
 
+		public delegate void CreateHandler(Client client);
+		public static event CreateHandler OnCreate;
+
 		static Client () {
 			Clients.CacheTimeout = 5000;
-			Clients.OnTimeout += onTimeout;
 			Clients.OnRemove += onRemove;
-		}
-
-		static void onTimeout (Guid key, Client value)
-		{
-			Console.WriteLine ("Timeout of client {0}", key);
 		}
 
 		static void onRemove (Guid key, Client value)
@@ -52,6 +49,9 @@ namespace Galaxpeer
 			if (client == null) {
 				client = new Client (message, (Player)EntityManager.Get (message.Uuid));
 				Clients.Set (message.Uuid, client);
+				if (OnCreate != null) {
+					OnCreate (client);
+				}
 			}
 			return client;
 		}

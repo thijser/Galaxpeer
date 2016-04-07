@@ -8,6 +8,7 @@ namespace Galaxpeer
 		public static ConcurrentDictionary<Guid, MobileEntity> Entities = new ConcurrentDictionary<Guid, MobileEntity>();
 		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerMillisecond * 500;
 		private static long nextAsteroid = DateTime.UtcNow.Ticks + ASTEROID_INTERVAL;
+		private static List<MobileEntity> toUpdate = new List<MobileEntity>();
 
 
 		static EntityManager()
@@ -15,7 +16,15 @@ namespace Galaxpeer
 			MobileEntity.OnLocationUpdate += OnLocationUpdate;
 			MobileEntity.OnDestroy += OnDestroyEntity;
 			PsycicManager.OnTick += GenerateAsteroids;
+			PsycicManager.OnTick += SendLocationUpdates;
 			DestroyMessage.OnReceive += OnDestroyMessage;
+
+			Client.OnCreate += OnCreateClient;
+		}
+
+		static void OnCreateClient (Client client)
+		{
+			// TODO: Send mobile entities
 		}
 
 		static void OnDestroyEntity (MobileEntity entity, bool owned)
@@ -23,34 +32,15 @@ namespace Galaxpeer
 			if (owned) {
 				var msg = new DestroyMessage (entity);
 				Game.ConnectionManager.SendInRoi (msg, entity.Location);
-				//foreach (var client in Game.ConnectionManager.ClientsInRoi.Values) {
-				//	client.Connection.Send (msg);
-				//}
 			}
 		}
 
 		private static void OnLocationUpdate(MobileEntity entity, bool owned)
 		{
 			if (owned) {
-				/*if (DateTime
-
-				if (entity.Type == MobileEntity.EntityType.Asteroid || entity.Type == MobileEntity.EntityType.Rocket) {
-					if (DateTime.UtcNow.Ticks - entity.LastUpdate >= TimeSpan.TicksPerSecond) {
-
-					}
-				}*/
-
-				var msg = new LocationMessage (entity);
-				Game.ConnectionManager.SendInRoi (msg, entity.Location);
-				//foreach (var item in Game.ConnectionManager.ClientsInRoi) {
-				//	Player player = item.Value.Player;
-				//	if (player != null) {
-				//		bool inRoi = Position.IsInRoi (player.Location, entity.Location);
-				//		if (inRoi) {
-				//			item.Value.Connection.Send (msg);
-				//		}
-				//	}
-				//}
+				lock (toUpdate) {
+					toUpdate.Add (entity);
+				}
 			}
 		}
 
@@ -86,7 +76,7 @@ namespace Galaxpeer
 		{
 			MobileEntity entity = Get (message.Uuid);
 			if (entity == null) {
-				if (Position.IsInRoi(LocalPlayer.Instance.Location, message.Location)) {
+				if (Position.IsEntityInRoi(LocalPlayer.Instance.Location, message.Location)) {
 					CreateEntity (message);
 				}
 			} else {
@@ -113,6 +103,17 @@ namespace Galaxpeer
 			}
 			PsycicManager.Instance.AddEntity (entity);
 			Entities.Set(message.Uuid, entity);
+		}
+
+		static void SendLocationUpdates(long time)
+		{
+			lock (toUpdate) {
+				foreach (var entity in toUpdate) {
+					var msg = new LocationMessage (entity);
+					Game.ConnectionManager.SendInRoi (msg, entity.Location);
+				}
+				toUpdate.Clear ();
+			}
 		}
 
 		private static void GenerateAsteroids(long time)

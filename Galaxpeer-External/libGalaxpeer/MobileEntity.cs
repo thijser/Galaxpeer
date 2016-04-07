@@ -130,9 +130,9 @@ namespace Galaxpeer
 			float nx = (float)(Location.X + stepsize * Velocity.X); 
 			float ny = (float)(Location.Y + stepsize * Velocity.Y);
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
-			Location = new Vector3 (nx, ny, nz);
+			location = new Vector3 (nx, ny, nz);
 
-			if (!Position.IsInRoi (LocalPlayer.Instance.Location, Location)) {
+			if (!Position.IsEntityInRoi (LocalPlayer.Instance.Location, Location)) {
 				if (!IsMine || !Position.IsInAnyRoi (Location)) {
 					Destroy ();
 				}
@@ -260,11 +260,9 @@ namespace Galaxpeer
 				distance *= -1;
 			}
 
-			Location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
-			Vector3 myLoc = LocalPlayer.Instance.Location;
-
+			location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
+			velocity = new Vector3 ((float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f);
 			Rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
-			Velocity = new Vector3 ((float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f);
 		}
 
 		public Asteroid(LocationMessage message) : base(message) {}

@@ -28,7 +28,7 @@ namespace Galaxpeer
 
 		public ConnectionManager()
 		{
-			ConnectionCache.CacheTimeout = 10000;
+			ConnectionCache.CacheTimeout = 30000;
 			Client.Clients.OnRemove += this.removeClient;
 
 			ConnectionMessage.OnReceive += this.OnReceiveConnection;
@@ -63,7 +63,7 @@ namespace Galaxpeer
 		public void SendInRoi(Message message, Vector3 location)
 		{
 			ClientsInRoi.ForEach ((Guid uuid, Client client) => {
-				if (Position.IsInRoi(client.Player.Location, location)) {
+				if (Position.IsEntityInRoi(client.Player.Location, location)) {
 					client.Connection.Send(message);
 				}
 			});
@@ -82,7 +82,7 @@ namespace Galaxpeer
 
 		public void UpdateRoiConnection(Client client, Vector3 location)
 		{
-			if (Position.IsInRoi (LocalPlayer.Instance.Location, location)) {
+			if (Position.IsClientInRoi (location)) {
 				if (!ClientsInRoi.ContainsKey (client.Uuid)) {
 					ClientsInRoi.Set (client.Uuid, client);
 				}
