@@ -8,22 +8,30 @@ namespace Galaxpeer
 	{
 		struct ValuePair
 		{
-			public Timer timer;
+			public Timer timeout;
+			public Timer interval;
 			public TValue value;
 		}
 
 		private ConcurrentDictionary<TKey, ValuePair> dictionary = new ConcurrentDictionary<TKey, ValuePair> ();
 
 		public delegate void TimeoutHandler (TKey key, TValue value);
+		public event TimeoutHandler OnInterval;
 		public event TimeoutHandler OnTimeout;
 		public event TimeoutHandler OnRemove;
 
 		public int CacheTimeout;
+		public int CacheInterval;
 
 		public void Set (TKey key, TValue value)
 		{
-			ValuePair pair;
-			pair.timer = new Timer(TimerHandler, key, CacheTimeout, Timeout.Infinite);
+			ValuePair pair = new ValuePair();
+			if (CacheTimeout > 0) {
+				pair.timeout = new Timer (TimerHandler, key, CacheTimeout, Timeout.Infinite);
+			}
+			if (CacheInterval > 0) {
+				pair.interval = new Timer (IntervalHandler, key, CacheInterval, CacheInterval);
+			}
 			pair.value = value;
 			dictionary.Set (key, pair);
 		}
@@ -41,8 +49,11 @@ namespace Galaxpeer
 		public bool Remove (TKey key)
 		{
 			ValuePair pair = dictionary.Get(key);
-			if (pair.timer != null) {
-				pair.timer.Dispose ();
+			if (pair.timeout != null) {
+				pair.timeout.Dispose ();
+			}
+			if (pair.interval != null) {
+				pair.interval.Dispose ();
 			}
 			bool success = dictionary.Remove (key);
 			if (pair.value != null && OnRemove != null) {
@@ -68,7 +79,12 @@ namespace Galaxpeer
 			ValuePair pair = dictionary.Get (key);
 
 			try {
-				pair.timer.Change(CacheTimeout, Timeout.Infinite);
+				if (pair.timeout != null) {
+					pair.timeout.Change(CacheTimeout, Timeout.Infinite);
+				}
+				if (pair.interval != null) {
+					pair.interval.Change(CacheInterval, CacheInterval);
+				}
 			}
 			catch (Exception) {}
 		}
@@ -86,6 +102,17 @@ namespace Galaxpeer
 				}
 				if (OnRemove != null) {
 					OnRemove (key, value);
+				}
+			}
+		}
+
+		private void IntervalHandler (object obj)
+		{
+			if (OnInterval != null) {
+				TKey key = (TKey)obj;
+				TValue value = Get (key);
+				if (value != null) {
+					OnInterval (key, value);
 				}
 			}
 		}

@@ -59,6 +59,7 @@
     <Compile Include="ILocationMessage.cs" />
     <Compile Include="TakeoverMessage.cs" />
     <Compile Include="RequestLocationMessage.cs" />
+    <Compile Include="HeartbeatMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

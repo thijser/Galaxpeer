@@ -19,13 +19,29 @@ namespace Galaxpeer
 			PsycicManager.OnTick += SendLocationUpdates;
 			DestroyMessage.OnReceive += OnDestroyMessage;
 			ConnectionMessage.OnParse += OnParseConnectionMessage;
-			LocationMessage.OnParse += OnLocationMessage;
+			LocationMessage.OnParse += OnParseLocationMessage;
+			LocationMessage.OnReceive += OnLocationMessage;
 			RequestLocationMessage.OnReceive += OnRequestLocationMessage;
 
 			HandoverMessage.OnReceive += OnHandover;
 			TakeoverMessage.OnReceive += OnTakeover;
 
 			Client.OnCreate += OnCreateClient;
+		}
+
+		static void OnLocationMessage (LocationMessage message)
+		{
+			if (message.Type != MobileEntity.EntityType.Player) {
+				MobileEntity entity = Get (message.Uuid);
+				if (entity != null && entity.IsMine && message.OwnedBy != entity.OwnedBy) {
+					// Ownership conflict! Client with lowest UUID takes ownership
+					if (entity.OwnedBy.CompareTo (message.OwnedBy) < 0) {
+						message.SourceClient.Connection.Send (new TakeoverMessage (entity));
+					} else {
+						entity.OwnedBy = message.OwnedBy;
+					}
+				}
+			}
 		}
 
 		static void OnRequestLocationMessage (RequestLocationMessage message)
@@ -37,7 +53,7 @@ namespace Galaxpeer
 		}
 
 		// Send data about MobileEntities in his ROI
-		static void OnLocationMessage (LocationMessage message)
+		static void OnParseLocationMessage (LocationMessage message)
 		{
 			if (message.Type == MobileEntity.EntityType.Player) {
 				Client client = Client.Get (message.Uuid);
@@ -47,7 +63,7 @@ namespace Galaxpeer
 							if (Position.IsEntityInRoi (entity.Location, message.Location)) {
 								if (!Position.IsEntityInRoi (entity.Location, client.Player.Location)) {
 									client.Connection.Send (new LocationMessage (entity));
-									Console.WriteLine("Sent location of {0} to {1}", entity.Uuid, client.Uuid);
+									Console.WriteLine ("Sent location of {0} to {1}", entity.Uuid, client.Uuid);
 								}
 							}
 						}
@@ -60,7 +76,7 @@ namespace Galaxpeer
 		{
 			MobileEntity entity = Get (message.ObjectUuid);
 			if (entity != null) {
-				entity.OwnedBy = message.OwnerUuid;
+				entity.Takeover (message.OwnerUuid);
 			}
 		}
 

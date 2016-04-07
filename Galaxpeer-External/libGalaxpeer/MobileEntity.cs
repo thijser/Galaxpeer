@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace Galaxpeer
@@ -66,6 +67,8 @@ namespace Galaxpeer
 			}
 		}
 
+		protected Timer handoverTimer;
+		protected bool isHandingOver = false;
 		public long LastUpdate = DateTime.UtcNow.Ticks;
 
 		public MobileEntity ()
@@ -105,6 +108,41 @@ namespace Galaxpeer
 				fireUpdate (false);
 			}
 		}
+
+		protected void TryHandover ()
+		{
+			Client closest;
+			if (Position.ClosestClient (location, out closest)) {
+				Handover (closest);
+			} else {
+
+			}
+		}
+
+		protected void Handover (Client client)
+		{
+			isHandingOver = true;
+			client.Connection.Send (new HandoverMessage (this));
+			handoverTimer = new Timer (this.onHandoverTimeout, this, 1500, Timeout.Infinite);
+		}
+
+		public void Takeover (Guid uuid)
+		{
+			try {
+				handoverTimer.Dispose ();
+				handoverTimer = null;
+			} catch (Exception) {}
+			OwnedBy = uuid;
+		}
+
+		protected void onHandoverTimeout (object obj)
+		{
+			try {
+				handoverTimer.Dispose ();
+				handoverTimer = null;
+			} catch (Exception) {}
+			TryHandover ();
+		}
 			
 		protected void fireUpdate(bool owned)
 		{
@@ -134,7 +172,7 @@ namespace Galaxpeer
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			location = new Vector3 (nx, ny, nz);
 
-			if (IsMine) {
+			if (IsMine && !isHandingOver) {
 				Client closest;
 				if (Position.ClosestClient (location, out closest)) {
 					closest.Connection.Send (new HandoverMessage (this));

@@ -6,8 +6,6 @@ namespace Galaxpeer
 {
 	public class LocationMessage : TMessage<LocationMessage>, ILocationMessage
 	{
-		public override sbyte max_hops { get { return 0; } }
-
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Guid OwnedBy { get; private set; }

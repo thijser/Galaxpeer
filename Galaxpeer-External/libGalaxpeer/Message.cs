@@ -8,7 +8,7 @@ namespace Galaxpeer
 	
 	public abstract class Message
 	{
-		public virtual sbyte max_hops { get { return 2; } }
+		public virtual sbyte max_hops { get { return 0; } }
 
 		public virtual IPEndPoint SourceIp { get; set; }
 		public Client SourceClient { get; set; }

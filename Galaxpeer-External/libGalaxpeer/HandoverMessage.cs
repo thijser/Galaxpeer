@@ -5,8 +5,6 @@ namespace Galaxpeer
 {
 	class HandoverMessage : TMessage<HandoverMessage>
 	{
-		public override sbyte max_hops { get { return 0; } }
-
 		public Guid ObjectUuid;
 		public Guid OwnerUuid;
 

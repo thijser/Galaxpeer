@@ -79,10 +79,11 @@ namespace Galaxpeer
 
 		public void ForwardMessage(Message message)
 		{
-			if (--message.Hops > 0) {
+			if (message.Hops-- > 0) {
 				foreach (var client in ClosestClients) {
 					if (client != null && client != message.SourceClient) {
 						client.Connection.Send (message);
+						Console.WriteLine ("Forwarding message");
 					}
 				}
 			}

@@ -15,14 +15,28 @@ namespace Galaxpeer
 		public static event CreateHandler OnCreate;
 
 		static Client () {
-			Clients.CacheTimeout = 5000;
+			Clients.CacheTimeout = 10000;
+			Clients.CacheInterval = 3000;
 			Clients.OnRemove += onRemove;
+			Clients.OnInterval += SendHeartbeat;
+
+			HeartbeatMessage.OnReceive += OnHeartbeat;
+		}
+
+		static void OnHeartbeat (HeartbeatMessage message)
+		{
+			message.SourceClient.Connection.Send (Game.ConnectionManager.LocalConnectionMessage);
 		}
 
 		static void onRemove (Guid key, Client value)
 		{
 			value.Connection.Close ();
 			value.Player.Destroy ();
+		}
+
+		static void SendHeartbeat (Guid uuid, Client client)
+		{
+			client.Connection.Send (new HeartbeatMessage ());
 		}
 
 		public Guid Uuid;

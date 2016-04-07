@@ -34,6 +34,7 @@ namespace Galaxpeer
 			Register ('H', typeof(HandoverMessage));
 			Register ('T', typeof(TakeoverMessage));
 			Register ('Q', typeof(RequestLocationMessage));
+			Register ('B', typeof(HeartbeatMessage));
 		}
 	}
 }

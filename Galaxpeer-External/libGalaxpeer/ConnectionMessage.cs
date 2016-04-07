@@ -7,6 +7,8 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : TMessage<ConnectionMessage>, ILocationMessage
 	{
+		public override sbyte max_hops { get { return 2; } }
+
 		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
 
 		public override IPEndPoint SourceIp

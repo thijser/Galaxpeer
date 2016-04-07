@@ -5,8 +5,6 @@ namespace Galaxpeer
 {
 	class RequestLocationMessage : TMessage<RequestLocationMessage>
 	{
-		public override sbyte max_hops { get { return 0; } }
-
 		public Guid Uuid;
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
