@@ -11,7 +11,7 @@ namespace Galaxpeer
 		public virtual sbyte max_hops { get { return 2; } }
 
 		public virtual IPEndPoint SourceIp { get; set; }
-		public Client SourceClient;
+		public Client SourceClient { get; set; }
 		public sbyte Hops;
 		public long Timestamp;
 

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	public class LocationMessage : TMessage<LocationMessage>
+	public class LocationMessage : TMessage<LocationMessage>, ILocationMessage
 	{
 		public override sbyte max_hops { get { return 0; } }
 

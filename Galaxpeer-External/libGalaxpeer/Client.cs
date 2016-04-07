@@ -26,6 +26,7 @@ namespace Galaxpeer
 		}
 
 		public Guid Uuid;
+		public ConnectionMessage ConnectionMessage;
 		public Player Player;
 		public Connection Connection;
 		public IPEndPoint EndPoint;
@@ -33,6 +34,7 @@ namespace Galaxpeer
 		private Client (ConnectionMessage message, Player player)
 		{
 			Uuid = message.Uuid;
+			ConnectionMessage = message;
 			Player = player;
 			Connection = Game.ConnectionManager.Connect (message);
 		}

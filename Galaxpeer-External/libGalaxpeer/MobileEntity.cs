@@ -74,7 +74,7 @@ namespace Galaxpeer
 			rotation = new Quaternion (0, 0, 0, 1);
 			velocity = new Vector3 (0, 0, 0);
 			Size = 1;
-			Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
+			//Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
 		}
 
 		public MobileEntity(LocationMessage message)
@@ -83,7 +83,7 @@ namespace Galaxpeer
 			OwnedBy = message.SourceClient.Uuid;
 			copyMessageData (message);
 			Size = 1;
-			Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
+			//Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
 			fireUpdate (false);
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace Galaxpeer
@@ -7,6 +8,8 @@ namespace Galaxpeer
 	// Also receives incoming connections
 	public abstract class ConnectionManager
 	{
+		private const int REQUEST_CONNECTIONS_INTERVAL = 15000;
+
 		public ConnectionMessage LocalConnectionMessage;
 
 		public readonly TimedCache<Guid, ConnectionMessage> ConnectionCache = new TimedCache<Guid, ConnectionMessage>();
@@ -15,21 +18,14 @@ namespace Galaxpeer
 		public readonly Client[] ClosestClients = new Client[8];
 		public readonly ConcurrentDictionary<Guid, Client> ClientsInRoi = new ConcurrentDictionary<Guid, Client> ();
 
-
-		//public Dictionary<Guid, ConnectionMessage> ConnectionCache = new Dictionary<Guid, ConnectionMessage>();
-		//private readonly Dictionary<IPEndPoint, Client> endPoints = new Dictionary<IPEndPoint, Client>();
-		//public readonly Client[] ClosestClients = new Client[8];
-		//public Dictionary<Guid, Client> ClientsInRoi = new Dictionary<Guid, Client> ();
-
-		//private readonly List<Client> staleClients = new List<Client>();
-
-		//private readonly List<ConnectionMessage> newConnections = new List<ConnectionMessage>();
-		//private readonly List<ConnectionMessage> staleConnections = new List<ConnectionMessage> ();
+		private readonly Timer requestConnectionsTimer;
 
 		public ConnectionManager()
 		{
 			ConnectionCache.CacheTimeout = 30000;
 			Client.Clients.OnRemove += this.removeClient;
+
+			requestConnectionsTimer = new Timer (this.RequestConnections, null, REQUEST_CONNECTIONS_INTERVAL, REQUEST_CONNECTIONS_INTERVAL); 
 
 			ConnectionMessage.OnReceive += this.OnReceiveConnection;
 			LocationMessage.OnReceive += this.OnReceiveLocation;
@@ -38,9 +34,14 @@ namespace Galaxpeer
 
 		public abstract Connection Connect (ConnectionMessage message);
 
-		public void Disconnect(Client client)
+		public void Disconnect (Client client)
 		{
-			Client.Clients.Remove (client.Uuid);
+			Disconnect (client.Uuid);
+		}
+
+		public void Disconnect (Guid uuid)
+		{
+			Client.Clients.Remove (uuid);
 		}
 
 		public void AddByEndPoint(IPEndPoint endPoint, ConnectionMessage connection)
@@ -80,16 +81,26 @@ namespace Galaxpeer
 			}
 		}
 
-		public void UpdateRoiConnection(Client client, Vector3 location)
+		public void RequestConnections(object _)
 		{
-			if (Position.IsClientInRoi (location)) {
-				if (!ClientsInRoi.ContainsKey (client.Uuid)) {
-					ClientsInRoi.Set (client.Uuid, client);
+			foreach (var client in ClosestClients) {
+				if (client != null) {
+					client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
+				}
+			}
+		}
+
+		public void UpdateRoiConnection(ILocationMessage message)
+		{
+			bool contains = ClientsInRoi.ContainsKey (message.Uuid);
+			if (Position.IsClientInRoi (message.Location)) {
+				if (!contains) {
+					ClientsInRoi.Set (message.Uuid, Client.Clients.Get (message.Uuid));
 				}
 			} else {
-				if (ClientsInRoi.ContainsKey (client.Uuid)) {
-					ClientsInRoi.Remove (client.Uuid);
-					client.Connection.Close ();
+				if (contains) {
+					ClientsInRoi.Remove (message.Uuid);
+					Disconnect (message.Uuid);
 				}
 			}
 		}
@@ -132,6 +143,49 @@ namespace Galaxpeer
 			}
 		}
 
+		private void UpdateOctant (ILocationMessage message, Client client = null)
+		{
+			if (message.Uuid != LocalPlayer.Instance.Uuid && ClientsInRoi.ContainsKey(message.Uuid)) {
+				int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
+				double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
+				Client closest = ClosestClients [octant];
+
+				bool newInOctant = false;
+
+				if (closest == null) {
+					Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
+					newInOctant = true;
+				} else if (closest.Uuid != message.Uuid && distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 3)) {
+					Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
+					closest.Connection.Close ();
+					newInOctant = true;
+				}
+
+				if (newInOctant) {
+					if (client == null) {
+						if (message.GetType () == typeof(ConnectionMessage)) {
+							client = Client.Get ((ConnectionMessage)message);
+						}
+					}
+
+					// Remove from other octants
+					for (int i = 0; i < ClosestClients.Length; i++) {
+						if (ClosestClients [i] == client) {
+							ClosestClients [i] = null;
+						}
+					}
+					
+					ClosestClients [octant] = client;
+
+					Console.WriteLine ("Connections: ");
+					for (int i = 0; i < 8; i++) {
+						Client c = ClosestClients [i];
+						Console.WriteLine ("Octant {0}: {1}", i, c == null ? new Guid() : c.Uuid);
+					}
+				}
+			}
+		}
+
 		/* Handle a received connection message.
 		 * 
 		 * Add to connection list
@@ -139,30 +193,9 @@ namespace Galaxpeer
 		 */
 		protected void OnReceiveConnection(ConnectionMessage message)
 		{
-			if (message.Uuid != LocalConnectionMessage.Uuid && message.SourceClient != null) {
-				long age = DateTime.UtcNow.Ticks - message.Timestamp;
-				if (age <= ConnectionMessage.MAX_AGE) {
-					ConnectionCache.Set (message.Uuid, message);
-
-					int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
-					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
-					Client closest = ClosestClients [octant];
-
-					if (closest == null) {
-						Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
-						ClosestClients [octant] = Client.Get (message);
-						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
-					} else if (distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 5)) {
-						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2} ({3})", closest.Uuid, octant, message.Uuid, message.SourceClient.Player.Uuid);
-						closest.Connection.Close ();
-						ClosestClients [octant] = Client.Get (message);
-						message.SourceClient.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
-					}
-
-					// Check if this player is in ROI
-					UpdateRoiConnection (message.SourceClient, message.Location);
-				}
-			}
+			ConnectionCache.Set (message.Uuid, message);
+			UpdateRoiConnection (message);
+			UpdateOctant (message);
 		}
 
 		protected void OnReceiveLocation(LocationMessage message)
@@ -170,7 +203,12 @@ namespace Galaxpeer
 			EntityManager.UpdateEntity (message);
 
 			if ((MobileEntity.EntityType)message.Type == MobileEntity.EntityType.Player) {
-				UpdateRoiConnection (message.SourceClient, message.Location);
+				UpdateRoiConnection (message);
+
+				Client client = ClientsInRoi.Get (message.Uuid);
+				if (client != null) {
+					UpdateOctant (message, client);
+				}
 			}
 		}
 
@@ -182,33 +220,25 @@ namespace Galaxpeer
 		 */
 		protected void OnConnectionsRequest(RequestConnectionsMessage message)
 		{
-			ConnectionMessage[] connections = new ConnectionMessage[8];
-			ConnectionCache.ForEach ((Guid id, ConnectionMessage conn) => {
-				if (id != message.SourceClient.Uuid) {
-					MobileEntity entity = EntityManager.Get (id);
+			for (int i = 0; i < 8; i++) {
+				if (ClosestClients [i] != null && ClosestClients[i] != message.SourceClient) {
+					message.SourceClient.Connection.Send (ClosestClients [i].ConnectionMessage);
+				}
+			}
 
-					// Update location to newer value
-					if (entity != null
-					    && entity.LastUpdate > conn.Timestamp) {
-						conn.Location = entity.Location;
-					}
-
-					int octant = Position.GetOctant (message.Location, conn.Location);
-					double distance = Position.GetOctant (message.Location, conn.Location);
-					ConnectionMessage closest = connections [octant];
-
-					if (closest == null || distance < (Position.GetDistance (message.Location, closest.Location) - 5)) {
-						connections [octant] = conn;
-					}
+			// Send 'random' connection
+			Vector3 yourPos = message.Location;
+			ConnectionMessage furthest = null;
+			double distance = 0;
+			ConnectionCache.ForEach ((Guid uuid, ConnectionMessage conn) => {
+				double d = Position.GetDistance(yourPos, conn.Location);
+				if (d >= distance) {
+					furthest = conn;
+					distance = d;
 				}
 			});
 
-			// Return connections
-			foreach (var item in connections) {
-				if (item != null) {
-					message.SourceClient.Connection.Send (item);
-				}
-			}
+			message.SourceClient.Connection.Send (furthest);
 		}
 	}
 }

@@ -12,8 +12,10 @@ namespace Galaxpeer
 
 		public void Set (TKey key, TValue value)
 		{
-			lock (dictionary) {
-				dictionary[key] = value;
+			if (value != null) {
+				lock (dictionary) {
+					dictionary [key] = value;
+				}
 			}
 		}
 

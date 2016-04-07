@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	public class ConnectionMessage : TMessage<ConnectionMessage>
+	public class ConnectionMessage : TMessage<ConnectionMessage>, ILocationMessage
 	{
 		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
 
@@ -24,10 +24,10 @@ namespace Galaxpeer
 			}
 		}
 
-		public Guid Uuid;
+		public Guid Uuid { get; private set; }
 		public IPAddress Ip;
 		public int Port;
-		public Vector3 Location;
+		public Vector3 Location { get; set; }
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
@@ -70,6 +70,11 @@ namespace Galaxpeer
 
 		public override byte[] Serialize()
 		{
+			var player = EntityManager.Get (Uuid);
+			if (player != null) {
+				Location = player.Location;
+			}
+
 			Packet packet;
 			packet.Id = 'C';
 			packet.Hops = Hops;
