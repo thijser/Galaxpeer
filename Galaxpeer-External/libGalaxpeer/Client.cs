@@ -13,7 +13,13 @@ namespace Galaxpeer
 
 		static Client () {
 			Clients.CacheTimeout = 5000;
+			Clients.OnTimeout += onTimeout;
 			Clients.OnRemove += onRemove;
+		}
+
+		static void onTimeout (Guid key, Client value)
+		{
+			Console.WriteLine ("Timeout of client {0}", key);
 		}
 
 		static void onRemove (Guid key, Client value)
