@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -6,18 +7,52 @@ namespace Galaxpeer
 {
 	public class Client
 	{
-		public const long MAX_AGE = 10000; // ms
+		//public const long MAX_AGE = 10000; // ms
 
-		public ConnectionMessage ConnectionMessage;
+		public static TimedCache<Guid, Client> Clients = new TimedCache<Guid, Client>();
+
+		static Client () {
+			Clients.CacheTimeout = 5000;
+			Clients.OnRemove += onRemove;
+		}
+
+		static void onRemove (Guid key, Client value)
+		{
+			value.Connection.Close ();
+			value.Player.Destroy ();
+		}
+
+		public Guid Uuid;
+		public Player Player;
+		public Connection Connection;
+		public IPEndPoint EndPoint;
+
+		private Client (ConnectionMessage message, Player player)
+		{
+			Uuid = message.Uuid;
+			Player = player;
+			Connection = Game.ConnectionManager.Connect (message);
+		}
+
+		public void Update()
+		{
+			Game.ConnectionManager.ConnectionCache.Update (Uuid);
+			Clients.Update (Uuid);
+		}
+
+		public static Client Get(ConnectionMessage message)
+		{
+			Client client = Clients.Get (message.Uuid);
+			if (client == null) {
+				client = new Client (message, (Player)EntityManager.Get (message.Uuid));
+				Clients.Set (message.Uuid, client);
+			}
+			return client;
+		}
+
+		/*
 
 		private Timer timer;
-
-		public Guid Uuid
-		{
-			get {
-				return ConnectionMessage.Uuid;
-			}
-		}
 
 		public Player Player
 		{
@@ -64,6 +99,6 @@ namespace Galaxpeer
 				clients [message.Uuid] = client;
 				return client;
 			}
-		}
+		}*/
 	}
 }

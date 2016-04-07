@@ -47,7 +47,7 @@ namespace Galaxpeer
 					throw new ArgumentException ("Message from unknown client");
 				} else {
 					Console.WriteLine ("Received {0} from {1}", (char) received [0], ip);
-					message.SourceClient.Tick ();
+					message.SourceClient.Update ();
 					message.Dispatch();
 					this.ForwardMessage (message);
 				}

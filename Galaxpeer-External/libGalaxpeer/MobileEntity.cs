@@ -64,7 +64,7 @@ namespace Galaxpeer
 		public float Size;
 		public Guid Uuid;
 		public Guid OwnedBy;
-		public long LastUpdate;
+		public long LastUpdate = DateTime.UtcNow.Ticks;
 
 		public MobileEntity ()
 		{
@@ -133,7 +133,7 @@ namespace Galaxpeer
 			Location = new Vector3 (nx, ny, nz);
 
 			if (!Position.IsInRoi (LocalPlayer.Instance.Location, Location)) {
-				if (!IsMine || !Position.IsInAnyRoi (Game.ConnectionManager.ClientsInRoi.Values, Location)) {
+				if (!IsMine || !Position.IsInAnyRoi (Location)) {
 					Destroy ();
 				}
 			}
@@ -255,7 +255,7 @@ namespace Galaxpeer
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			float distance = Position.ROI_RADIUS / 2; //- 1;
+			float distance = 80; //Position.ROI_RADIUS / 2; //- 1;
 			if (rnd.NextDouble () > .5) {
 				distance *= -1;
 			}

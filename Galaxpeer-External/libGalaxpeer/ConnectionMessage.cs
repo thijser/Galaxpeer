@@ -61,9 +61,11 @@ namespace Galaxpeer
 
 			if (EntityManager.Get (Uuid) == null) {
 				Player player = new Player (this);
-				EntityManager.Entities[Uuid] = player;
+				EntityManager.Add(Uuid, player);
 				PsycicManager.Instance.AddEntity (player);
 			}
+
+			Game.ConnectionManager.ConnectionCache.Update (Uuid);
 		}
 
 		public override byte[] Serialize()

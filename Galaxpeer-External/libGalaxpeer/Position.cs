@@ -35,15 +35,15 @@ namespace Galaxpeer
 			return GetDistance (myLocation, otherLocation) <= ROI_RADIUS;
 		}
 
-		public static bool IsInAnyRoi(ICollection<Client> clients, Vector3 location)
+		public static bool IsInAnyRoi(Vector3 location)
 		{
-			foreach (var client in clients) {
-				if (client.Player != null && IsInRoi (client.Player.Location, location)) {
-					return true;
+			bool inRoi = false;
+			Game.ConnectionManager.ClientsInRoi.ForEach ((Guid uuid, Client client) => {
+				if (IsInRoi(client.Player.Location, location)) {
+					inRoi = true;
 				}
-			}
-
-			return false;
+			});
+			return inRoi;
 		}
 
 		public static bool IsInSight(Vector3 a, Vector3 b)
