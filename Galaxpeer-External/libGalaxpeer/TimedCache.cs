@@ -58,6 +58,11 @@ namespace Galaxpeer
 			});
 		}
 
+		public void Acquire (Action action)
+		{
+			dictionary.Acquire (action);
+		}
+
 		public void Update (TKey key)
 		{
 			ValuePair pair = dictionary.Get (key);

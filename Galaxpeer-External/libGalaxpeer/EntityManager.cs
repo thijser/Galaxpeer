@@ -18,13 +18,22 @@ namespace Galaxpeer
 			PsycicManager.OnTick += GenerateAsteroids;
 			PsycicManager.OnTick += SendLocationUpdates;
 			DestroyMessage.OnReceive += OnDestroyMessage;
+			ConnectionMessage.OnParse += OnConnectionMessage;
 
 			Client.OnCreate += OnCreateClient;
+		}
+
+		static void OnConnectionMessage (ConnectionMessage message)
+		{
+			if (!Entities.ContainsKey (message.Uuid) && Position.IsClientInRoi (message.Location)) {
+				Entities.Add (message.Uuid, new Player (message));
+			}
 		}
 
 		static void OnCreateClient (Client client)
 		{
 			// TODO: Send mobile entities
+			Console.WriteLine("Created client {0}", client.Uuid);
 		}
 
 		static void OnDestroyEntity (MobileEntity entity, bool owned)

@@ -46,12 +46,14 @@ namespace Galaxpeer
 		public void AddEntity(MobileEntity entity)
 		{
 			if (entity != null) {
+				EntityManager.Add(entity.Uuid, entity);
 				created.Add (entity);
 			}
 		}
 	
 		public void RemoveEntity(MobileEntity entity)
 		{
+			EntityManager.Remove (entity);
 			destroyed.Add (entity);
 		}
 
@@ -61,7 +63,6 @@ namespace Galaxpeer
 			while (pm.created.Count != 0) {
 				var entity = pm.created [0];
 				pm.objects.Add (entity);
-				EntityManager.Add(entity.Uuid, entity);
 				if (entity != LocalPlayer.Instance) {
 					UnityInterfaceInterfaceManager.InstanceUnintyInterface.SpawnModel (entity);
 				}
@@ -89,7 +90,6 @@ namespace Galaxpeer
 			while (destroyed.Count != 0) {
 				var entity = destroyed [0];
 				objects.Remove (entity);
-				EntityManager.Remove (entity);
 				UnityInterfaceInterfaceManager.InstanceUnintyInterface.Destroy (entity);
 				destroyed.Remove (entity);
 			}

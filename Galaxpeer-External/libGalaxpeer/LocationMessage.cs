@@ -10,6 +10,7 @@ namespace Galaxpeer
 
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
+		public Guid OwnedBy { get; private set; }
 		public Vector3 Location { get; private set; }
 		public Quaternion Rotation { get; private set; }
 		public Vector3 Velocity { get; private set; }
@@ -22,6 +23,7 @@ namespace Galaxpeer
 			public byte Type;
 			public long Timestamp;
 			public Guid Uuid;
+			public Guid OwnedBy;
 			public Vector3 Location;
 			public Quaternion Rotation;
 			public Vector3 Velocity;
@@ -31,6 +33,7 @@ namespace Galaxpeer
 		{
 			Type = mob.Type;
 			Uuid = mob.Uuid;
+			OwnedBy = mob.OwnedBy;
 			Location = mob.Location;
 			Rotation = mob.Rotation;
 			Velocity = mob.Velocity;
@@ -43,6 +46,7 @@ namespace Galaxpeer
 			Hops = packet.Hops;
 			Type = (MobileEntity.EntityType) packet.Type;
 			Uuid = packet.Uuid;
+			OwnedBy = packet.OwnedBy;
 			Location = packet.Location;
 			Rotation = packet.Rotation;
 			Velocity = packet.Velocity;
@@ -56,6 +60,7 @@ namespace Galaxpeer
 			packet.Timestamp = Timestamp;
 			packet.Type = (byte) Type;
 			packet.Uuid = Uuid;
+			packet.OwnedBy = OwnedBy;
 			packet.Location = Location;
 			packet.Rotation = Rotation;
 			packet.Velocity = Velocity;

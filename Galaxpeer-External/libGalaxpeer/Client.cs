@@ -31,11 +31,16 @@ namespace Galaxpeer
 		public Connection Connection;
 		public IPEndPoint EndPoint;
 
-		private Client (ConnectionMessage message, Player player)
+		private Client (ConnectionMessage message)
 		{
 			Uuid = message.Uuid;
 			ConnectionMessage = message;
-			Player = player;
+
+			if (!EntityManager.Entities.ContainsKey (message.Uuid)) {
+				PsycicManager.Instance.AddEntity (new Player (message));
+			}
+			Player = (Player) EntityManager.Get (message.Uuid);
+
 			Connection = Game.ConnectionManager.Connect (message);
 		}
 
@@ -49,9 +54,15 @@ namespace Galaxpeer
 		{
 			Client client = Clients.Get (message.Uuid);
 			if (client == null) {
-				client = new Client (message, (Player)EntityManager.Get (message.Uuid));
-				Clients.Set (message.Uuid, client);
-				if (OnCreate != null) {
+				bool created = false;
+				Clients.Acquire (() => {
+					client = Clients.Get (message.Uuid);
+					if (client == null) {
+						client = new Client (message);
+						Clients.Set (message.Uuid, client);
+					}
+				});
+				if (created && OnCreate != null) {
 					OnCreate (client);
 				}
 			}

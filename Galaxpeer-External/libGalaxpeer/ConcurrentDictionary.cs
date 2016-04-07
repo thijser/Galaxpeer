@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Galaxpeer
 {
+	public delegate void Action ();
+
 	public class ConcurrentDictionary<TKey, TValue>
 	{
 		public delegate void Functor (TKey key, TValue value);
@@ -23,6 +25,17 @@ namespace Galaxpeer
 		{
 			lock (dictionary) {
 				return dictionary.ContainsKey (key);
+			}
+		}
+
+		public void Add (TKey key, TValue value)
+		{
+			if (value != null) {
+				lock (dictionary) {
+					if (!ContainsKey (key)) {
+						Set (key, value);
+					}
+				}
 			}
 		}
 
@@ -64,6 +77,13 @@ namespace Galaxpeer
 				foreach (var item in toRemove) {
 					dictionary.Remove (item);
 				}
+			}
+		}
+
+		public void Acquire (Action func)
+		{
+			lock (dictionary) {
+				func ();
 			}
 		}
 	}

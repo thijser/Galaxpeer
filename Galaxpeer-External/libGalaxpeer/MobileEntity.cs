@@ -80,7 +80,7 @@ namespace Galaxpeer
 		public MobileEntity(LocationMessage message)
 		{
 			Uuid = message.Uuid;
-			OwnedBy = message.SourceClient.Uuid;
+			OwnedBy = message.OwnedBy;
 			copyMessageData (message);
 			Size = 1;
 			//Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);

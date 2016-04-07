@@ -17,6 +17,7 @@ namespace GalaxpeerCLI
 			Game.Init (c1);
 
 			Console.WriteLine ("Listening on port {0}", c1.LocalConnectionMessage.Port);
+			Console.WriteLine ("Local player is {0}", LocalPlayer.Instance.Uuid);
 
 			if (args.Length >= 2) {
 				Console.WriteLine ("Connecting to {0}:{1}", args [0], args[1]);

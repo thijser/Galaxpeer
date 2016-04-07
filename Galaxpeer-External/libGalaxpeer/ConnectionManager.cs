@@ -92,17 +92,31 @@ namespace Galaxpeer
 
 		public void UpdateRoiConnection(ILocationMessage message)
 		{
-			bool contains = ClientsInRoi.ContainsKey (message.Uuid);
-			if (Position.IsClientInRoi (message.Location)) {
-				if (!contains) {
-					ClientsInRoi.Set (message.Uuid, Client.Clients.Get (message.Uuid));
+			bool inRoi = Position.IsClientInRoi (message.Location);
+			ClientsInRoi.Acquire (() => {
+				bool contains = ClientsInRoi.ContainsKey (message.Uuid);
+				if (inRoi) {
+					if (!contains) {
+						if (message.GetType () == typeof(ConnectionMessage)) {
+							// With a ConnectionMessage, a new Client can be created if it does not yet
+							// exist.
+							ClientsInRoi.Set (message.Uuid, Client.Get ((ConnectionMessage)message));
+						} else {
+							// With only a LocationMessage, there is insufficient information to create
+							// a new Client. If the client already exists, it will be added to the 
+							// list of clients in ROI, otherwise, too bad, but there is nothing to do.
+							ClientsInRoi.Set (message.Uuid, Client.Clients.Get (message.Uuid));
+						}
+						Console.WriteLine ("Added client {0} to ROI", message.Uuid);
+					}
+				} else {
+					if (contains) {
+						ClientsInRoi.Remove (message.Uuid);
+						Disconnect (message.Uuid);
+						Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
+					}
 				}
-			} else {
-				if (contains) {
-					ClientsInRoi.Remove (message.Uuid);
-					Disconnect (message.Uuid);
-				}
-			}
+			});
 		}
 
 		public void FindClosestClient(int octant)
@@ -193,21 +207,25 @@ namespace Galaxpeer
 		 */
 		protected void OnReceiveConnection(ConnectionMessage message)
 		{
-			ConnectionCache.Set (message.Uuid, message);
-			UpdateRoiConnection (message);
-			UpdateOctant (message);
+			if (message.Uuid != LocalPlayer.Instance.Uuid) {
+				ConnectionCache.Set (message.Uuid, message);
+				UpdateRoiConnection (message);
+				UpdateOctant (message);
+			}
 		}
 
 		protected void OnReceiveLocation(LocationMessage message)
 		{
-			EntityManager.UpdateEntity (message);
+			if (message.OwnedBy != LocalPlayer.Instance.Uuid) {
+				EntityManager.UpdateEntity (message);
 
-			if ((MobileEntity.EntityType)message.Type == MobileEntity.EntityType.Player) {
-				UpdateRoiConnection (message);
+				if ((MobileEntity.EntityType)message.Type == MobileEntity.EntityType.Player) {
+					UpdateRoiConnection (message);
 
-				Client client = ClientsInRoi.Get (message.Uuid);
-				if (client != null) {
-					UpdateOctant (message, client);
+					Client client = ClientsInRoi.Get (message.Uuid);
+					if (client != null) {
+						UpdateOctant (message, client);
+					}
 				}
 			}
 		}
