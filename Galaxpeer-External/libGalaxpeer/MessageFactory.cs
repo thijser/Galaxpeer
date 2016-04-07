@@ -32,6 +32,8 @@ namespace Galaxpeer
 			Register ('R', typeof(RequestConnectionsMessage));
 			Register ('D', typeof(DestroyMessage));
 			Register ('H', typeof(HandoverMessage));
+			Register ('T', typeof(TakeoverMessage));
+			Register ('Q', typeof(RequestLocationMessage));
 		}
 	}
 }

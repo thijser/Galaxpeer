@@ -3,12 +3,11 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	class HandoverMessage : TMessage<HandoverMessage>
+	class RequestLocationMessage : TMessage<RequestLocationMessage>
 	{
 		public override sbyte max_hops { get { return 0; } }
 
-		public Guid ObjectUuid;
-		public Guid OwnerUuid;
+		public Guid Uuid;
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
@@ -16,33 +15,29 @@ namespace Galaxpeer
 			public char Id;
 			public sbyte Hops;
 			public long Timestamp;
-			public Guid ObjectUuid;
-			public Guid OwnerUuid;
+			public Guid Uuid;
 		}
 
-		public HandoverMessage(MobileEntity mob)
+		public RequestLocationMessage(Guid uuid)
 		{
-			ObjectUuid = mob.Uuid;
-			OwnerUuid = mob.OwnedBy;
+			Uuid = uuid;
 		}
 
-		public HandoverMessage(byte[] bytes)
+		public RequestLocationMessage(byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
 			Timestamp = packet.Timestamp;
 			Hops = packet.Hops;
-			ObjectUuid = packet.ObjectUuid;
-			OwnerUuid = packet.OwnerUuid;
+			Uuid = packet.Uuid;
 		}
 
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'H';
+			packet.Id = 'Q';
 			packet.Hops = Hops;
 			packet.Timestamp = Timestamp;
-			packet.ObjectUuid = ObjectUuid;
-			packet.OwnerUuid = OwnerUuid;
+			packet.Uuid = Uuid;
 
 			return ToBytes (packet);
 		}

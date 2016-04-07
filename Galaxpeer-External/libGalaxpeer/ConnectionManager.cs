@@ -70,6 +70,13 @@ namespace Galaxpeer
 			});
 		}
 
+		public void Broadcast(Message message)
+		{
+			ClientsInRoi.ForEach ((Guid uuid, Client client) => {
+				client.Connection.Send (message);
+			});
+		}
+
 		public void ForwardMessage(Message message)
 		{
 			if (--message.Hops > 0) {
@@ -143,7 +150,9 @@ namespace Galaxpeer
 			ClientsInRoi.Remove (uuid);
 
 			// Remove from endpoints
-			endPoints.Remove (client.EndPoint);
+			if (client.EndPoint != null) {
+				endPoints.Remove (client.EndPoint);
+			}
 
 			// Remove from connection cache
 			ConnectionCache.Remove (uuid);
@@ -169,7 +178,7 @@ namespace Galaxpeer
 				if (closest == null) {
 					Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
 					newInOctant = true;
-				} else if (closest.Uuid != message.Uuid && distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 3)) {
+				} else if (closest.Uuid != message.Uuid && distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 10)) {
 					Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
 					closest.Connection.Close ();
 					newInOctant = true;

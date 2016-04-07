@@ -3,10 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	class HandoverMessage : TMessage<HandoverMessage>
+	class TakeoverMessage : TMessage<TakeoverMessage>
 	{
-		public override sbyte max_hops { get { return 0; } }
-
 		public Guid ObjectUuid;
 		public Guid OwnerUuid;
 
@@ -20,13 +18,13 @@ namespace Galaxpeer
 			public Guid OwnerUuid;
 		}
 
-		public HandoverMessage(MobileEntity mob)
+		public TakeoverMessage(MobileEntity mob)
 		{
 			ObjectUuid = mob.Uuid;
 			OwnerUuid = mob.OwnedBy;
 		}
 
-		public HandoverMessage(byte[] bytes)
+		public TakeoverMessage(byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
 			Timestamp = packet.Timestamp;
@@ -38,7 +36,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'H';
+			packet.Id = 'T';
 			packet.Hops = Hops;
 			packet.Timestamp = Timestamp;
 			packet.ObjectUuid = ObjectUuid;
@@ -48,3 +46,4 @@ namespace Galaxpeer
 		}
 	}
 }
+

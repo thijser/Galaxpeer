@@ -71,12 +71,21 @@ namespace Galaxpeer
 		}
 
 		public abstract byte[] Serialize();
+		public abstract void Parsed();
 		public abstract void Dispatch();
 	}
 
 	public abstract class TMessage<T> : Message where T : TMessage<T>
 	{
 		public static event MessageHandler<T> OnReceive;
+		public static event MessageHandler<T> OnParse;
+
+		public override void Parsed()
+		{
+			if (OnParse != null) {
+				OnParse ((T)this);
+			}
+		}
 
 		public override void Dispatch()
 		{

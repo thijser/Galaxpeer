@@ -16,17 +16,6 @@ namespace Galaxpeer
 		protected Quaternion rotation;
 		protected Vector3 velocity;
 
-		bool? isMine = null;
-		bool IsMine
-		{
-			get {
-				if (isMine == null) {
-					isMine = OwnedBy.Equals (LocalPlayer.LocalUuid); 
-				}
-				return (bool) isMine;
-			}
-		}
-
 		public Vector3 Location
 		{
 			get {
@@ -60,10 +49,23 @@ namespace Galaxpeer
 			}
 		}
 
+
+		public bool IsMine;
 		public abstract EntityType Type { get; }
 		public float Size;
 		public Guid Uuid;
-		public Guid OwnedBy;
+
+		private Guid ownedBy;
+		public Guid OwnedBy {
+			get {
+				return ownedBy;
+			}
+			set {
+				IsMine = value.Equals (LocalPlayer.LocalUuid);
+				ownedBy = value;
+			}
+		}
+
 		public long LastUpdate = DateTime.UtcNow.Ticks;
 
 		public MobileEntity ()
@@ -131,6 +133,15 @@ namespace Galaxpeer
 			float ny = (float)(Location.Y + stepsize * Velocity.Y);
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			location = new Vector3 (nx, ny, nz);
+
+			if (IsMine) {
+				Client closest;
+				if (Position.ClosestClient (location, out closest)) {
+					closest.Connection.Send (new HandoverMessage (this));
+				} else {
+
+				}
+			}
 
 			if (!Position.IsEntityInRoi (LocalPlayer.Instance.Location, Location)) {
 				if (!IsMine || !Position.IsInAnyRoi (Location)) {

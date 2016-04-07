@@ -50,5 +50,20 @@ namespace Galaxpeer
 			});
 			return inRoi;
 		}
+
+		public static bool ClosestClient (Vector3 location, out Client client)
+		{
+			Client closest = null;
+			double distance = Position.GetDistance (LocalPlayer.Instance.Location, location);
+			Game.ConnectionManager.ClientsInRoi.ForEach ((Guid id, Client c) => {
+				double d = Position.GetDistance(c.Player.Location, location);
+				if (d < distance && d <= ROI_RADIUS) {
+					closest = c;
+					distance = d;
+				}
+			});
+			client = closest;
+			return client != null;
+		}
 	}
 }

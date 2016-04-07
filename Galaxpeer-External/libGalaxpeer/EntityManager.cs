@@ -18,12 +18,66 @@ namespace Galaxpeer
 			PsycicManager.OnTick += GenerateAsteroids;
 			PsycicManager.OnTick += SendLocationUpdates;
 			DestroyMessage.OnReceive += OnDestroyMessage;
-			ConnectionMessage.OnParse += OnConnectionMessage;
+			ConnectionMessage.OnParse += OnParseConnectionMessage;
+			LocationMessage.OnParse += OnLocationMessage;
+			RequestLocationMessage.OnReceive += OnRequestLocationMessage;
+
+			HandoverMessage.OnReceive += OnHandover;
+			TakeoverMessage.OnReceive += OnTakeover;
 
 			Client.OnCreate += OnCreateClient;
 		}
 
-		static void OnConnectionMessage (ConnectionMessage message)
+		static void OnRequestLocationMessage (RequestLocationMessage message)
+		{
+			MobileEntity entity = Get (message.Uuid);
+			if (entity != null) {
+				message.SourceClient.Connection.Send (new LocationMessage (entity));
+			}
+		}
+
+		// Send data about MobileEntities in his ROI
+		static void OnLocationMessage (LocationMessage message)
+		{
+			if (message.Type == MobileEntity.EntityType.Player) {
+				Client client = Client.Get (message.Uuid);
+				if (client != null) {
+					Entities.ForEach ((Guid uuid, MobileEntity entity) => {
+						if (entity.IsMine) {
+							if (Position.IsEntityInRoi (entity.Location, message.Location)) {
+								if (!Position.IsEntityInRoi (entity.Location, client.Player.Location)) {
+									client.Connection.Send (new LocationMessage (entity));
+									Console.WriteLine("Sent location of {0} to {1}", entity.Uuid, client.Uuid);
+								}
+							}
+						}
+					});
+				}
+			}
+		}
+
+		static void OnTakeover (TakeoverMessage message)
+		{
+			MobileEntity entity = Get (message.ObjectUuid);
+			if (entity != null) {
+				entity.OwnedBy = message.OwnerUuid;
+			}
+		}
+
+		static void OnHandover (HandoverMessage message)
+		{
+			MobileEntity entity = Get (message.ObjectUuid);
+			if (entity != null) {
+				entity.OwnedBy = LocalPlayer.Instance.Uuid;
+				message.SourceClient.Connection.Send (new TakeoverMessage (entity));
+				//Game.ConnectionManager.SendInRoi (new TakeoverMessage (entity), entity.Location);
+			} else {
+				Console.WriteLine ("Unknown entity {0}", message.ObjectUuid);
+				message.SourceClient.Connection.Send (new RequestLocationMessage (message.ObjectUuid));
+			}
+		}
+
+		static void OnParseConnectionMessage (ConnectionMessage message)
 		{
 			if (!Entities.ContainsKey (message.Uuid) && Position.IsClientInRoi (message.Location)) {
 				Entities.Add (message.Uuid, new Player (message));
@@ -32,15 +86,20 @@ namespace Galaxpeer
 
 		static void OnCreateClient (Client client)
 		{
-			// TODO: Send mobile entities
-			Console.WriteLine("Created client {0}", client.Uuid);
+			Vector3 l = client.Player.Location;
+			Console.WriteLine ("New client {0} at {1} {2} {3}", client.Uuid, l.X, l.Y, l.Z);
+			Entities.ForEach ((Guid uuid, MobileEntity entity) => {
+				if (Position.IsEntityInRoi(entity.Location, client.Player.Location)) {
+					client.Connection.Send (new LocationMessage(entity));
+					Console.WriteLine("Sent location of {0} to new client {1}", entity.Uuid, client.Uuid);
+				}
+			});
 		}
 
 		static void OnDestroyEntity (MobileEntity entity, bool owned)
 		{
 			if (owned) {
-				var msg = new DestroyMessage (entity);
-				Game.ConnectionManager.SendInRoi (msg, entity.Location);
+				Game.ConnectionManager.SendInRoi (new DestroyMessage(entity), entity.Location);
 			}
 		}
 

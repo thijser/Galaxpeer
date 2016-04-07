@@ -36,11 +36,12 @@ namespace Galaxpeer
 
 		protected void onReceive(IAsyncResult result)
 		{
-			//try
-			//{
+			try
+			{
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
 				Message message = MessageFactory.Parse (received);
+				message.Parsed();
 				message.SourceIp = ip;
 				message.SourceClient = GetByEndPoint (ip);
 				if (message.SourceClient == null) {
@@ -53,11 +54,11 @@ namespace Galaxpeer
 					message.Dispatch();
 					this.ForwardMessage (message);
 				}
-	//}
-			//catch (Exception e)
-			//{
-
-			//}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine (e.StackTrace);
+			}
 			Receive ();
 		}
 	}

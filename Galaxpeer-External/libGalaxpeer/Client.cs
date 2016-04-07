@@ -50,6 +50,11 @@ namespace Galaxpeer
 			Clients.Update (Uuid);
 		}
 
+		public static Client Get (Guid uuid)
+		{
+			return Clients.Get (uuid);
+		}
+
 		public static Client Get(ConnectionMessage message)
 		{
 			Client client = Clients.Get (message.Uuid);
@@ -60,6 +65,7 @@ namespace Galaxpeer
 					if (client == null) {
 						client = new Client (message);
 						Clients.Set (message.Uuid, client);
+						created = true;
 					}
 				});
 				if (created && OnCreate != null) {

@@ -9,8 +9,6 @@ namespace Galaxpeer
 	{
 		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
 
-		public static event MessageHandler<ConnectionMessage> OnParse;
-
 		public override IPEndPoint SourceIp
 		{
 			set {
@@ -62,10 +60,6 @@ namespace Galaxpeer
 			Timestamp = packet.Timestamp;
 
 			Game.ConnectionManager.ConnectionCache.Update (Uuid);
-
-			if (OnParse != null) {
-				OnParse (this);
-			}
 		}
 
 		public override byte[] Serialize()
