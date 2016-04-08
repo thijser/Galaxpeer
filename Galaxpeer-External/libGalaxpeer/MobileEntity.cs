@@ -175,7 +175,7 @@ namespace Galaxpeer
 			if (IsMine && !isHandingOver) {
 				Client closest;
 				if (Position.ClosestClient (location, out closest)) {
-					closest.Connection.Send (new HandoverMessage (this));
+					Handover (closest);
 				} else {
 
 				}
