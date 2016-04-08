@@ -52,7 +52,6 @@ namespace Galaxpeer
 					}
 					message.SourceClient.Update ();
 					message.Dispatch();
-					this.ForwardMessage (message);
 				}
 			}
 			catch (Exception e)

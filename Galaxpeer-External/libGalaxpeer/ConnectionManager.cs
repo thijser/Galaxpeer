@@ -13,6 +13,7 @@ namespace Galaxpeer
 		public ConnectionMessage LocalConnectionMessage;
 
 		public readonly TimedCache<Guid, ConnectionMessage> ConnectionCache = new TimedCache<Guid, ConnectionMessage>();
+		private readonly TimedCache<Guid, ConnectionMessage> ForwardedMessages = new TimedCache<Guid, ConnectionMessage> ();
 		private readonly ConcurrentDictionary<IPEndPoint, Client> endPoints = new ConcurrentDictionary<IPEndPoint, Client>();
 
 		public readonly Client[] ClosestClients = new Client[8];
@@ -23,6 +24,8 @@ namespace Galaxpeer
 		public ConnectionManager()
 		{
 			ConnectionCache.CacheTimeout = 30000;
+			ForwardedMessages.CacheTimeout = 5000;
+
 			Client.Clients.OnRemove += this.removeClient;
 
 			requestConnectionsTimer = new Timer (this.RequestConnections, null, REQUEST_CONNECTIONS_INTERVAL, REQUEST_CONNECTIONS_INTERVAL); 
@@ -77,25 +80,61 @@ namespace Galaxpeer
 			});
 		}
 
-		public void ForwardMessage(Message message)
+		private void ForwardConnectionMessage (ConnectionMessage message)
 		{
-			if (message.Hops-- > 0) {
+			bool forward = false;
+			ForwardedMessages.Acquire (() => {
+				if (!ForwardedMessages.ContainsKey(message.Uuid)) {
+					ForwardedMessages.Set (message.Uuid, message);
+					forward = true;
+				}
+			});
+			if (forward) {
+				ForwardMessage (message);
+			}
+		}
+
+		public void ForwardMessage(ConnectionMessage message)
+		{
+			//if (message.Hops-- > 0) {
 				foreach (var client in ClosestClients) {
 					if (client != null && client != message.SourceClient) {
-						client.Connection.Send (message);
-						Console.WriteLine ("Forwarding message");
+						if (Position.IsClientInRoi (client.Player.Location, message.Location)) {
+							client.Connection.Send (message);
+							Console.WriteLine ("Forwarding message");
+						}
 					}
 				}
-			}
+			//}
 		}
 
 		public void RequestConnections(object _)
 		{
+			Console.WriteLine ("Requesting connections");
 			foreach (var client in ClosestClients) {
 				if (client != null) {
 					client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
 				}
 			}
+		}
+
+		public bool IsClosest (Guid uuid) {
+			foreach (var closest in ClosestClients) {
+				if (closest != null && closest.Uuid == uuid) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public bool IsClosest (Client client)
+		{
+			foreach (var closest in ClosestClients) {
+				if (client == closest) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public void UpdateRoiConnection(ILocationMessage message)
@@ -120,7 +159,12 @@ namespace Galaxpeer
 				} else {
 					if (contains) {
 						ClientsInRoi.Remove (message.Uuid);
-						Disconnect (message.Uuid);
+						// Only disconnect if not in ClosestClients
+						if (!IsClosest (message.Uuid)) {
+							Disconnect (message.Uuid);
+						} else {
+							Console.WriteLine("Maintaining connection with {0} in closest", message.Uuid);
+						}
 						Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
 					}
 				}
@@ -218,6 +262,7 @@ namespace Galaxpeer
 		protected void OnReceiveConnection(ConnectionMessage message)
 		{
 			if (message.Uuid != LocalPlayer.Instance.Uuid) {
+				ForwardConnectionMessage (message);
 				ConnectionCache.Set (message.Uuid, message);
 				UpdateRoiConnection (message);
 				UpdateOctant (message);

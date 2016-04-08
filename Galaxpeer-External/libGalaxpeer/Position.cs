@@ -30,14 +30,24 @@ namespace Galaxpeer
 			return Math.Sqrt (d.X * d.X + d.Y * d.Y + d.Z * d.Z);
 		}
 
-		public static bool IsEntityInRoi(Vector3 myLocation, Vector3 otherLocation)
+		private static bool IsInRoi (Vector3 a, Vector3 b, float r)
 		{
-			return GetDistance (myLocation, otherLocation) <= ROI_RADIUS;
+			return GetDistance (a, b) <= r;
+		}
+
+		public static bool IsEntityInRoi(Vector3 player, Vector3 entity)
+		{
+			return IsInRoi (player, entity, ROI_RADIUS);
+		}
+
+		public static bool IsClientInRoi(Vector3 a, Vector3 b)
+		{
+			return IsInRoi (a, b, PLAYER_ROI_RADIUS);
 		}
 
 		public static bool IsClientInRoi(Vector3 location)
 		{
-			return GetDistance (LocalPlayer.Instance.Location, location) <= PLAYER_ROI_RADIUS;
+			return IsClientInRoi (LocalPlayer.Instance.Location, location);
 		}
 
 		public static bool IsInAnyRoi(Vector3 location)
