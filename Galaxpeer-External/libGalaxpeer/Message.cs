@@ -12,8 +12,8 @@ namespace Galaxpeer
 
 		public virtual IPEndPoint SourceIp { get; set; }
 		public Client SourceClient { get; set; }
-		public sbyte Hops;
-		public long Timestamp;
+		public sbyte Hops { get; set; }
+		public long Timestamp { get; set; }
 
 		public long Age {
 			get {

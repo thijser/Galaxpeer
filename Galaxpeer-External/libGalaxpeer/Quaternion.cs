@@ -64,6 +64,11 @@ namespace Galaxpeer
 		{
 			return new Vector3 (v.X * f, v.Y * f, v.Z * f);
 		}
+
+		public override string ToString ()
+		{
+			return "(" + X + ", " + Y + ", " + Z + ")";
+		}
 	}
 
 	#if WINRT

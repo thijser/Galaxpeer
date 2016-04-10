@@ -8,6 +8,10 @@ namespace Galaxpeer
 	// Also receives incoming connections
 	public abstract class ConnectionManager
 	{
+		public delegate void ClientHandler (Client client);
+		public static event ClientHandler OnEnterROI;
+		public static event ClientHandler OnExitROI;
+
 		private const int REQUEST_CONNECTIONS_INTERVAL = 15000;
 
 		public ConnectionMessage LocalConnectionMessage;
@@ -67,16 +71,9 @@ namespace Galaxpeer
 		public void SendInRoi(Message message, Vector3 location)
 		{
 			ClientsInRoi.ForEach ((Guid uuid, Client client) => {
-				if (Position.IsEntityInRoi(client.Player.Location, location)) {
+				if (Position.IsEntityNearRoi(client.Player.Location, location)) {
 					client.Connection.Send(message);
 				}
-			});
-		}
-
-		public void Broadcast(Message message)
-		{
-			ClientsInRoi.ForEach ((Guid uuid, Client client) => {
-				client.Connection.Send (message);
 			});
 		}
 
@@ -101,7 +98,7 @@ namespace Galaxpeer
 					if (client != null && client != message.SourceClient) {
 						if (Position.IsClientInRoi (client.Player.Location, message.Location)) {
 							client.Connection.Send (message);
-							Console.WriteLine ("Forwarding message");
+							//Console.WriteLine ("Forwarding message");
 						}
 					}
 				}
@@ -110,7 +107,7 @@ namespace Galaxpeer
 
 		public void RequestConnections(object _)
 		{
-			Console.WriteLine ("Requesting connections");
+			//Console.WriteLine ("Requesting connections");
 			foreach (var client in ClosestClients) {
 				if (client != null) {
 					client.Connection.Send (new RequestConnectionsMessage (LocalPlayer.Instance.Location));
@@ -140,6 +137,11 @@ namespace Galaxpeer
 		public void UpdateRoiConnection(ILocationMessage message)
 		{
 			bool inRoi = Position.IsClientInRoi (message.Location);
+
+			bool entered = false;
+			bool exited = false;
+			Client subject = null;
+
 			ClientsInRoi.Acquire (() => {
 				bool contains = ClientsInRoi.ContainsKey (message.Uuid);
 				if (inRoi) {
@@ -147,28 +149,46 @@ namespace Galaxpeer
 						if (message.GetType () == typeof(ConnectionMessage)) {
 							// With a ConnectionMessage, a new Client can be created if it does not yet
 							// exist.
-							ClientsInRoi.Set (message.Uuid, Client.Get ((ConnectionMessage)message));
+							subject = Client.Get ((ConnectionMessage)message);
+							ClientsInRoi.Set (message.Uuid, subject);
 						} else {
 							// With only a LocationMessage, there is insufficient information to create
 							// a new Client. If the client already exists, it will be added to the 
 							// list of clients in ROI, otherwise, too bad, but there is nothing to do.
-							ClientsInRoi.Set (message.Uuid, Client.Clients.Get (message.Uuid));
+							subject = Client.Clients.Get (message.Uuid);
+							ClientsInRoi.Set (message.Uuid, subject);
 						}
-						Console.WriteLine ("Added client {0} to ROI", message.Uuid);
+						//Console.WriteLine ("Added client {0} to ROI", message.Uuid);
+						entered = true;
 					}
 				} else {
 					if (contains) {
+						subject = Client.Get (message.Uuid);
+						exited = true;
 						ClientsInRoi.Remove (message.Uuid);
 						// Only disconnect if not in ClosestClients
 						if (!IsClosest (message.Uuid)) {
 							Disconnect (message.Uuid);
 						} else {
-							Console.WriteLine("Maintaining connection with {0} in closest", message.Uuid);
+							//Console.WriteLine("Maintaining connection with {0} in closest", message.Uuid);
 						}
-						Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
+						//Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
 					}
 				}
 			});
+
+			// Fire events outside lock
+			if (subject != null) {
+				if (entered) {
+					if (OnEnterROI != null) {
+						OnEnterROI (subject);
+					}
+				} else if (exited) {
+					if (OnExitROI != null) {
+						OnExitROI (subject);
+					}
+				}
+			}
 		}
 
 		public void FindClosestClient(int octant)
@@ -179,7 +199,7 @@ namespace Galaxpeer
 				if (messageOctant == octant) {
 					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
 					if (distance <= max_distance) {
-						Console.WriteLine ("Found new client {0}", message.Uuid);
+						//Console.WriteLine ("Found new client {0}", message.Uuid);
 						ClosestClients [octant] = Client.Get (message);
 						max_distance = distance;
 					}
@@ -189,7 +209,7 @@ namespace Galaxpeer
 
 		void removeClient (Guid uuid, Client client)
 		{
-			Console.WriteLine ("Dropping client {0}", uuid);
+			//Console.WriteLine ("Dropping client {0}", uuid);
 
 			// Remove from ROI
 			ClientsInRoi.Remove (uuid);
@@ -221,10 +241,10 @@ namespace Galaxpeer
 				bool newInOctant = false;
 
 				if (closest == null) {
-					Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
+					//Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
 					newInOctant = true;
 				} else if (closest.Uuid != message.Uuid && distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 10)) {
-					Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
+					//Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
 					closest.Connection.Close ();
 					newInOctant = true;
 				}
@@ -245,11 +265,11 @@ namespace Galaxpeer
 					
 					ClosestClients [octant] = client;
 
-					Console.WriteLine ("Connections: ");
+					/*Console.WriteLine ("Connections: ");
 					for (int i = 0; i < 8; i++) {
 						Client c = ClosestClients [i];
 						Console.WriteLine ("Octant {0}: {1}", i, c == null ? new Guid() : c.Uuid);
-					}
+					}*/
 				}
 			}
 		}

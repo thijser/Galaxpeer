@@ -28,7 +28,7 @@ namespace Galaxpeer
 		public override void Close ()
 		{
 			// TODO implement UDPConnection.Close()
-			Console.WriteLine ("TODO: close connection");
+			//Console.WriteLine ("TODO: close connection");
 		}
 
 		protected void onSend(IAsyncResult result)

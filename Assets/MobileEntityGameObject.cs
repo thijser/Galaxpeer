@@ -8,6 +8,7 @@ using System.Reflection;
 public class MobileEntityGameObject : MonoBehaviour {
 	public Guid Uuid;
 	public string id;
+	public int Health;
 
 	void Start () {
 		id = Uuid.ToString ();
@@ -24,6 +25,7 @@ public class MobileEntityGameObject : MonoBehaviour {
 	void Update () {
 		var me = Entity;
 		if (me != null) {
+			Health = me.Health;
 			transform.position = Conversion.ToUnity (me.Location);
 			transform.rotation = Conversion.ToUnity (me.Rotation);
 		}

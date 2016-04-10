@@ -50,10 +50,15 @@ namespace Galaxpeer
 			Uuid = message.Uuid;
 			ConnectionMessage = message;
 
-			if (!EntityManager.Entities.ContainsKey (message.Uuid)) {
-				PsycicManager.Instance.AddEntity (new Player (message));
-			}
-			Player = (Player) EntityManager.Get (message.Uuid);
+			EntityManager.Entities.Acquire (() => {
+				if (!EntityManager.Entities.ContainsKey (message.Uuid)) {
+					Player = new Player (message);
+					PsycicManager.Instance.AddEntity (Player);
+					EntityManager.Entities.Set (message.Uuid, Player);
+				} else {
+					Player = (Player) EntityManager.Entities.Get (message.Uuid);
+				}
+			});
 
 			Connection = Game.ConnectionManager.Connect (message);
 		}
@@ -86,58 +91,8 @@ namespace Galaxpeer
 					OnCreate (client);
 				}
 			}
+
 			return client;
 		}
-
-		/*
-
-		private Timer timer;
-
-		public Player Player
-		{
-			get {
-				return (Player) EntityManager.Get (ConnectionMessage.Uuid);
-			}
-		}
-
-		private Connection connection;
-		public Connection Connection
-		{
-			get {
-				if (connection == null) {
-					connection = Game.ConnectionManager.Connect (ConnectionMessage);
-				}
-				return connection;
-			}
-		}
-
-		public Client(ConnectionMessage connectionMessage)
-		{
-			Console.WriteLine ("New Client {0}", connectionMessage.Uuid);
-			ConnectionMessage = connectionMessage;
-			timer = new Timer (onTimeout, null, MAX_AGE, Timeout.Infinite);
-		}
-
-		public void Tick ()
-		{
-			timer.Change (MAX_AGE, Timeout.Infinite);
-		}
-
-		private void onTimeout(object _)
-		{
-			Game.ConnectionManager.Disconnect (this);
-		}
-
-		private static Dictionary<Guid, Client> clients = new Dictionary<Guid, Client>();
-		public static Client Create(ConnectionMessage message)
-		{
-			if (clients.ContainsKey (message.Uuid)) {
-				return clients [message.Uuid];
-			} else {
-				var client = new Client (message);
-				clients [message.Uuid] = client;
-				return client;
-			}
-		}*/
 	}
 }

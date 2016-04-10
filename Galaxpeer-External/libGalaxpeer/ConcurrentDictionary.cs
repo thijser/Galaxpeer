@@ -12,6 +12,13 @@ namespace Galaxpeer
 
 		private Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
 
+		public int Count
+		{
+			get {
+				return dictionary.Count;
+			}
+		}
+
 		public void Set (TKey key, TValue value)
 		{
 			if (value != null) {

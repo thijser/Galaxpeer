@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Galaxpeer
 {
-	public class LocationMessage : TMessage<LocationMessage>, ILocationMessage
+	public class LocationMessage : TMessage<LocationMessage>, IFullLocationMessage
 	{
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }

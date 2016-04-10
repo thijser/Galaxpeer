@@ -8,7 +8,14 @@ namespace Galaxpeer
 
 	public abstract class MobileEntity
 	{
+		const int UPDATE_TIMEOUT = 2000;
+		const int PERIODIC_UPDATE_INTERVAL = 500;
+		const int HANDOVER_TIMEOUT = 1500;
+		const int HANDOVER_COOLDOWN = 1000;
+
 		public static event EntityUpdateHandler OnLocationUpdate;
+		public static event EntityUpdateHandler OnPeriodicUpdate;
+		public static event EntityUpdateHandler OnTimeout;
 		public static event EntityUpdateHandler OnDestroy;
 
 		public enum EntityType : byte { Player = 1, Rocket = 2, Asteroid = 3 };
@@ -51,61 +58,129 @@ namespace Galaxpeer
 		}
 
 
-		public bool IsMine;
+		protected abstract int MaxHealth { get; }
+		public int Health;
+
+		private bool isMine = false;
+		public bool IsMine {
+			get {
+				return isMine;
+			}
+			set {
+				lock (ownershipLock) {
+					if (value && !isMine) {
+						try {
+							livenessTimer.Dispose ();
+						} catch (Exception) {}
+						livenessTimer = new Timer (this.sendPeriodicUpdate, null, PERIODIC_UPDATE_INTERVAL, PERIODIC_UPDATE_INTERVAL);
+					} else if (!value && isMine) {
+						try {
+							livenessTimer.Dispose ();
+						} catch (Exception) {}
+						livenessTimer = new Timer (this.onUpdateTimeout, null, UPDATE_TIMEOUT, UPDATE_TIMEOUT);
+					}
+
+					isMine = value;
+				}
+			}
+		}
+
+		void sendPeriodicUpdate (object _) {
+			if (OnPeriodicUpdate != null) {
+				OnPeriodicUpdate (this, IsMine);
+			}
+		}
+
+		void onUpdateTimeout (object _) {
+			if (OnTimeout != null) {
+				OnTimeout (this, IsMine);
+			}
+		}
+
 		public abstract EntityType Type { get; }
 		public float Size;
 		public Guid Uuid;
 
+		private object ownershipLock = new object ();
 		private Guid ownedBy;
 		public Guid OwnedBy {
 			get {
 				return ownedBy;
 			}
 			set {
-				IsMine = value.Equals (LocalPlayer.LocalUuid);
-				ownedBy = value;
+				lock (ownershipLock) {
+					IsMine = value.Equals (LocalPlayer.LocalUuid);
+					ownedBy = value;
+				}
 			}
 		}
 
 		protected Timer handoverTimer;
+		protected Timer livenessTimer;
 		protected bool isHandingOver = false;
 		public long LastUpdate = DateTime.UtcNow.Ticks;
 
 		public MobileEntity ()
 		{
 			Uuid = Guid.NewGuid ();
-			OwnedBy = LocalPlayer.LocalUuid;
 			location = new Vector3 (0, 0, 0);
 			rotation = new Quaternion (0, 0, 0, 1);
 			velocity = new Vector3 (0, 0, 0);
-			Size = 1;
-			//Console.WriteLine ("Generated MobileEntity {0} of type {1} at {2}.{3}.{4}", Uuid, this.Type, Location.X, Location.Y, Location.Z);
+			Size = .8f;
+			Health = MaxHealth;
+
+			lock (ownershipLock) {
+				OwnedBy = LocalPlayer.LocalUuid;
+				if (!IsMine) {
+					livenessTimer = new Timer (this.onUpdateTimeout, null, UPDATE_TIMEOUT, UPDATE_TIMEOUT);
+				}
+			}
 		}
 
-		public MobileEntity(LocationMessage message)
+		public MobileEntity(IFullLocationMessage message)
 		{
 			Uuid = message.Uuid;
-			OwnedBy = message.OwnedBy;
 			copyMessageData (message);
-			Size = 1;
-			//Console.WriteLine ("Created MobileEntity {0} of type {1} from LocationMessage", Uuid, this.Type);
+			Size = .8f;
+			Health = MaxHealth;
 			fireUpdate (false);
+
+			lock (ownershipLock) {
+				OwnedBy = message.OwnedBy;
+				if (!IsMine) {
+					livenessTimer = new Timer (this.onUpdateTimeout, null, UPDATE_TIMEOUT, UPDATE_TIMEOUT);
+				}
+			}
 		}
 
-		private void copyMessageData(LocationMessage message)
+		private void copyMessageData(IFullLocationMessage message)
 		{
 			location = message.Location;
 			rotation = message.Rotation;
 			velocity = message.Velocity;
 
+			OwnedBy = message.OwnedBy;
 			LastUpdate = message.Timestamp;
 		}
 
-		public void Update(LocationMessage message)
+		public void Update(IFullLocationMessage message)
 		{
-			if (message.Timestamp > LastUpdate) {
-				copyMessageData (message);
-				fireUpdate (false);
+			// Ownership conflict! Client with lowest UUID takes ownership
+			lock (ownershipLock) {
+				if (IsMine && !isHandingOver) {
+					if (OwnedBy.CompareTo (message.OwnedBy) < 0) {
+						if (Game.Config.PrintEntities) {
+							Console.WriteLine ("Ownership conflict over {0} between me ({1}) and {2}", message.Uuid, OwnedBy, message.OwnedBy);
+						}
+						Takeover (message.SourceClient);
+					}
+				} else {
+					if (message.Timestamp > LastUpdate) {
+						copyMessageData (message);
+						livenessTimer.Change (UPDATE_TIMEOUT, Timeout.Infinite);
+						fireUpdate (false);
+					}
+				}
 			}
 		}
 
@@ -115,33 +190,65 @@ namespace Galaxpeer
 			if (Position.ClosestClient (location, out closest)) {
 				Handover (closest);
 			} else {
-
+				// TODO: What now?
 			}
 		}
 
 		protected void Handover (Client client)
 		{
-			isHandingOver = true;
-			client.Connection.Send (new HandoverMessage (this));
-			handoverTimer = new Timer (this.onHandoverTimeout, this, 1500, Timeout.Infinite);
+			lock (ownershipLock) {
+				if (IsMine) {
+					isHandingOver = true;
+					client.Connection.Send (new HandoverMessage (this));
+					handoverTimer = new Timer (this.onHandoverTimeout, this, HANDOVER_TIMEOUT, HANDOVER_TIMEOUT);
+				}
+			}
 		}
 
-		public void Takeover (Guid uuid)
+		public void Takeover (Client client)
 		{
-			try {
-				handoverTimer.Dispose ();
-				handoverTimer = null;
-			} catch (Exception) {}
-			OwnedBy = uuid;
+			lock (ownershipLock) {
+				client.Connection.Send (new TakeoverMessage (this));
+				OnTakeover (LocalPlayer.Instance.Uuid);
+			}
+		}
+
+		public void Takeover ()
+		{
+			lock (ownershipLock) {
+				Game.ConnectionManager.SendInRoi (new TakeoverMessage (this), Location);
+				OnTakeover (LocalPlayer.Instance.Uuid);
+			}
+		}
+
+		public void OnTakeover (Guid uuid)
+		{
+			lock (ownershipLock) {
+				//isHandingOver = false;
+				OwnedBy = uuid;
+				try {
+					handoverTimer.Dispose ();
+				} catch (Exception) {}
+				handoverTimer = new Timer (onHandoverCooldown, null, HANDOVER_COOLDOWN, Timeout.Infinite);
+			}
+			Game.ConnectionManager.SendInRoi (new LocationMessage (this), Location);
+		}
+
+		void onHandoverCooldown (object obj)
+		{
+			isHandingOver = false;
 		}
 
 		protected void onHandoverTimeout (object obj)
 		{
-			try {
-				handoverTimer.Dispose ();
+			lock (ownershipLock) {
+				isHandingOver = false;
+				try {
+					handoverTimer.Dispose ();
+				} catch (Exception) {}
 				handoverTimer = null;
-			} catch (Exception) {}
-			TryHandover ();
+				TryHandover ();
+			}
 		}
 			
 		protected void fireUpdate(bool owned)
@@ -152,19 +259,49 @@ namespace Galaxpeer
 			}
 		}
 
-		public abstract void Collide (MobileEntity other);
+		public virtual void Collide (MobileEntity other)
+		{
+			float difX = other.Velocity.X - Velocity.X;
+			float difY = other.Velocity.X - Velocity.X;
+			float difZ = other.Velocity.X - Velocity.X;
+			int difHealth = (int) Math.Round (difX * difX + difY * difY + difZ * difZ);
+			Vector3 myVelocity = Velocity;
+
+			Health -= difHealth;
+			other.Health -= difHealth;
+			if (Health <= 0) {
+				this.Destroy ();
+			} else {
+				Velocity = other.Velocity;
+			}
+
+			if (other.Health <= 0) {
+				other.Destroy ();
+			} else {
+				other.Velocity = myVelocity;
+			}
+		}
 
 		public virtual void Destroy ()
 		{
 			PsycicManager.Instance.RemoveEntity (this);
+			lock (ownershipLock) {
+				try {
+					handoverTimer.Dispose ();
+				} catch (Exception) {}
+				try {
+					livenessTimer.Dispose ();
+				} catch (Exception) {}
+			}
 
 			if (OnDestroy != null) {
 				OnDestroy (this, IsMine);
 			}
 		}
 
-		public int Health;
-
+		// If entity is mine and new position is closer to other player, hand over to that player
+		// If entity is mine and outside my ROI, but not closer to other player, destroy
+		// If entity is not mine and outside my ROI, destroy
 		public void LocationUpdate (double stepsize)
 		{
 			float nx = (float)(Location.X + stepsize * Velocity.X); 
@@ -172,18 +309,20 @@ namespace Galaxpeer
 			float nz = (float)(Location.Z + stepsize * Velocity.Z);
 			location = new Vector3 (nx, ny, nz);
 
-			if (IsMine && !isHandingOver) {
-				Client closest;
-				if (Position.ClosestClient (location, out closest)) {
-					Handover (closest);
+			lock (ownershipLock) {
+				if (IsMine) {
+					if (!isHandingOver) {
+						Client closest;
+						if (Position.ClosestClient (location, out closest)) {
+							Handover (closest);
+						} else if (!Position.IsEntityInRoi (LocalPlayer.Instance.Location, location)) {
+							Destroy ();
+						}
+					}
 				} else {
-
-				}
-			}
-
-			if (!Position.IsEntityInRoi (LocalPlayer.Instance.Location, Location)) {
-				if (!IsMine || !Position.IsInAnyRoi (Location)) {
-					Destroy ();
+					if (!Position.IsEntityInRoi (LocalPlayer.Instance.Location, Location)) {
+						Destroy ();
+					}
 				}
 			}
 		}
@@ -193,10 +332,6 @@ namespace Galaxpeer
 			Vector3 f = Rotation.GetForwardVector ();
 			Vector3 v = velocity + (stepsize * (acceleration * f));
 
-			//float Vx = Velocity.X + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().X));
-			//float Vy = Velocity.Y + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Y));
-			//float Vz = Velocity.Z + (float)(stepsize * (acceleration * Rotation.GetForwardVector ().Z));
-			//velocity = new Vector3 (Vx, Vy, Vz);
 			if ((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) >= maxspeed * maxspeed) {
 				v *= 0.8f;
 			}
@@ -207,11 +342,13 @@ namespace Galaxpeer
 		{
 			Quaternion r = Quaternion.CreateFromYawPitchRoll ((float) right, (float) up, (float) spin);
 			Rotation *= r;
-
 		}
 
 		public bool CheckCollision (MobileEntity other)
 		{
+			if (other == null) {
+				return false;
+			}
 			if (other.Equals (this))
 				return false;
 			double Xdist = Location.X - other.Location.X;
@@ -232,6 +369,12 @@ namespace Galaxpeer
 			}
 		}
 
+		protected override int MaxHealth {
+			get {
+				return 100;
+			}
+		}
+
 		public Player() {}
 
 		public Player(ConnectionMessage message)
@@ -241,12 +384,7 @@ namespace Galaxpeer
 			Location = message.Location;
 		}
 
-		public Player(LocationMessage message) : base(message) {}
-
-		public override void Collide (MobileEntity other)
-		{
-			this.Velocity = other.Velocity;
-		}
+		public Player(IFullLocationMessage message) : base(message) {}
 	}
 
 	public class Rocket : MobileEntity
@@ -257,31 +395,37 @@ namespace Galaxpeer
 			}
 		}
 
+		protected override int MaxHealth {
+			get {
+				return 10;
+			}
+		}
+
 		const float VELOCITY = 50;
 
 		public Rocket(Vector3 location, Quaternion rotation)
 		{
 			Vector3 v = rotation.GetForwardVector ();
 		
-			this.location = location + (v * 3);
+			this.location = location + (v * (Size + LocalPlayer.Instance.Size + .5f));
 			this.rotation = rotation;
 
-			float Vx = (float)(20 * v.X);
-			float Vy = (float)(20 * v.Y);
-			float Vz = (float)(20 * v.Z);
+			float Vx = (float)(VELOCITY * v.X);
+			float Vy = (float)(VELOCITY * v.Y);
+			float Vz = (float)(VELOCITY * v.Z);
 			Velocity = new Vector3 (Vx, Vy, Vz);
 		}
 
-		public Rocket(LocationMessage message) : base(message) {}
+		public Rocket(IFullLocationMessage message) : base(message) {}
 
 		public override void Collide (MobileEntity other)
 		{
-			float difX = other.Velocity.X - Velocity.X;
-			float difY = other.Velocity.X - Velocity.X;
-			float difZ = other.Velocity.X - Velocity.X;
-			this.Velocity = other.Velocity;
-			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));
-			other.Health = other.Health - 10;
+			//float difX = other.Velocity.X - Velocity.X;
+			//float difY = other.Velocity.X - Velocity.X;
+			//float difZ = other.Velocity.X - Velocity.X;
+			//this.Velocity = other.Velocity;
+			//Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));
+			other.Health -= 20;
 			this.Destroy ();
 		}
 	}
@@ -291,6 +435,13 @@ namespace Galaxpeer
 		public override EntityType Type {
 			get {
 				return EntityType.Asteroid;
+			}
+		}
+
+		private const int MinHealth = 20;
+		protected override int MaxHealth {
+			get {
+				return 200;
 			}
 		}
 		
@@ -304,7 +455,7 @@ namespace Galaxpeer
 			double y = Math.Sin (s) * Math.Cos (t);
 			double z = Math.Sin (t);
 
-			float distance = 80; //Position.ROI_RADIUS / 2; //- 1;
+			float distance = Position.ROI_RADIUS - 10; // / 2;
 			if (rnd.NextDouble () > .5) {
 				distance *= -1;
 			}
@@ -312,23 +463,10 @@ namespace Galaxpeer
 			location = LocalPlayer.Instance.Location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
 			velocity = new Vector3 ((float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f, (float) rnd.NextDouble() -.5f);
 			Rotate (rnd.NextDouble (), rnd.NextDouble(), rnd.NextDouble());
+			Health = rnd.Next (MinHealth, MaxHealth);
 		}
 
-		public Asteroid(LocationMessage message) : base(message) {}
-
-		public override void Collide (MobileEntity other)
-		{
-			float difX = other.Velocity.X - Velocity.X;
-			float difY = other.Velocity.X - Velocity.X;
-			float difZ = other.Velocity.X - Velocity.X;
-			this.Velocity = other.Velocity;
-			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
-			if (Health < 0) {
-				this.Destroy ();
-			}
-
-		}
-
+		public Asteroid(IFullLocationMessage message) : base(message) {}
 	}
 
 		
@@ -364,9 +502,10 @@ namespace Galaxpeer
 
 		public void Spawn ()
 		{
+			Health = MaxHealth;
 			Random rnd = new Random();
 			Velocity = new Vector3 (0, 0, 0);
-			Location = new Vector3(rnd.Next(0, 100), rnd.Next(0, 100), rnd.Next(0, 100));
+			Location = new Vector3(rnd.Next(0, 200), rnd.Next(0, 200), rnd.Next(0, 200));
 		}
 
 		public override void Destroy ()
@@ -381,18 +520,6 @@ namespace Galaxpeer
 				return new Rocket (this.Location, this.Rotation);
 			}
 			return null;
-		}
-
-		public override void Collide (MobileEntity other)
-		{
-			float difX = other.Velocity.X - Velocity.X;
-			float difY = other.Velocity.X - Velocity.X;
-			float difZ = other.Velocity.X - Velocity.X;
-			this.Velocity = other.Velocity;
-			Health = (int)(Health - (difX * difX + difY * difY + difZ * difZ));	
-			if (Health < 0) {
-				this.Destroy ();
-			}
 		}
 
 

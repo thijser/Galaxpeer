@@ -48,7 +48,7 @@ namespace Galaxpeer
 					//throw new ArgumentException ("Message from unknown client");
 				} else {
 					if (message.GetType() != typeof(LocationMessage)) {
-						Console.WriteLine ("Received {0} from {1}", (char)received [0], ip);
+						//Console.WriteLine ("Received {0} from {1}", (char)received [0], ip);
 					}
 					message.SourceClient.Update ();
 					message.Dispatch();

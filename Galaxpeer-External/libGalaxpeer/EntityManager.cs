@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace Galaxpeer
@@ -6,39 +7,49 @@ namespace Galaxpeer
 	public class EntityManager
 	{
 		public static ConcurrentDictionary<Guid, MobileEntity> Entities = new ConcurrentDictionary<Guid, MobileEntity>();
-		private const long ASTEROID_INTERVAL = TimeSpan.TicksPerMillisecond * 500;
-		private static long nextAsteroid = DateTime.UtcNow.Ticks + ASTEROID_INTERVAL;
+		private const long ASTEROID_INTERVAL = 3000;
+		private const int MAX_ENTITIES = 150;
 		private static List<MobileEntity> toUpdate = new List<MobileEntity>();
-
+		private static Timer asteroidTimer;
 
 		static EntityManager()
 		{
+			asteroidTimer = new Timer (GenerateAsteroids, null, ASTEROID_INTERVAL, ASTEROID_INTERVAL);
+
 			MobileEntity.OnLocationUpdate += OnLocationUpdate;
+			MobileEntity.OnPeriodicUpdate += OnPeriodicEntityUpdate;
+			MobileEntity.OnTimeout += OnEntityTimeout;
 			MobileEntity.OnDestroy += OnDestroyEntity;
-			PsycicManager.OnTick += GenerateAsteroids;
 			PsycicManager.OnTick += SendLocationUpdates;
 			DestroyMessage.OnReceive += OnDestroyMessage;
 			ConnectionMessage.OnParse += OnParseConnectionMessage;
-			LocationMessage.OnParse += OnParseLocationMessage;
-			LocationMessage.OnReceive += OnLocationMessage;
 			RequestLocationMessage.OnReceive += OnRequestLocationMessage;
 
 			HandoverMessage.OnReceive += OnHandover;
 			TakeoverMessage.OnReceive += OnTakeover;
 
-			Client.OnCreate += OnCreateClient;
+			ConnectionManager.OnEnterROI += ForwardAllLocations;
 		}
 
-		static void OnLocationMessage (LocationMessage message)
+		static void OnPeriodicEntityUpdate (MobileEntity entity, bool owned)
 		{
-			if (message.Type != MobileEntity.EntityType.Player) {
-				MobileEntity entity = Get (message.Uuid);
-				if (entity != null && entity.IsMine && message.OwnedBy != entity.OwnedBy) {
-					// Ownership conflict! Client with lowest UUID takes ownership
-					if (entity.OwnedBy.CompareTo (message.OwnedBy) < 0) {
-						message.SourceClient.Connection.Send (new TakeoverMessage (entity));
-					} else {
-						entity.OwnedBy = message.OwnedBy;
+			if (owned) {
+				Game.ConnectionManager.SendInRoi (new LocationMessage (entity), entity.Location);
+			}
+		}
+
+		static void OnEntityTimeout (MobileEntity entity, bool owned)
+		{
+			if (!owned) {
+				if (entity.Type != MobileEntity.EntityType.Player) {
+					if (Game.Config.PrintEntities) {
+						Console.WriteLine ("Entity {0} of {1} timed out", entity.Uuid, entity.OwnedBy);
+					}
+					if (Position.IsEntityInRoi (LocalPlayer.Instance.Location, entity.Location)) {
+						Client closest;
+						if (!Position.ClosestClient (entity.Location, out closest)) {
+							entity.Takeover ();
+						}
 					}
 				}
 			}
@@ -52,62 +63,49 @@ namespace Galaxpeer
 			}
 		}
 
-		// Send data about MobileEntities in his ROI
-		static void OnParseLocationMessage (LocationMessage message)
-		{
-			if (message.Type == MobileEntity.EntityType.Player) {
-				Client client = Client.Get (message.Uuid);
-				if (client != null) {
-					Entities.ForEach ((Guid uuid, MobileEntity entity) => {
-						if (entity.IsMine) {
-							if (Position.IsEntityInRoi (entity.Location, message.Location)) {
-								if (!Position.IsEntityInRoi (entity.Location, client.Player.Location)) {
-									client.Connection.Send (new LocationMessage (entity));
-									Console.WriteLine ("Sent location of {0} to {1}", entity.Uuid, client.Uuid);
-								}
-							}
-						}
-					});
-				}
-			}
-		}
-
 		static void OnTakeover (TakeoverMessage message)
 		{
+			if (Game.Config.PrintEntities) {
+				Console.WriteLine ("{0} takes over {1}", message.OwnerUuid, message.ObjectUuid);
+			}
 			MobileEntity entity = Get (message.ObjectUuid);
 			if (entity != null) {
-				entity.Takeover (message.OwnerUuid);
+				entity.OnTakeover (message.OwnerUuid);
 			}
 		}
 
 		static void OnHandover (HandoverMessage message)
 		{
-			MobileEntity entity = Get (message.ObjectUuid);
+			if (Game.Config.PrintEntities) {
+				Console.WriteLine ("{0} hands over {1}", message.SourceClient.Uuid, message.Uuid);
+			}
+			MobileEntity entity = UpdateEntity (message);
 			if (entity != null) {
-				entity.OwnedBy = LocalPlayer.Instance.Uuid;
-				message.SourceClient.Connection.Send (new TakeoverMessage (entity));
-				//Game.ConnectionManager.SendInRoi (new TakeoverMessage (entity), entity.Location);
-			} else {
-				Console.WriteLine ("Unknown entity {0}", message.ObjectUuid);
-				message.SourceClient.Connection.Send (new RequestLocationMessage (message.ObjectUuid));
+				entity.Takeover (message.SourceClient);
 			}
 		}
 
 		static void OnParseConnectionMessage (ConnectionMessage message)
 		{
-			if (!Entities.ContainsKey (message.Uuid) && Position.IsClientInRoi (message.Location)) {
-				Entities.Add (message.Uuid, new Player (message));
+			if (Position.IsClientInRoi (message.Location)) {
+				Entities.Acquire (() => {
+					if (!Entities.ContainsKey (message.Uuid)) {
+						Player player = new Player (message);
+						Entities.Set (message.Uuid, player);
+						PsycicManager.Instance.AddEntity (player);
+					}
+				});
 			}
 		}
 
-		static void OnCreateClient (Client client)
+		static void ForwardAllLocations (Client client)
 		{
 			Vector3 l = client.Player.Location;
-			Console.WriteLine ("New client {0} at {1} {2} {3}", client.Uuid, l.X, l.Y, l.Z);
+			//Console.WriteLine ("New client {0} at {1} {2} {3}", client.Uuid, l.X, l.Y, l.Z);
 			Entities.ForEach ((Guid uuid, MobileEntity entity) => {
-				if (Position.IsEntityInRoi(entity.Location, client.Player.Location)) {
+				if (Position.IsEntityNearRoi(entity.Location, client.Player.Location)) {
 					client.Connection.Send (new LocationMessage(entity));
-					Console.WriteLine("Sent location of {0} to new client {1}", entity.Uuid, client.Uuid);
+					//Console.WriteLine("Sent location of {0} to new client {1}", entity.Uuid, client.Uuid);
 				}
 			});
 		}
@@ -156,19 +154,27 @@ namespace Galaxpeer
 			Remove (entity.Uuid);
 		}
 
-		public static void UpdateEntity(LocationMessage message)
+		public static MobileEntity UpdateEntity(IFullLocationMessage message)
 		{
-			MobileEntity entity = Get (message.Uuid);
-			if (entity == null) {
-				if (Position.IsEntityInRoi(LocalPlayer.Instance.Location, message.Location)) {
-					CreateEntity (message);
+			MobileEntity entity = null;
+			bool doUpdate = true;
+			Entities.Acquire (() => {
+				entity = Get (message.Uuid);
+				if (entity == null) {
+					if (Position.IsEntityInRoi(LocalPlayer.Instance.Location, message.Location)) {
+						entity = CreateEntity (message);
+					}
+					doUpdate = false;
 				}
-			} else {
+			});
+
+			if (doUpdate) {
 				entity.Update (message);
 			}
+			return entity;
 		}
 
-		public static void CreateEntity(LocationMessage message)
+		public static MobileEntity CreateEntity(IFullLocationMessage message)
 		{
 			MobileEntity entity = null;
 			MobileEntity.EntityType type = (MobileEntity.EntityType)message.Type;
@@ -183,10 +189,11 @@ namespace Galaxpeer
 				entity = new Rocket (message);
 				break;
 			default:
-				return;
+				return null;
 			}
 			PsycicManager.Instance.AddEntity (entity);
 			Entities.Set(message.Uuid, entity);
+			return entity;
 		}
 
 		static void SendLocationUpdates(long time)
@@ -200,11 +207,10 @@ namespace Galaxpeer
 			}
 		}
 
-		private static void GenerateAsteroids(long time)
+		private static void GenerateAsteroids(object _)
 		{
-			if (time >= nextAsteroid) {
-				nextAsteroid = time + ASTEROID_INTERVAL;
-
+			// Only generate asteroid if space is not already filled with entities
+			if (Entities.Count <= MAX_ENTITIES) {
 				// Only generate asteroid if it is outside ROI of other players
 				Asteroid a = new Asteroid ();
 

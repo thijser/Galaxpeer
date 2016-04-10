@@ -21,7 +21,7 @@ namespace Galaxpeer
 		public TakeoverMessage(MobileEntity mob)
 		{
 			ObjectUuid = mob.Uuid;
-			OwnerUuid = mob.OwnedBy;
+			OwnerUuid = LocalPlayer.Instance.Uuid;
 		}
 
 		public TakeoverMessage(byte[] bytes)
