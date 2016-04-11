@@ -603,10 +603,10 @@ namespace Galaxpeer
 			if (closest == null) {
 				Location = new Vector3 (rnd.Next (0, 200), rnd.Next (0, 200), rnd.Next (0, 200));
 			} else {
-				Location = Position.Near (closest.Player.Location, Position.ROI_RADIUS / 2);
+				Location = Position.Near (closest.Player.Location, 50);//Position.ROI_RADIUS / 2);
 			}
 			spawnTimer.Dispose ();
-			spawnTimer = new Timer (completeSpawn, null, 5000, Timeout.Infinite);
+			spawnTimer = new Timer (completeSpawn, null, 1000, Timeout.Infinite);
 		}
 
 		private void completeSpawn (object _)

@@ -158,7 +158,9 @@ namespace Galaxpeer
 							subject = Client.Clients.Get (message.Uuid);
 							ClientsInRoi.Set (message.Uuid, subject);
 						}
-						//Console.WriteLine ("Added client {0} to ROI", message.Uuid);
+						if (Game.Config.PrintConnections) {
+							Console.WriteLine ("Added client {0} to ROI", message.Uuid);
+						}
 						entered = true;
 					}
 				} else {
@@ -169,10 +171,10 @@ namespace Galaxpeer
 						// Only disconnect if not in ClosestClients
 						if (!IsClosest (message.Uuid)) {
 							Disconnect (message.Uuid);
-						} else {
-							//Console.WriteLine("Maintaining connection with {0} in closest", message.Uuid);
 						}
-						//Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
+						if (Game.Config.PrintConnections) {
+							Console.WriteLine ("Removed client {0} from ROI", message.Uuid);
+						}
 					}
 				}
 			});
@@ -199,7 +201,9 @@ namespace Galaxpeer
 				if (messageOctant == octant) {
 					double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
 					if (distance <= max_distance) {
-						//Console.WriteLine ("Found new client {0}", message.Uuid);
+						if (Game.Config.PrintConnections) {
+							Console.WriteLine ("Found new client {0} in octant {1}", message.Uuid, octant);
+						}
 						ClosestClients [octant] = Client.Get (message);
 						max_distance = distance;
 					}
@@ -209,7 +213,9 @@ namespace Galaxpeer
 
 		void removeClient (Guid uuid, Client client)
 		{
-			//Console.WriteLine ("Dropping client {0}", uuid);
+			if (Game.Config.PrintConnections) {
+				Console.WriteLine ("Dropping client {0}", uuid);
+			}
 
 			// Remove from ROI
 			ClientsInRoi.Remove (uuid);
@@ -241,10 +247,14 @@ namespace Galaxpeer
 				bool newInOctant = false;
 
 				if (closest == null) {
-					//Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
+					if (Game.Config.PrintConnections) {
+						Console.WriteLine ("New client {0} in octant {1}", message.Uuid, octant);
+					}
 					newInOctant = true;
 				} else if (closest.Uuid != message.Uuid && distance < (Position.GetDistance (LocalPlayer.Instance.Location, closest.Player.Location) - 10)) {
-					//Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
+					if (Game.Config.PrintConnections) {
+						Console.WriteLine ("Dropping connection with {0} in octant {1} for {2}", closest.Uuid, octant, message.Uuid);
+					}
 					closest.Connection.Close ();
 					newInOctant = true;
 				}
@@ -265,11 +275,13 @@ namespace Galaxpeer
 					
 					ClosestClients [octant] = client;
 
-					/*Console.WriteLine ("Connections: ");
-					for (int i = 0; i < 8; i++) {
-						Client c = ClosestClients [i];
-						Console.WriteLine ("Octant {0}: {1}", i, c == null ? new Guid() : c.Uuid);
-					}*/
+					if (Game.Config.PrintConnections) {
+						Console.WriteLine ("Connections: ");
+						for (int i = 0; i < 8; i++) {
+							Client c = ClosestClients [i];
+							Console.WriteLine ("Octant {0}: {1}", i, c == null ? new Guid () : c.Uuid);
+						}
+					}
 				}
 			}
 		}

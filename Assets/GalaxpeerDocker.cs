@@ -14,6 +14,11 @@ public class GalaxpeerDocker : MonoBehaviour {
 	public string targetPort;
 	Dictionary<Guid, GameObject> gameObjects = new Dictionary<Guid, GameObject> ();
 
+	void Awake () {
+		QualitySettings.vSyncCount = 0;  // VSync must be disabled
+		Application.targetFrameRate = 30;
+	}
+
 	void Start () {
 		var UDPC = new UDPConnectionManager ();
 		string[] config = new string[] { "--connect", targetIP + ":" + targetPort };
