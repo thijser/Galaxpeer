@@ -214,8 +214,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 680619778}
-  - 135: {fileID: 1448527529}
-  - 23: {fileID: 1448527528}
   - 114: {fileID: 1448527527}
   - 114: {fileID: 1448527531}
   m_Layer: 0
@@ -237,46 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76cdddd5de88748d192045191ff8e3b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!23 &1448527528
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 2301798, guid: 5f3eca1413d0c49d98bf9865b8caeee1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1448527526}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 1
-  m_ReflectionProbeUsage: 1
-  m_ProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
---- !u!135 &1448527529
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 13513340, guid: 5f3eca1413d0c49d98bf9865b8caeee1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1448527526}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1448527531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,6 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 
+  Health: 0
 --- !u!1 &2089700872
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,7 +261,6 @@ GameObject:
   - 92: {fileID: 2089700876}
   - 124: {fileID: 2089700875}
   - 81: {fileID: 2089700874}
-  - 114: {fileID: 2089700873}
   - 45: {fileID: 2089700879}
   m_Layer: 0
   m_Name: Main Camera
@@ -311,18 +269,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2089700873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11478782, guid: 5f3eca1413d0c49d98bf9865b8caeee1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2089700872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43d772837db6540e5a109c42cc64c2fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!81 &2089700874
 AudioListener:
   m_ObjectHideFlags: 0

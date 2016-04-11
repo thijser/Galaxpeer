@@ -233,7 +233,7 @@ namespace Galaxpeer
 
 		private void UpdateOctant (ILocationMessage message, Client client = null)
 		{
-			if (message.Uuid != LocalPlayer.Instance.Uuid && ClientsInRoi.ContainsKey(message.Uuid)) {
+			if (message.Uuid != LocalPlayer.Instance.Uuid) {
 				int octant = Position.GetOctant (LocalPlayer.Instance.Location, message.Location);
 				double distance = Position.GetDistance (LocalPlayer.Instance.Location, message.Location);
 				Client closest = ClosestClients [octant];

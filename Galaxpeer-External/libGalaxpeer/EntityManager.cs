@@ -18,6 +18,7 @@ namespace Galaxpeer
 
 			MobileEntity.OnLocationUpdate += OnLocationUpdate;
 			MobileEntity.OnPeriodicUpdate += OnPeriodicEntityUpdate;
+			MobileEntity.BeforeTimeout += BeforeEntityTimeout;
 			MobileEntity.OnTimeout += OnEntityTimeout;
 			MobileEntity.OnDestroy += OnDestroyEntity;
 			PsycicManager.OnTick += SendLocationUpdates;
@@ -35,6 +36,16 @@ namespace Galaxpeer
 		{
 			if (owned) {
 				Game.ConnectionManager.SendInRoi (new LocationMessage (entity), entity.Location);
+			}
+		}
+
+		static void BeforeEntityTimeout (MobileEntity entity, bool owned)
+		{
+			if (!owned) {
+				Client client = Client.Get (entity.OwnedBy);
+				if (client != null) {
+					client.Connection.Send (new RequestLocationMessage (entity.Uuid));
+				}
 			}
 		}
 

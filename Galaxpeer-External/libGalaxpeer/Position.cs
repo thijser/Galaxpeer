@@ -5,8 +5,8 @@ namespace Galaxpeer
 {
 	public static class Position
 	{
-		public static float ROI_RADIUS = 150;
-		public static float PLAYER_ROI_RADIUS = 2 * ROI_RADIUS;
+		public const float ROI_RADIUS = 150;
+		public const float PLAYER_ROI_RADIUS = 2 * ROI_RADIUS;
 
 		public static int GetOctant (Vector3 myLocation, Vector3 otherLocation)
 		{
@@ -79,6 +79,40 @@ namespace Galaxpeer
 			});
 			client = closest;
 			return client != null;
+		}
+
+		public static Client ClosestClient ()
+		{
+			Vector3 myLoc = LocalPlayer.Instance.Location;
+			double distance = double.MaxValue;
+			Client closest = null;
+			foreach (var client in Game.ConnectionManager.ClosestClients) {
+				if (client != null) {
+					double d = Position.GetDistance (myLoc, client.Player.Location);
+					if (d < distance) {
+						distance = d;
+						closest = client;
+					}
+				}
+			}
+			return closest;
+		}
+
+		static Random rnd = new Random();
+		public static Vector3 Near (Vector3 location, float distance = Position.ROI_RADIUS - 10)
+		{
+			double s = rnd.NextDouble () % (2 * Math.PI);
+			double t = rnd.NextDouble () % (2 * Math.PI);
+
+			double x = Math.Cos (s) * Math.Cos (t);
+			double y = Math.Sin (s) * Math.Cos (t);
+			double z = Math.Sin (t);
+
+			if (rnd.NextDouble () > .5) {
+				distance *= -1;
+			}
+
+			return location + (new Vector3 ((float) x, (float) y, (float) z) * distance);
 		}
 	}
 }

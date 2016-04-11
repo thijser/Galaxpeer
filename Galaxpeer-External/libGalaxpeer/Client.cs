@@ -44,6 +44,7 @@ namespace Galaxpeer
 		public Player Player;
 		public Connection Connection;
 		public IPEndPoint EndPoint;
+		private long lastUpdate;
 
 		private Client (ConnectionMessage message)
 		{
@@ -61,12 +62,17 @@ namespace Galaxpeer
 			});
 
 			Connection = Game.ConnectionManager.Connect (message);
+
+			lastUpdate = DateTime.UtcNow.Ticks;
 		}
 
 		public void Update()
 		{
-			Game.ConnectionManager.ConnectionCache.Update (Uuid);
-			Clients.Update (Uuid);
+			if (lastUpdate < DateTime.UtcNow.Ticks - 1000) {
+				Game.ConnectionManager.ConnectionCache.Update (Uuid);
+				Clients.Update (Uuid);
+				lastUpdate = DateTime.UtcNow.Ticks;
+			}
 		}
 
 		public static Client Get (Guid uuid)

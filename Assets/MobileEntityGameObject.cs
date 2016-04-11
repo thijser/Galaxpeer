@@ -9,9 +9,11 @@ public class MobileEntityGameObject : MonoBehaviour {
 	public Guid Uuid;
 	public string id;
 	public int Health;
+	private Renderer rend;
 
 	void Start () {
 		id = Uuid.ToString ();
+		rend = GetComponentInChildren<Renderer> ();
 	}
 
 	public MobileEntity Entity {
@@ -28,6 +30,12 @@ public class MobileEntityGameObject : MonoBehaviour {
 			Health = me.Health;
 			transform.position = Conversion.ToUnity (me.Location);
 			transform.rotation = Conversion.ToUnity (me.Rotation);
+
+			if (Health <= 0) {
+				rend.enabled = false;
+			} else {
+				rend.enabled = true;
+			}
 		}
 	}
 }

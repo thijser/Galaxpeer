@@ -11,7 +11,6 @@ namespace Galaxpeer
 		struct Packet
 		{
 			public char Id;
-			public sbyte Hops;
 			public long Timestamp;
 			public Guid Uuid;
 		}
@@ -24,7 +23,6 @@ namespace Galaxpeer
 		public DestroyMessage(byte[] bytes)
 		{
 			Packet packet = FromBytes<Packet> (bytes);
-			Hops = packet.Hops;
 			Timestamp = packet.Timestamp;
 			Uuid = packet.Uuid;
 		}
@@ -33,7 +31,6 @@ namespace Galaxpeer
 		{
 			Packet packet;
 			packet.Id = 'D';
-			packet.Hops = Hops;
 			packet.Timestamp = Timestamp;
 			packet.Uuid = Uuid;
 

@@ -16,6 +16,7 @@ namespace Galaxpeer
 		Quaternion Rotation { get; }
 		Vector3 Velocity { get; }
 		Guid OwnedBy { get; }
+		int Health { get; }
 	}
 }
 
