@@ -7,7 +7,7 @@ namespace Galaxpeer
 {
 	public class UDPConnection : Connection
 	{
-		static UdpClient socket = new UdpClient();
+		public static UdpClient socket;
 		IPEndPoint EndPoint;
 
 		public UDPConnection(ConnectionMessage message) : base(message)
