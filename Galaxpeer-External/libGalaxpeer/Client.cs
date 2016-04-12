@@ -36,7 +36,9 @@ namespace Galaxpeer
 
 		static void SendHeartbeat (Guid uuid, Client client)
 		{
-			client.Connection.Send (new HeartbeatMessage ());
+			if (Game.ConnectionManager.IsClosest (client) || Game.ConnectionManager.IsInRoi (client)) {
+				client.Connection.Send (new HeartbeatMessage ());
+			}
 		}
 
 		public Guid Uuid;

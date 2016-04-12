@@ -43,7 +43,7 @@ namespace Galaxpeer
 				file = new StreamWriter ("log.csv");
 				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections outside ROI,Number of closest clients,Total entities,Received messages,Sent messages");
 
-				measure_timer = new Timer (CountAll, null, 10000, 10000);
+				measure_timer = new Timer (CountAll, null, config.MeasureFrequency, config.MeasureFrequency);
 			}
 		}
 

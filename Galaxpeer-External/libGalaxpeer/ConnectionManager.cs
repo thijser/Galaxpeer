@@ -134,6 +134,10 @@ namespace Galaxpeer
 			return false;
 		}
 
+		public bool IsInRoi (Client client) {
+			return ClientsInRoi.ContainsKey (client.Uuid);
+		}
+
 		public void UpdateRoiConnection(ILocationMessage message)
 		{
 			bool inRoi = Position.IsClientInRoi (message.Location);

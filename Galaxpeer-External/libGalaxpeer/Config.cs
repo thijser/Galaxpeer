@@ -22,6 +22,7 @@ namespace Galaxpeer
 		public readonly bool PrintConnections = false;
 		public readonly bool PrintEntities = false;
 
+		public readonly int MeasureFrequency = 10000;
 		public readonly bool MeasureAny = false;
 		public readonly bool MeasurePhysics = false;
 		public readonly bool MeasureEntityCount = false;
@@ -77,6 +78,13 @@ namespace Galaxpeer
 					MeasureConnectionsCount = true;
 					MeasureMessageCount = true;
 					MeasureMessageTime = true;
+				} else if (arguments [i] == "--measurefreq") {
+					try {
+						MeasureFrequency = int.Parse(arguments[i + 1]);
+						i++;
+					} catch (Exception) {
+						Console.WriteLine ("Failed to parse measure frequency");
+					}
 				}
 			}
 		}
