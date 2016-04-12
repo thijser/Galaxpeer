@@ -25,6 +25,7 @@ namespace Galaxpeer
 
 		public void Set (TKey key, TValue value)
 		{
+			stop (key);
 			ValuePair pair = new ValuePair();
 			if (CacheTimeout > 0) {
 				pair.timeout = new Timer (TimerHandler, key, CacheTimeout, Timeout.Infinite);
@@ -46,7 +47,7 @@ namespace Galaxpeer
 			return dictionary.ContainsKey (key);
 		}
 
-		public bool Remove (TKey key)
+		private ValuePair stop (TKey key)
 		{
 			ValuePair pair = dictionary.Get(key);
 			if (pair.timeout != null) {
@@ -55,6 +56,12 @@ namespace Galaxpeer
 			if (pair.interval != null) {
 				pair.interval.Dispose ();
 			}
+			return pair;
+		}
+
+		public bool Remove (TKey key)
+		{
+			ValuePair pair = stop (key);
 			bool success = dictionary.Remove (key);
 			if (pair.value != null && OnRemove != null) {
 				OnRemove (key, pair.value);
