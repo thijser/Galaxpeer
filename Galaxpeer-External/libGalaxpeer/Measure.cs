@@ -18,13 +18,14 @@ namespace Galaxpeer
 			public int ConnectionsInRoi;
 			public int ConnectionsOutsideRoi;
 			public int ClosestConnections;
+			public int KnownConnections;
 			public int TotalEntities;
 			public string ReceivedMessages;
 			public string SentMessages;
 
 			public override string ToString()
 			{
-				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, TotalEntities, ReceivedMessages, SentMessages);
+				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}", TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, KnownConnections, TotalEntities, ReceivedMessages, SentMessages);
 			}
 		}
 
@@ -42,7 +43,7 @@ namespace Galaxpeer
 				total_watch.Start ();
 
 				file = new StreamWriter ("log.csv");
-				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Total entities,Received messages,Sent messages");
+				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Known clients,Total entities,Received messages,Sent messages");
 
 				measure_timer = new Timer (CountAll, null, config.MeasureFrequency, config.MeasureFrequency);
 			}
@@ -205,6 +206,7 @@ namespace Galaxpeer
 					data.ConnectionsInRoi = Game.ConnectionManager.ClientsInRoi.Count;
 					data.ConnectionsOutsideRoi = 0;
 					data.ClosestConnections = 0;
+					data.KnownConnections = Game.ConnectionManager.ConnectionCache.Count;
 					foreach (var client in Game.ConnectionManager.ClosestClients) {
 						if (client != null) {
 							data.ClosestConnections++;
