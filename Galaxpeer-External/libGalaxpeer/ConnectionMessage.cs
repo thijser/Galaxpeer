@@ -7,6 +7,8 @@ namespace Galaxpeer
 {
 	public class ConnectionMessage : TMessage<ConnectionMessage>, ILocationMessage
 	{
+		public override char Id { get { return 'C'; } }
+
 		public static long MAX_AGE = 3 * TimeSpan.TicksPerMinute;
 
 		public override IPEndPoint SourceIp
@@ -68,7 +70,7 @@ namespace Galaxpeer
 			}
 
 			Packet packet;
-			packet.Id = 'C';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.Uuid = Uuid;
 			packet.Ip = BitConverter.ToUInt32(Ip.GetAddressBytes(), 0);

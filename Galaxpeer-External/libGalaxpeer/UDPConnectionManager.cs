@@ -37,11 +37,13 @@ namespace Galaxpeer
 
 		protected void onReceive(IAsyncResult result)
 		{
+			Game.Measure.BeginReceive ();
 			try
 			{
 				IPEndPoint ip = new IPEndPoint (IPAddress.Any, 0);
 				Byte[] received = socket.EndReceive (result, ref ip);
 				Message message = MessageFactory.Parse (received);
+				Game.Measure.ReceivedMessage(message.Id);
 				message.Parsed();
 				message.SourceIp = ip;
 				message.SourceClient = GetByEndPoint (ip);
@@ -59,6 +61,7 @@ namespace Galaxpeer
 			{
 				Console.WriteLine (e.ToString());
 			}
+			Game.Measure.EndReceive ();
 			Receive ();
 		}
 	}

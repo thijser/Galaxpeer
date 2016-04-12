@@ -5,6 +5,7 @@ namespace Galaxpeer
 {
 	public class DestroyMessage : TMessage<DestroyMessage>
 	{
+		public override char Id { get { return 'D'; } }
 		public Guid Uuid;
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
@@ -30,7 +31,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'D';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.Uuid = Uuid;
 

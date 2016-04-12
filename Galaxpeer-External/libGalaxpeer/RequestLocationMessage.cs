@@ -5,6 +5,7 @@ namespace Galaxpeer
 {
 	class RequestLocationMessage : TMessage<RequestLocationMessage>
 	{
+		public override char Id { get { return 'Q'; } }
 		public Guid Uuid;
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
@@ -30,7 +31,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'Q';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.Uuid = Uuid;
 

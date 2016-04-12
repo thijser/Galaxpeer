@@ -6,6 +6,7 @@ namespace Galaxpeer
 {
 	public class HandoverMessage : TMessage<HandoverMessage>, IFullLocationMessage
 	{
+		public override char Id { get { return 'H'; } }
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Guid OwnedBy { get { return LocalPlayer.Instance.Uuid; } }
@@ -52,7 +53,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'H';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.Health = (short)Health;
 			packet.Type = (byte) Type;

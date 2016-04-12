@@ -61,6 +61,7 @@ namespace Galaxpeer
 
 		public static void Tick(object _)
 		{
+			Game.Measure.BeginPhysics ();
 			lock (tickLock) {
 				var pm = PsycicManager.Instance;
 				while (pm.created.Count != 0) {
@@ -87,6 +88,7 @@ namespace Galaxpeer
 					OnTick (DateTime.UtcNow.Ticks);
 				}
 			}
+			Game.Measure.EndPhysics ();
 		}
 
 		private void Cleanup()

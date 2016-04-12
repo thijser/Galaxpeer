@@ -66,6 +66,7 @@ namespace Galaxpeer
 			return str;
 		}
 
+		public abstract char Id { get; }
 		public abstract byte[] Serialize();
 		public abstract void Parsed();
 		public abstract void Dispatch();

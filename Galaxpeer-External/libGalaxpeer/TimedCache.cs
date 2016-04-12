@@ -89,6 +89,13 @@ namespace Galaxpeer
 			catch (Exception) {}
 		}
 
+		public int Count
+		{
+			get {
+				return dictionary.Count;
+			}
+		}
+
 		private void TimerHandler (object obj)
 		{
 			TKey key = (TKey)obj;

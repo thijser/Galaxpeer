@@ -7,9 +7,11 @@ namespace Galaxpeer
 	{
 		public static ConnectionManager ConnectionManager { get; private set; }
 		public static Config Config { get; private set; }
+		public static Measurements Measure { get; private set; }
 
 		public static void Init(Config config, ConnectionManager connectionManager)
 		{
+			Measure = new Measurements (config);
 			Config = config;
 			ConnectionManager = connectionManager;
 			PsycicManager.Instance.Init ();

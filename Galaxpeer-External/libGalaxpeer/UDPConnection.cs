@@ -20,6 +20,7 @@ namespace Galaxpeer
 		public override void Send(Message message)
 		{
 			if (message != null) {
+				Game.Measure.SentMessage (message.Id);
 				byte[] serialized = message.Serialize ();
 				socket.BeginSend (serialized, serialized.Length, EndPoint, new AsyncCallback (onSend), null);
 			}

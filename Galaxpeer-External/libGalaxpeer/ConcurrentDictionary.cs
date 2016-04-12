@@ -93,5 +93,12 @@ namespace Galaxpeer
 				func ();
 			}
 		}
+
+		public void Clear ()
+		{
+			lock (dictionary) {
+				dictionary.Clear ();
+			}
+		}
 	}
 }

@@ -5,6 +5,7 @@ namespace Galaxpeer
 {
 	public class RequestConnectionsMessage : TMessage<RequestConnectionsMessage>
 	{
+		public override char Id { get { return 'R'; } }
 		public Vector3 Location { get; private set; }
 
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
@@ -30,7 +31,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'R';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.Location = Location;
 			return ToBytes (packet);

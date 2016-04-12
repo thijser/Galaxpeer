@@ -5,6 +5,7 @@ namespace Galaxpeer
 {
 	class TakeoverMessage : TMessage<TakeoverMessage>
 	{
+		public override char Id { get { return 'T'; } }
 		public Guid ObjectUuid;
 		public Guid OwnerUuid;
 
@@ -34,7 +35,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'T';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 			packet.ObjectUuid = ObjectUuid;
 			packet.OwnerUuid = OwnerUuid;

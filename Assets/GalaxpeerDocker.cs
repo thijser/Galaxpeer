@@ -20,9 +20,10 @@ public class GalaxpeerDocker : MonoBehaviour {
 	}
 
 	void Start () {
-		var UDPC = new UDPConnectionManager ();
-		string[] config = new string[] { "--connect", targetIP + ":" + targetPort };
-		Game.Init (new Config(config), UDPC);
+		string[] config = new string[] { "--connect", targetIP + ":" + targetPort, "--port", "36963" };
+		Config cfg = new Config (config);
+		var UDPC = new UDPConnectionManager (cfg.ListenPort);
+		Game.Init (cfg, UDPC);
 			print(UDPC.portstore);
 
 		if (targetIP != null) {

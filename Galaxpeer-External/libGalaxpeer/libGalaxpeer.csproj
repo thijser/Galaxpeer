@@ -61,6 +61,7 @@
     <Compile Include="RequestLocationMessage.cs" />
     <Compile Include="HeartbeatMessage.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Measure.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

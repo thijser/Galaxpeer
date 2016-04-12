@@ -5,6 +5,7 @@ namespace Galaxpeer
 {
 	class HeartbeatMessage : TMessage<HeartbeatMessage>
 	{
+		public override char Id { get { return 'B'; } }
 		[StructLayout(LayoutKind.Sequential, Pack=1, CharSet=CharSet.Unicode)]
 		struct Packet
 		{
@@ -23,7 +24,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'B';
+			packet.Id = Id;
 			packet.Timestamp = Timestamp;
 
 			return ToBytes (packet);

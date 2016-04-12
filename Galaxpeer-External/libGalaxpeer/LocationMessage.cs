@@ -6,6 +6,8 @@ namespace Galaxpeer
 {
 	public class LocationMessage : TMessage<LocationMessage>, IFullLocationMessage
 	{
+		public override char Id { get { return 'L'; } }
+
 		public MobileEntity.EntityType Type { get; private set; }
 		public Guid Uuid { get; private set; }
 		public Guid OwnedBy { get; private set; }
@@ -55,7 +57,7 @@ namespace Galaxpeer
 		public override byte[] Serialize()
 		{
 			Packet packet;
-			packet.Id = 'L';
+			packet.Id = Id;
 			packet.Health = (short) Health;
 			packet.Timestamp = Timestamp;
 			packet.Type = (byte) Type;
