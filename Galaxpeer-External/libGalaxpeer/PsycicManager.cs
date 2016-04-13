@@ -59,10 +59,29 @@ namespace Galaxpeer
 			destroyed.Add (entity);
 		}
 
+		private static bool moved = false;
+		private static Random rnd = new Random ();
+		private static Vector3 previousLocation;
 		public static void Tick(object _)
 		{
 			Game.Measure.BeginPhysics ();
 			lock (tickLock) {
+
+				DateTime time = DateTime.UtcNow;
+
+				if (Game.Config.MeasureFail) {
+					if (time.Minute % 2 == 0 && !moved) {
+						moved = true;
+						previousLocation = LocalPlayer.Instance.Location;
+						LocalPlayer.Instance.Location = new Vector3 (rnd.Next (0, 150), rnd.Next (0, 150), rnd.Next (0, 150));
+						Console.WriteLine ("Jumped to {0}", LocalPlayer.Instance.Location);
+					} else if (time.Minute % 2 == 1 && moved) {
+						moved = false;
+						LocalPlayer.Instance.Location = previousLocation;
+						Console.WriteLine ("Jumped to {0}", LocalPlayer.Instance.Location);
+					}
+				}
+
 				var pm = PsycicManager.Instance;
 				while (pm.created.Count != 0) {
 					var entity = pm.created [0];
@@ -85,7 +104,7 @@ namespace Galaxpeer
 				}
 				pm.Cleanup ();
 				if (OnTick != null) {
-					OnTick (DateTime.UtcNow.Ticks);
+					OnTick (time.Ticks);
 				}
 			}
 			Game.Measure.EndPhysics ();

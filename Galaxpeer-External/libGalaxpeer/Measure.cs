@@ -19,13 +19,14 @@ namespace Galaxpeer
 			public int ConnectionsOutsideRoi;
 			public int ClosestConnections;
 			public int KnownConnections;
+			public int ProcessCount;
 			public int TotalEntities;
 			public string ReceivedMessages;
 			public string SentMessages;
 
 			public override string ToString()
 			{
-				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}", TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, KnownConnections, TotalEntities, ReceivedMessages, SentMessages);
+				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}", TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, KnownConnections, ProcessCount, TotalEntities, ReceivedMessages, SentMessages);
 			}
 		}
 
@@ -43,7 +44,7 @@ namespace Galaxpeer
 				total_watch.Start ();
 
 				file = new StreamWriter ("log.csv");
-				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Known clients,Total entities,Received messages,Sent messages");
+				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Known clients,Number of processes,Total entities,Received messages,Sent messages");
 
 				measure_timer = new Timer (CountAll, null, config.MeasureFrequency, config.MeasureFrequency);
 			}
@@ -215,6 +216,17 @@ namespace Galaxpeer
 							}
 						}
 					}
+				}
+				if (config.MeasureFail) {
+					Process process = new Process();
+					process.StartInfo.FileName = "/bin/pgrep";
+					process.StartInfo.Arguments = "-cf Galaxpeer-CLI";
+					process.StartInfo.UseShellExecute = false;
+					process.StartInfo.RedirectStandardOutput = true;
+					process.StartInfo.RedirectStandardError = true;
+					process.Start();
+					string output = process.StandardOutput.ReadToEnd();
+					data.ProcessCount = int.Parse (output);
 				}
 
 				file.WriteLine (data.ToString ());

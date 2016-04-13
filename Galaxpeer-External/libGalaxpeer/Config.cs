@@ -29,6 +29,9 @@ namespace Galaxpeer
 		public readonly bool MeasureConnectionsCount = false;
 		public readonly bool MeasureMessageCount = false;
 		public readonly bool MeasureMessageTime = false;
+		public readonly bool MeasureFail = false;
+
+		public readonly bool Fail = false;
 
 		// I know, I know, real elegant. Works though.
 		public Config (string[] arguments)
@@ -80,11 +83,16 @@ namespace Galaxpeer
 					MeasureMessageTime = true;
 				} else if (arguments [i] == "--measurefreq") {
 					try {
-						MeasureFrequency = int.Parse(arguments[i + 1]);
+						MeasureFrequency = int.Parse (arguments [i + 1]);
 						i++;
 					} catch (Exception) {
 						Console.WriteLine ("Failed to parse measure frequency");
 					}
+				} else if (arguments [i] == "--fail") {
+					Fail = true;
+					MeasureFail = true;
+				} else if (arguments [i] == "--measurefail") {
+					MeasureFail = true;
 				}
 			}
 		}
