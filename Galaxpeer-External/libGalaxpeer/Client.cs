@@ -31,7 +31,9 @@ namespace Galaxpeer
 		static void onRemove (Guid key, Client value)
 		{
 			value.Connection.Close ();
-			value.Player.Destroy ();
+			if (!value.Uuid.Equals (LocalPlayer.Instance.Uuid)) {
+				value.Player.Destroy ();
+			}
 		}
 
 		static void SendHeartbeat (Guid uuid, Client client)

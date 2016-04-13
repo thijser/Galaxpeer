@@ -90,7 +90,6 @@ namespace Galaxpeer
 					}
 				} else if (arguments [i] == "--fail") {
 					Fail = true;
-					MeasureFail = true;
 				} else if (arguments [i] == "--measurefail") {
 					MeasureFail = true;
 				}

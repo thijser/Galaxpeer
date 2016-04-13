@@ -50,7 +50,7 @@ namespace Galaxpeer
 		}
 
 		public Guid newPlayer(){
-			LocalPlayer.Instance.Spawn ();
+			//LocalPlayer.Instance.Spawn ();
 			return LocalPlayer.Instance.Uuid;
 		}
 		public void shootplayer(){
