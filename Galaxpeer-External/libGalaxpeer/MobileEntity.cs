@@ -587,7 +587,13 @@ namespace Galaxpeer
 			if (!IsSpawning) {
 				IsSpawning = true;
 				Velocity = new Vector3 (0, 0, 0);
-				Location = new Vector3 (rndLoc(), rndLoc(), rndLoc());
+
+				if (Game.Config == null || Game.Config.MeasureLocal) {
+					Location = new Vector3 (rnd.Next (0, 200), rnd.Next (0, 200), rnd.Next (0, 200));
+				}
+				else {
+					Location = new Vector3 (rndLoc (), rndLoc (), rndLoc ());
+				}
 				spawnTimer = new Timer (selectSpawnPoint, null, 5000, Timeout.Infinite);
 			}
 		}
@@ -599,11 +605,13 @@ namespace Galaxpeer
 
 		private void selectSpawnPoint (object _)
 		{
-			Client closest = Position.ClosestClient ();
-			if (closest == null) {
-				Location = new Vector3 (rnd.Next (0, 200), rnd.Next (0, 200), rnd.Next (0, 200));
-			} else {
-				Location = Position.Near (closest.Player.Location, 50); //Position.ROI_RADIUS / 3);
+			if (!Game.Config.MeasureLocal) {
+				Client closest = Position.ClosestClient ();
+				if (closest == null) {
+					Location = new Vector3 (rnd.Next (0, 200), rnd.Next (0, 200), rnd.Next (0, 200));
+				} else {
+					Location = Position.Near (closest.Player.Location, 50); //Position.ROI_RADIUS / 3);
+				}
 			}
 			spawnTimer.Dispose ();
 			spawnTimer = new Timer (completeSpawn, null, 1000, Timeout.Infinite);

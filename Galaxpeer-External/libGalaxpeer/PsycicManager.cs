@@ -62,6 +62,7 @@ namespace Galaxpeer
 		private static bool moved = false;
 		private static Random rnd = new Random ();
 		private static Vector3 previousLocation;
+		private static Timer neighbourTimer = new Timer ((object _) => { Game.Measure.LogNeighbours(); }, null, Timeout.Infinite, Timeout.Infinite);
 		public static void Tick(object _)
 		{
 			Game.Measure.BeginPhysics ();
@@ -75,10 +76,12 @@ namespace Galaxpeer
 						previousLocation = LocalPlayer.Instance.Location;
 						LocalPlayer.Instance.Location = new Vector3 (rnd.Next (0, 150), rnd.Next (0, 150), rnd.Next (0, 150));
 						Console.WriteLine ("Jumped to {0}", LocalPlayer.Instance.Location);
+						neighbourTimer.Change (30000, Timeout.Infinite);
 					} else if (time.Minute % 2 == 1 && moved) {
 						moved = false;
 						LocalPlayer.Instance.Location = previousLocation;
 						Console.WriteLine ("Jumped to {0}", LocalPlayer.Instance.Location);
+						neighbourTimer.Change (30000, Timeout.Infinite);
 					}
 				}
 

@@ -8,6 +8,7 @@ namespace Galaxpeer
 	public class Measurements
 	{
 		Config config;
+		public volatile bool Reliable = false;
 
 		struct MeasureData
 		{
@@ -23,10 +24,12 @@ namespace Galaxpeer
 			public int TotalEntities;
 			public string ReceivedMessages;
 			public string SentMessages;
+			public int TotalReceivedMessages;
+			public int TotalSentMessages;
 
 			public override string ToString()
 			{
-				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}", TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, KnownConnections, ProcessCount, TotalEntities, ReceivedMessages, SentMessages);
+				return string.Format ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", DateTime.UtcNow, TotalTime.Ticks, PhysicsTime.Ticks, ReceiveTime.Ticks, TotalConnections, ConnectionsInRoi, ConnectionsOutsideRoi, ClosestConnections, KnownConnections, ProcessCount, TotalEntities, ReceivedMessages, SentMessages, TotalReceivedMessages, TotalSentMessages);
 			}
 		}
 
@@ -44,7 +47,7 @@ namespace Galaxpeer
 				total_watch.Start ();
 
 				file = new StreamWriter ("log.csv");
-				file.WriteLine ("Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Known clients,Number of processes,Total entities,Received messages,Sent messages");
+				file.WriteLine ("Real time, Total time,Physics time,Receive time,Total connections,Connections in ROI,Connections outside ROI,Number of closest clients,Known clients,Number of processes,Total entities,Received messages,Sent messages,Total received messages,Total sent messages");
 
 				measure_timer = new Timer (CountAll, null, config.MeasureFrequency, config.MeasureFrequency);
 			}
@@ -150,15 +153,18 @@ namespace Galaxpeer
 			}
 		}
 
-		private string messageCount (ConcurrentDictionary<char, int> messages)
+		private string messageCount (ConcurrentDictionary<char, int> messages, out int total)
 		{
 			string str = "";
+			int _total = 0;
 			messages.Acquire (() => {
 				messages.ForEach ((char id, int count) => {
 					str += id + ":" + count + " ";
+					_total += count;
 				});
 				messages.Clear ();
 			});
+			total = _total;
 			return str;
 		}
 
@@ -196,8 +202,8 @@ namespace Galaxpeer
 					}
 				}
 				if (config.MeasureMessageCount) {
-					data.ReceivedMessages = messageCount (received_messages);
-					data.SentMessages = messageCount (sent_messages);
+					data.ReceivedMessages = messageCount (received_messages, out data.TotalReceivedMessages);
+					data.SentMessages = messageCount (sent_messages, out data.TotalSentMessages);
 				}
 				if (config.MeasureEntityCount) {
 					data.TotalEntities = EntityManager.Entities.Count;
@@ -220,7 +226,7 @@ namespace Galaxpeer
 				if (config.MeasureFail) {
 					Process process = new Process();
 					process.StartInfo.FileName = "/bin/pgrep";
-					process.StartInfo.Arguments = "-cf Galaxpeer-CLI";
+					process.StartInfo.Arguments = "-cf Galaxpeer-CLI.exe";
 					process.StartInfo.UseShellExecute = false;
 					process.StartInfo.RedirectStandardOutput = true;
 					process.StartInfo.RedirectStandardError = true;
@@ -230,6 +236,17 @@ namespace Galaxpeer
 				}
 
 				file.WriteLine (data.ToString ());
+			}
+		}
+
+		public void LogNeighbours ()
+		{
+			if (config.MeasureNeighbours) {
+				int neighbours = Game.ConnectionManager.ClientsInRoi.Count;
+				using (StreamWriter writer = new StreamWriter ("neighbours-" + LocalPlayer.LocalUuid + ".txt", true)) {
+					writer.WriteLine (string.Format ("{0} {1}{2}", DateTime.UtcNow, neighbours, Reliable ? "" : "x"));
+				}
+				Reliable = true;
 			}
 		}
 	}

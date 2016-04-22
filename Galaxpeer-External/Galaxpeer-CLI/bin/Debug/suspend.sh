@@ -9,7 +9,7 @@ then
     kill $pid
     sleep $delay
     echo "Starting Galaxpeer"
-    mono --debug ./Galaxpeer-CLI.exe --connect 127.0.0.1:36963 --fail &
+    mono --debug ./Galaxpeer-CLI.exe --connect 127.0.0.1:36963 --fail --measurefail &
 else
     echo "Suspend $pid"
     kill -TSTP $pid

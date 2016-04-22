@@ -30,6 +30,8 @@ namespace Galaxpeer
 		public readonly bool MeasureMessageCount = false;
 		public readonly bool MeasureMessageTime = false;
 		public readonly bool MeasureFail = false;
+		public readonly bool MeasureNeighbours = false;
+		public readonly bool MeasureLocal = false;
 
 		public readonly bool Fail = false;
 
@@ -90,8 +92,12 @@ namespace Galaxpeer
 					}
 				} else if (arguments [i] == "--fail") {
 					Fail = true;
+					MeasureNeighbours = true;
 				} else if (arguments [i] == "--measurefail") {
 					MeasureFail = true;
+					MeasureNeighbours = true;
+				} else if (arguments [i] == "--measurelocal") {
+					MeasureLocal = true;
 				}
 			}
 		}

@@ -13,7 +13,7 @@ else
 		for i in $(seq 1 $num_clients)
 		do
 			( mono --debug ./Galaxpeer-CLI.exe --connect 127.0.0.1:36963 "${@:2}" & )
-			sleep 0.2
+			sleep 1
 		done
 	fi
 fi
